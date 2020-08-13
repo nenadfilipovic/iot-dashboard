@@ -1,29 +1,22 @@
-#-------------------------------------------------------------------------------------------------------------
-# Configuration file used to set up orchestration of development containers.
-# docker-compose.devcontainer.yml
-#-------------------------------------------------------------------------------------------------------------
 version: '3'
 services:
   authentication-service:
     build:
-      context: ./application/services/authentication
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-    command: sleep infinity
+    command: /bin/sh -c "while sleep 1000; do :; done"
 
   device-service:
     build:
-      context: ./application/services/device
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-    command: sleep infinity
+    command: /bin/sh -c "while sleep 1000; do :; done"
 
   log-service:
     build:
-      context: ./application/services/log
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-    command: sleep infinity
+    command: /bin/sh -c "while sleep 1000; do :; done"
