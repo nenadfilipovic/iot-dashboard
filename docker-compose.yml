@@ -8,3 +8,13 @@ services:
     build:
       context: ./application/services/authentication
       dockerfile: Dockerfile
+
+  device-service:
+    build:
+      context: ./application/services/device
+      dockerfile: Dockerfile
+
+  log-service:
+    build:
+      context: ./application/services/log
+      dockerfile: Dockerfile

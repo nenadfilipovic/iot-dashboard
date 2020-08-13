@@ -11,3 +11,19 @@ services:
     volumes:
       - .:/workspace:cached
     command: sleep infinity
+
+  device-service:
+    build:
+      context: ./application/services/device
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
+
+  log-service:
+    build:
+      context: ./application/services/log
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity

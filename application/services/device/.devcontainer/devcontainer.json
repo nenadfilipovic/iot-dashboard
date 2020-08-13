@@ -1,0 +1,43 @@
+//------------------------------------------------------------------------------------------------------------
+// Configuration file for development container.
+// devcontainer.json
+//------------------------------------------------------------------------------------------------------------
+
+{
+	// Service name.
+	"name": "Device-Service",
+
+	// Append to service listed in docker-compose.yml file.
+	"service": "device-service",
+
+	// Select docker-compose file to start all development containers at the same time.
+	"dockerComposeFile": [
+		"../../../../docker-compose.yml",
+		"../../../../docker-compose.devcontainer.yml",
+	  ],
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "npm install",
+
+	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "node",
+
+	// Leave containers running after closing VS Code window.
+	"shutdownAction": "none",
+
+	// Select workspace folder for selected service.
+	"workspaceFolder": "/workspace/application/services/device"
+}
