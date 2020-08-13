@@ -1,0 +1,10 @@
+#-------------------------------------------------------------------------------------------------------------
+# Configuration file used to set up orchestration of containers.
+# docker-compose.yml
+#-------------------------------------------------------------------------------------------------------------
+version: '3'
+services:
+  authentication-service:
+    build:
+      context: ./application/services/authentication
+      dockerfile: Dockerfile
