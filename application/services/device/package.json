@@ -1,11 +1,16 @@
 {
   "name": "device-service",
   "version": "1.0.0",
-  "description": "Device service for IOT dashboard project",
+  "description": "Device service for IOT Dashboard project",
   "main": "",
   "scripts": {
-    "start": ""
+    "start:dev": "tsnd --respawn --transpile-only src/server.ts",
+    "start:prod": "tsc && node dist/server.js"
   },
   "author": "Nenad Filipovic",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node-dev": "^1.0.0-pre.57",
+    "typescript": "^3.9.7"
+  }
 }

@@ -6,9 +6,9 @@
     "../../../../docker-compose.devcontainer.yml"
   ],
   "settings": {},
-  "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
+  "extensions": ["esbenp.prettier-vscode"],
   // "forwardPorts": [],
-  // "postCreateCommand": "npm install",
+  "postCreateCommand": "npm install",
   "remoteUser": "node",
   "shutdownAction": "none",
   "workspaceFolder": "/workspace/application/services/authentication"
