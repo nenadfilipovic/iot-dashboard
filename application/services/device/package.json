@@ -1,0 +1,11 @@
+{
+  "name": "device-service",
+  "version": "1.0.0",
+  "description": "Device service for IOT dashboard project",
+  "main": "",
+  "scripts": {
+    "start": ""
+  },
+  "author": "Nenad Filipovic",
+  "license": "ISC"
+}
