@@ -1,6 +1,6 @@
 # IOT Dashboard
 
-Complete system that enables you to monitor your IOT sensor data.
+Complete system that enables you to receive, store and monitor your sensor data.
 
 ## Getting Started
 

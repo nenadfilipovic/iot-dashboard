@@ -5,10 +5,13 @@
     "../../../../docker-compose.yml",
     "../../../../docker-compose.devcontainer.yml"
   ],
-  "settings": {},
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true
+  },
   "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
   // "forwardPorts": [],
-  "postCreateCommand": "npm install",
+  "postCreateCommand": "sh .devcontainer/refresh.sh",
   "remoteUser": "node",
   "shutdownAction": "none",
   "workspaceFolder": "/workspace/application/services/device"
