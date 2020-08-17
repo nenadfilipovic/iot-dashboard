@@ -40,7 +40,7 @@ git clone https://github.com/nenadfilipovic/iot-dashboard
 
 ## Authors
 
-* **Nenad Filipovic** - *Initial work* - [nenadfilipovic](https://github.com/nenadfilipovic)
+- **Nenad Filipovic** - _Initial work_ - [nenadfilipovic](https://github.com/nenadfilipovic)
 
 ## License
 
