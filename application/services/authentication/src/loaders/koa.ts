@@ -1,15 +1,16 @@
 import Koa from 'koa';
-import helmet from 'koa-helmet';
-import bodyParser from 'koa-bodyparser';
-import compress from 'koa-compress';
-import pino from 'koa-pino-logger';
+import koaHelmet from 'koa-helmet';
+import koaBodyparser from 'koa-bodyparser';
+import koaCompress from 'koa-compress';
+import koaPinoLogger from 'koa-pino-logger';
+import { authRouter } from '../routes/authentication';
 import zlib from 'zlib';
 
 const koaServer = ({ app }: { app: Koa }): Koa => {
-  app.use(helmet());
-  app.use(bodyParser());
+  app.use(koaHelmet());
+  app.use(koaBodyparser());
   app.use(
-    compress({
+    koaCompress({
       filter(content_type) {
         return /text/i.test(content_type);
       },
@@ -18,7 +19,9 @@ const koaServer = ({ app }: { app: Koa }): Koa => {
       },
     }),
   );
-  app.use(pino);
+  if (process.env.NODE_ENV !== 'production') {
+    app.use(koaPinoLogger({ prettyPrint: true }));
+  }
   app.use(async (ctx, next) => {
     try {
       await next();
@@ -29,6 +32,12 @@ const koaServer = ({ app }: { app: Koa }): Koa => {
       };
     }
   });
+  app.use(authRouter.routes());
+  app.use(
+    authRouter.allowedMethods({
+      throw: true,
+    }),
+  );
   return app;
 };
 

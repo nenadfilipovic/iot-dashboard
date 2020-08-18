@@ -5,18 +5,18 @@ services:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-    command: /bin/sh -c "while sleep 1000; do :; done"
+    command: sleep infinity
 
   device-service:
     build:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-    command: /bin/sh -c "while sleep 1000; do :; done"
+    command: sleep infinity
 
   log-service:
     build:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - .:/workspace:cached
-    command: /bin/sh -c "while sleep 1000; do :; done"
+    command: sleep infinity
