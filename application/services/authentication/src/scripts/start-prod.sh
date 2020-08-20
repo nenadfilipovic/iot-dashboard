@@ -1,0 +1,1 @@
+(rm -rf dist) && tsc && node dist/server.js

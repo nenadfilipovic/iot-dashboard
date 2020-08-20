@@ -1,0 +1,1 @@
+NODE_ENV=development ts-node-dev -r dotenv/config --respawn --transpile-only src/server.ts

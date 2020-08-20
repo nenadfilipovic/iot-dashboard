@@ -8,7 +8,7 @@
   },
   "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
   "forwardPorts": [3005],
-  "postCreateCommand": "sh .devcontainer/refresh.sh",
+  "postCreateCommand": "sh .devcontainer/refresh-container.sh",
   "remoteUser": "node",
   "shutdownAction": "none",
   "workspaceFolder": "/workspace/application/services/authentication"

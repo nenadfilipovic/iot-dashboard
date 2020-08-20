@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Authentication {
+  id        Int                    @default(autoincrement()) @id
+  email     String                 @unique
+  password  String
+  status    Authentication_status?
+  updatedAt DateTime               @default(now())
+  createdAt DateTime               @default(now())
+}
+
+enum Authentication_status {
+  active
+  disabled
+}
