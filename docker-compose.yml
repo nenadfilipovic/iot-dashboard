@@ -4,7 +4,6 @@ services:
     build:
       context: ./application/services/authentication
       dockerfile: Dockerfile
-
     depends_on:
       - authentication-db
 
@@ -17,36 +16,39 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: password
 
+  user-service:
+    build:
+      context: ./application/services/user
+      dockerfile: Dockerfile
+    #depends_on:
+    #- user-db
+
+  #user-db:
+  #image: mysql:5.7
+  #restart: always
+  #environment:
+  #MYSQL_ROOT_PASSWORD: root
+  #MYSQL_DATABASE: user
+  #MYSQL_USER: root
+  #MYSQL_PASSWORD: password
+
   device-service:
     build:
       context: ./application/services/device
       dockerfile: Dockerfile
+    #depends_on:
+    #- device-db
 
-    depends_on:
-      - device-db
-
-  device-db:
-    image: mysql:5.7
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: device
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
+  #device-db:
+  #image: mysql:5.7
+  #restart: always
+  #environment:
+  #MYSQL_ROOT_PASSWORD: root
+  #MYSQL_DATABASE: device
+  #MYSQL_USER: root
+  #MYSQL_PASSWORD: password
 
   log-service:
     build:
       context: ./application/services/log
       dockerfile: Dockerfile
-
-    depends_on:
-      - log-db
-
-  log-db:
-    image: mysql:5.7
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: log
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password

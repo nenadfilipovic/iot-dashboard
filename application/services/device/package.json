@@ -1,14 +1,14 @@
 {
-  "name": "authentication-service",
+  "name": "device-service",
   "version": "1.0.0",
-  "description": "Authentication service for IOT Dashboard project",
+  "description": "Device service for IOT Dashboard project",
   "author": "Nenad Filipovic",
   "license": "MIT",
-  "main": "dist/server.js",
+  "main": "dist/bin/server.js",
   "scripts": {
     "start:prod": "sh src/scripts/start-prod.sh",
     "start:dev": "sh src/scripts/start-dev.sh",
-    "test": "jest"
+    "test": "sh src/scripts/test.sh"
   },
   "devDependencies": {
     "@prisma/cli": "^2.5.0",
@@ -33,6 +33,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
+    "@prisma/client": "^2.5.1",
     "bcryptjs": "^2.4.3",
     "joi": "^17.2.0",
     "koa": "^2.13.0",

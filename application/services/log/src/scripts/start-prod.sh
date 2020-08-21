@@ -1,1 +1,1 @@
-(rm -rf dist) && tsc && node dist/server.js
+(rm -rf dist) && tsc && node dist/bin/server.js

@@ -1,8 +1,6 @@
 import koaJwt from 'koa-jwt';
 
-import { appConfig } from '../config';
-
-const { jwtSecret } = appConfig;
+import { jwtSecret } from '../config';
 
 const jwtMiddleware = koaJwt({
   secret: jwtSecret,
