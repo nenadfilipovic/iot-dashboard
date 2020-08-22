@@ -10,6 +10,8 @@ import { authenticationRouter } from '../api/routes/authentication';
 
 const app = new Koa();
 
+console.log(process.env.NODE_ENV);
+
 if (process.env.NODE_ENV === 'development') {
   app.use(koaLogger());
 }

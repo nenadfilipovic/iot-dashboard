@@ -8,9 +8,8 @@ import { jwtSecret } from '../../config';
 const prisma = new PrismaClient();
 
 const login = async (ctx: Context): Promise<void> => {
-  /*
   const { email, password } = ctx.request.body;
-  // Validation here
+  // Joi validation here
   const existingUser = await prisma.authentication.findOne({
     where: { email: email },
   });
@@ -18,7 +17,10 @@ const login = async (ctx: Context): Promise<void> => {
     // Add custom error
     throw new Error('User with provided email does not exist.');
   }
-  const correctPassword = Password.compare(existingUser.password, password);
+  const correctPassword = await Password.compare(
+    existingUser.password,
+    password,
+  );
   if (!correctPassword) {
     // Add custom error
     throw new Error('Provided password is not correct.');
@@ -26,7 +28,7 @@ const login = async (ctx: Context): Promise<void> => {
   const token = jwt.sign({ id: existingUser.user_id }, jwtSecret);
 
   ctx.body = { existingUser };
-  
+  /*
    * Check provided user email
    * If it exist, compare provided password with users password
    * If ok generate JWT

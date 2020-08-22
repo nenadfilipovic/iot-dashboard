@@ -2,6 +2,7 @@ import joi from 'joi';
 
 const configSchema = joi
   .object({
+    NODE_ENV: joi.string().valid('development', 'production').required(),
     SERVICE_NAME: joi.string().required(),
     SERVICE_PORT: joi.number().required(),
     JWT_SECRET: joi.string().required(),
@@ -18,7 +19,8 @@ if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
 
-const { serviceName, servicePort, jwtSecret } = {
+const { environment, serviceName, servicePort, jwtSecret } = {
+  environment: validConfig.NODE_ENV,
   serviceName: validConfig.SERVICE_NAME,
   servicePort: validConfig.SERVICE_PORT,
   jwtSecret: validConfig.JWT_SECRET,
@@ -32,6 +34,7 @@ const { dbHost, dbName, dbPassword, dbUser } = {
 };
 
 export {
+  environment,
   serviceName,
   servicePort,
   jwtSecret,
