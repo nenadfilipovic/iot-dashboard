@@ -2,17 +2,22 @@
   "name": "Log-Service",
   "service": "log-service",
   "dockerComposeFile": [
-    "../../../../docker-compose.yml",
-    "../../../../docker-compose.devcontainer.yml"
+    "docker-compose.yml",
   ],
   "settings": {
     "editor.tabSize": 2,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "extensions.ignoreRecommendations": true
   },
-  "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
-  "forwardPorts": [3015],
-  "postCreateCommand": "sh .devcontainer/refresh-container.sh",
+  "extensions": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ],
+  "forwardPorts": [
+    3015
+  ],
+  "postCreateCommand": "sh .devcontainer/rebuild.sh",
   "remoteUser": "node",
-  "shutdownAction": "none",
-  "workspaceFolder": "/workspace/application/services/log"
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspace"
 }

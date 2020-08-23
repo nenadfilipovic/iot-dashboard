@@ -1,0 +1,16 @@
+version: '3'
+services:
+  authentication-service:
+    image: node:14-alpine
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    depends_on:
+      - authentication-db
+
+  authentication-db:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: authentication

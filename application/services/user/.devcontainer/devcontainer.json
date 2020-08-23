@@ -2,23 +2,23 @@
   "name": "User-Service",
   "service": "user-service",
   "dockerComposeFile": [
-    "../../../../docker-compose.yml",
-    "../../../../docker-compose.devcontainer.yml"
+    "docker-compose.yml",
   ],
   "settings": {
     "editor.tabSize": 2,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "extensions.ignoreRecommendations": true
   },
   "extensions": [
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "Prisma.prisma"
+    "prisma.prisma"
   ],
   "forwardPorts": [
     3015
   ],
-  "postCreateCommand": "sh .devcontainer/refresh-container.sh",
+  "postCreateCommand": "sh .devcontainer/rebuild.sh",
   "remoteUser": "node",
-  "shutdownAction": "none",
-  "workspaceFolder": "/workspace/application/services/user"
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspace"
 }

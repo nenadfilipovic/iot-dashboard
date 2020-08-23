@@ -1,15 +1,21 @@
 import http from 'http';
 
 import { app } from './app';
+import { db } from './database';
 import { serviceName, servicePort } from '../config';
 import { appLogger } from '../utils/logger';
 
-const initialize = async () => {
+const startServer = async () => {
   appLogger.info(`🙏 ${serviceName} service is starting.`);
+
   /**
    * Load server, db, etc...
-   * Example: await db.initialize()
    */
+
+  db.authenticate().then(() => {
+    appLogger.info('😄 Database connection established successfully.');
+  });
+
   http
     .createServer(app.callback())
     .listen(servicePort, () =>
@@ -17,15 +23,16 @@ const initialize = async () => {
     );
 };
 
-initialize()
+startServer()
   /**
    * Need to hack around server.address().port if i want to show port because:
    * https://github.com/microsoft/ConversationLearner-Samples/issues/269
    */
-  .then(() => appLogger.info(`👍 ${serviceName} service is up and running.`))
+
+  .then()
   .catch((error) => {
-    if (error) {
-      appLogger.error('🔥 Unable to start service, read error below.');
-      appLogger.error(error);
-    }
+    appLogger.error(
+      `🔥 Unable to start ${serviceName} service, please read error below.`,
+    );
+    appLogger.error(error);
   });

@@ -1,6 +1,6 @@
 import KoaRouter from 'koa-router';
 
-import { login, logout } from '../controllers/authentication';
+import { login, logout } from '../controllers/auth';
 
 const router = new KoaRouter({ prefix: `/api/auth` });
 

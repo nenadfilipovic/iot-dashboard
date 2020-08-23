@@ -6,11 +6,9 @@ import koaLogger from 'koa-logger';
 import zlib from 'zlib';
 
 import { errorMiddleware } from '../middlewares/error';
-import { authenticationRouter } from '../api/routes/authentication';
+import { authenticationRouter } from '../api/routes/auth';
 
 const app = new Koa();
-
-console.log(process.env.NODE_ENV);
 
 if (process.env.NODE_ENV === 'development') {
   app.use(koaLogger());
