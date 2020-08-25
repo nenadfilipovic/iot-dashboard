@@ -1,23 +1,15 @@
 {
   "name": "Device-Service",
   "service": "device-service",
-  "dockerComposeFile": [
-    "docker-compose.yml",
-  ],
+  "dockerComposeFile": ["docker-compose.yml"],
   "settings": {
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
     "extensions.ignoreRecommendations": true
   },
-  "extensions": [
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "prisma.prisma"
-  ],
-  "forwardPorts": [
-    3010
-  ],
-  "postCreateCommand": "sh .devcontainer/rebuild.sh",
+  "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
+  "forwardPorts": [3010],
+  "postCreateCommand": "sh .devcontainer/refresh.sh",
   "remoteUser": "node",
   "shutdownAction": "stopCompose",
   "workspaceFolder": "/workspace"

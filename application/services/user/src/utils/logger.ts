@@ -6,7 +6,7 @@ const { combine, timestamp, prettyPrint, colorize, errors, printf } = format;
  * Enable logging of error stack: https://github.com/winstonjs/winston/issues/1338#issuecomment-482784056
  */
 
-const appLogger = createLogger({
+const logger = createLogger({
   format: combine(
     errors({ stack: true }),
     colorize(),
@@ -22,4 +22,4 @@ const appLogger = createLogger({
   transports: [new transports.Console()],
 });
 
-export { appLogger };
+export { logger };

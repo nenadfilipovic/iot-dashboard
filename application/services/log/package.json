@@ -4,9 +4,8 @@
   "description": "Log service for IOT Dashboard project",
   "author": "Nenad Filipovic",
   "license": "MIT",
-  "main": "dist/bin/server.js",
+  "main": "src/server.ts",
   "scripts": {
-    "start:prod": "sh src/scripts/start-prod.sh",
     "start:dev": "sh src/scripts/start-dev.sh",
     "test": "sh src/scripts/test.sh"
   },

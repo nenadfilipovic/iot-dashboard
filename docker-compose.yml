@@ -20,7 +20,7 @@ services:
       context: ./application/services/user
       dockerfile: Dockerfile
     depends_on:
-    - user-db
+      - user-db
 
   user-db:
     image: mysql:5.7
@@ -35,7 +35,7 @@ services:
       context: ./application/services/device
       dockerfile: Dockerfile
     depends_on:
-    - device-db
+      - device-db
 
   device-db:
     image: mysql:5.7

@@ -1,6 +1,9 @@
 import KoaRouter from 'koa-router';
 
-import { create, modify, destroy, getOne } from '../controllers/user';
+import { create } from '../controllers/create';
+import { modify } from '../controllers/modify';
+import { destroy } from '../controllers/destroy';
+import { getOne } from '../controllers/get-one';
 
 const router = new KoaRouter({ prefix: `/api/user` });
 
@@ -12,4 +15,4 @@ router.delete('/:id', destroy);
 
 router.get('/:id', getOne);
 
-export { router as userRouter };
+export { router };

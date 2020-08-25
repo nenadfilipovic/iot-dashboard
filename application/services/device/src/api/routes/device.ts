@@ -1,14 +1,15 @@
 import KoaRouter from 'koa-router';
+import config from 'config';
 
-import {
-  create,
-  modify,
-  destroy,
-  getOne,
-  getMany,
-} from '../controllers/device';
+import { create } from '../controllers/create';
+import { modify } from '../controllers/modify';
+import { destroy } from '../controllers/destroy';
+import { getOne } from '../controllers/get-one';
+import { getMany } from '../controllers/get-many';
 
-const router = new KoaRouter({ prefix: `/api/device` });
+const servicePrefix: string = config.get('service.prefix');
+
+const router = new KoaRouter({ prefix: servicePrefix });
 
 router.post('/', create);
 
@@ -20,4 +21,4 @@ router.get('/:id', getOne);
 
 router.get('/', getMany);
 
-export { router as deviceRouter };
+export { router };

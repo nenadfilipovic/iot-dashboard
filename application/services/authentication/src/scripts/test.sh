@@ -1,1 +1,1 @@
-jest
+NODE_ENV=test jest --watchAll --no-cache

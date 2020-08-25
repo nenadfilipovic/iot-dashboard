@@ -1,9 +1,9 @@
-version: "3"
+version: '3'
 services:
   device-service:
     image: node:14-alpine
     volumes:
-      - .:/workspace:cached
+      - ..:/workspace:cached
     command: sleep infinity
     depends_on:
       - device-db
@@ -12,6 +12,8 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: device
-      MYSQL_USER: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d

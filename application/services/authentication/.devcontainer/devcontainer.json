@@ -7,13 +7,9 @@
     "editor.formatOnSave": true,
     "extensions.ignoreRecommendations": true
   },
-  "extensions": [
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "prisma.prisma"
-  ],
+  "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
   "forwardPorts": [3005],
-  "postCreateCommand": "sh .devcontainer/rebuild.sh",
+  "postCreateCommand": "sh .devcontainer/refresh.sh",
   "remoteUser": "node",
   "shutdownAction": "stopCompose",
   "workspaceFolder": "/workspace"

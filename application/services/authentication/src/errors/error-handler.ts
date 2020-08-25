@@ -1,5 +1,5 @@
-import { appLogger } from '../utils/logger';
-import { BaseError } from './base';
+import { logger } from '../utils/logger';
+import { CustomError } from './custom';
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
@@ -14,10 +14,10 @@ process.on('uncaughtException', (error: Error) => {
 
 class ErrorHandler {
   public handleError(error: Error): void {
-    appLogger.error(error);
+    logger.error(error);
   }
   public isTrustedError(error: Error): boolean {
-    if (error instanceof BaseError) {
+    if (error instanceof CustomError) {
       return error.isOperational;
     }
     return false;
