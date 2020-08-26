@@ -8,7 +8,7 @@ import zlib from 'zlib';
 import config from 'config';
 
 import { errorMiddleware } from '../middlewares/error';
-import { router } from '../api/routes/authentication';
+import { router } from '../api/auth.routes';
 
 const serviceCookieKey: string = config.get('service.cookieKey');
 const serviceCookieKeyExpiresIn: number = config.get(

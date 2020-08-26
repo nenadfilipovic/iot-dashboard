@@ -1,8 +1,8 @@
 import KoaRouter from 'koa-router';
 import config from 'config';
 
-import { login } from '../controllers/log-in';
-import { logout } from '../controllers/log-out';
+import { login } from './auth.controller';
+import { logout } from './auth.controller';
 
 const servicePrefix: string = config.get('service.prefix');
 

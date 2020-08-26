@@ -1,11 +1,7 @@
 import KoaRouter from 'koa-router';
 import config from 'config';
 
-import { create } from '../controllers/create';
-import { modify } from '../controllers/modify';
-import { destroy } from '../controllers/destroy';
-import { getOne } from '../controllers/get-one';
-import { getMany } from '../controllers/get-many';
+import { create, modify, destroy, getOne, getMany } from './device.controller';
 
 const servicePrefix: string = config.get('service.prefix');
 

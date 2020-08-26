@@ -1,14 +1,16 @@
 import { DefaultContext } from 'koa';
 
-import { loginSchema } from '../../services/schemas';
-import { ValidationError } from '../../errors/validation';
-import { CustomError } from '../../errors/custom';
+import { loginSchema } from '../services/schemas';
+import { ValidationError } from '../errors/validation';
+import { CustomError } from '../errors/custom';
 import { Authentication } from '../models/Authentication';
-import { Password } from '../../services/password';
-import { createToken } from '../../services/jwt';
+import { Password } from '../services/password';
+import { createToken } from '../services/jwt';
 
 const login = async (ctx: DefaultContext): Promise<void> => {
   const { email, password } = ctx.request.body;
+
+  // email to lowercase
 
   const { error, value: validData } = loginSchema.validate({ email, password });
 
@@ -47,4 +49,9 @@ const login = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
-export { login };
+const logout = async (ctx: DefaultContext): Promise<void> => {
+    ctx.session = null;
+    ctx.body = {};
+  };
+
+export { login, logout };
