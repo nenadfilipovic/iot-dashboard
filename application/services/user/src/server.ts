@@ -5,11 +5,11 @@ import { db } from './core/database';
 import { app } from './core/app';
 import { logger } from './utils/logger';
 
-const serviceName: string = config.get('service.name');
-const servicePort: string = config.get('service.port');
+const name: string = config.get('service.name');
+const port: string = config.get('service.port');
 
 const startServer = async () => {
-  logger.info(`🙏 ${serviceName} service is starting.`);
+  logger.info(`🙏 ${name} service is starting.`);
 
   /**
    * Load server, db, etc...
@@ -21,8 +21,8 @@ const startServer = async () => {
 
   http
     .createServer(app.callback())
-    .listen(servicePort, () =>
-      logger.info(`😄 Server successfully started at port ${servicePort}.`),
+    .listen(port, () =>
+      logger.info(`😄 Server successfully started at port ${port}.`),
     );
 };
 
@@ -35,7 +35,7 @@ startServer()
   .then()
   .catch((error) => {
     logger.error(
-      `🔥 Unable to start ${serviceName} service, please read error below.`,
+      `🔥 Unable to start ${name} service, please read error below.`,
     );
     logger.error(error);
     process.exit(1);

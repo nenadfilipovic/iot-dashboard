@@ -1,57 +1,52 @@
 import { DefaultContext } from 'koa';
 
-import { loginSchema } from '../services/schemas';
-import { ValidationError } from '../errors/validation';
-import { CustomError } from '../errors/custom';
-import { Authentication } from '../models/Authentication';
-import { Password } from '../services/password';
+import { Authentication } from '../models/Auth';
 import { createToken } from '../services/jwt';
+
+/**
+ * Login user...
+ */
 
 const login = async (ctx: DefaultContext): Promise<void> => {
   const { email, password } = ctx.request.body;
 
-  // email to lowercase
-
-  const { error, value: validData } = loginSchema.validate({ email, password });
-
-  if (error) {
-    throw new ValidationError(error);
-  }
-
-  const user = await Authentication.findOne({
-    where: { email: validData.email },
+  const existingUser = await Authentication.findOne({
+    where: { email },
   });
 
-  if (!user) {
-    throw new CustomError('Incorrect email or password.', 401);
+  if (!existingUser) {
+    throw new Error(
+      'User with provided credentials does not exist, please check your email or password!',
+    );
   }
 
-  const correctPassword = await Password.compare(
-    validData.password,
-    user.password,
-  );
+  const correctPassword = existingUser.validPassword(password);
 
   if (!correctPassword) {
-    throw new CustomError('Incorrect email or password.', 401);
+    throw new Error(
+      'User with provided credentials does not exist, please check your email or password!',
+    );
   }
 
-  const token = createToken(user.userId);
+  const token = createToken(existingUser.id);
 
-  ctx.session = {
-    jwt: token,
-  };
+  ctx.session = { token };
 
-  Object.assign(user, { password: undefined });
+  Object.assign(existingUser, { password: undefined });
 
   ctx.body = {
     status: 'success',
-    data: { user },
+    data: { user: existingUser },
   };
 };
 
+/**
+ * Logout user...
+ */
+
 const logout = async (ctx: DefaultContext): Promise<void> => {
-    ctx.session = null;
-    ctx.body = {};
-  };
+  ctx.session = null;
+  ctx.body = {};
+};
 
 export { login, logout };

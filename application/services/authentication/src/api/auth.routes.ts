@@ -4,9 +4,9 @@ import config from 'config';
 import { login } from './auth.controller';
 import { logout } from './auth.controller';
 
-const servicePrefix: string = config.get('service.prefix');
+const prefix: string = config.get('service.prefix');
 
-const router = new KoaRouter({ prefix: servicePrefix });
+const router = new KoaRouter({ prefix });
 
 router.post('/', login);
 

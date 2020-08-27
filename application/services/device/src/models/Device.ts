@@ -6,48 +6,41 @@ import { logger } from '../utils/logger';
 enum Type {
   'esp32',
   'esp8266',
-  'arduino',
-}
-
-enum Status {
-  'active',
-  'disabled',
+  'uno',
+  'nano',
 }
 
 export interface DeviceAttributes extends Model {
-  userId: string;
-  deviceId: string;
+  id: string;
+  owner: string;
   name: string;
   description: string;
-  locationLat: number;
-  locationLong: number;
+  latitude: number;
+  longitude: number;
   type: Type;
-  status: Status;
+  isActive: boolean;
 }
 
 const Device = db.define<DeviceAttributes>(
   'Device',
   {
-    userId: {
-      type: DataTypes.STRING,
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
       allowNull: false,
-      validate: {
-        isUUID: {
-          args: 4,
-          msg:
-            'User identification number must be in universally unique identifier v4 format',
-        },
+      defaultValue: DataTypes.UUIDV4,
+      unique: {
+        name: 'id',
+        msg: 'Two devices with same identification string can not exist!',
       },
     },
-    deviceId: {
-      type: DataTypes.STRING,
+    owner: {
+      type: DataTypes.UUID,
       allowNull: false,
-      unique: true,
       validate: {
         isUUID: {
+          msg: 'Provided owner identification is not in valid format!',
           args: 4,
-          msg:
-            'Device identification number must be in universally unique identifier v4 format',
         },
       },
     },
@@ -56,83 +49,72 @@ const Device = db.define<DeviceAttributes>(
       allowNull: false,
       validate: {
         len: {
-          args: [3, 10],
-          msg: 'Device name must be between 3 and 10 characters long',
+          msg: 'Name must be between 3 and 25 characters long!',
+          args: [3, 25],
         },
         isAlphanumeric: {
-          msg: 'Device name can only contain alphanumeric characters',
+          msg: 'Name must contain only alphanumeric characters!',
         },
       },
     },
     description: {
       type: DataTypes.STRING,
       validate: {
-        max: {
-          args: [50],
-          msg: 'Device description can contain 50 characters at maximum',
+        len: {
+          msg: 'Description can not contain more than 500 characters!',
+          args: [0, 500],
         },
       },
     },
     latitude: {
-      type: DataTypes.FLOAT(10, 6),
+      type: DataTypes.INTEGER,
       validate: {
-        isFloat: {
-          msg: 'Location latitude must be in float format',
-        },
         min: {
-          args: [-90.0],
-          msg: 'Location latitude minimum is -90.0',
+          msg: 'Latitude can not be lower than -90!',
+          args: [-90],
         },
         max: {
-          args: [90.0],
-          msg: 'Location latitude maximum is 90.0',
+          msg: 'Latitude can not be higher than 90!',
+          args: [90],
         },
       },
     },
     longitude: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       validate: {
-        isFloat: {
-          msg: 'Location longitude must be in float format',
-        },
         min: {
-          args: [-180.0],
-          msg: 'Location longitude minimum is -180.0',
+          msg: 'Longitude can not be lower than -180!',
+          args: [-180],
         },
         max: {
-          args: [180.0],
-          msg: 'Location longitude maximum is 180.0',
+          msg: 'Longitude can not be lower than 180!',
+          args: [180],
         },
       },
     },
     type: {
-      type: DataTypes.ENUM('esp32', 'esp8266', 'arduino'),
+      type: DataTypes.ENUM('esp32', 'esp8266', 'arduino', 'uno', 'nano'),
       allowNull: false,
       validate: {
         isIn: {
-          args: [['esp32', 'esp8266', 'arduino']],
-          msg: 'Device type must be only "esp32", "esp8266" or "arduino"',
+          msg: 'Device type can only be esp32, esp8266, uno or nano!',
+          args: [['esp32', 'esp8266', 'uno', 'nano']],
         },
       },
     },
-    status: {
-      type: DataTypes.ENUM('active', 'disabled'),
-      defaultValue: 'active',
+    isActive: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      validate: {
-        isIn: {
-          args: [['active', 'disabled']],
-          msg: 'Device status must be either "active" or "disabled".',
-        },
-      },
+      defaultValue: true,
     },
   },
   {
     validate: {
+      // TODO - Need to fix this
       validCoordinates() {
         if ((this.latitude === null) !== (this.longitude === null)) {
           throw new Error(
-            'Either provide both latitude and longitude, or neither',
+            'Either provide both latitude and longitude or none!',
           );
         }
       },
@@ -140,8 +122,12 @@ const Device = db.define<DeviceAttributes>(
   },
 );
 
-Device.sync({ force: true }).then(() => {
-  logger.info('👍 Data model is in sync.');
-});
+Device.sync({ force: true })
+  .then(() => {
+    logger.info('👍 Data model is in sync.');
+  })
+  .catch((error) => {
+    throw new Error(error);
+  });
 
 export { Device };

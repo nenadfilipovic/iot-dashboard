@@ -1,119 +1,132 @@
 import { DefaultContext } from 'koa';
-import { v4 as uuidv4 } from 'uuid';
 
-import { createDevice } from '../services/schemas';
-import { ValidationError } from '../errors/validation';
 import { Device } from '../models/Device';
-import { CustomError } from '../errors/custom';
+
+/**
+ * Create device...
+ */
 
 const create = async (ctx: DefaultContext): Promise<void> => {
-    const {
-      userId,
-      name,
-      description,
-      locationLat,
-      locationLong,
-      type,
-      status,
-    } = ctx.request.body;
-  
-    const { error, value: validData } = createDevice.validate({
-      userId,
-      name,
-      description,
-      locationLat,
-      locationLong,
-      type,
-      status,
-    });
-  
-    if (error) {
-      throw new ValidationError(error);
-    }
-  
-    const newDevice = await Device.create({
-      deviceId: uuidv4(),
-      ...validData,
-    });
-  
-    ctx.body = {
-      status: 'success',
-      data: { newDevice },
-    };
-  };
+  const {
+    owner,
+    name,
+    description,
+    latitude,
+    longitude,
+    type,
+  } = ctx.request.body;
 
-  const destroy = async (ctx: DefaultContext): Promise<void> => {
-    const id = ctx.request.params.id;
-  
-    const device = await Device.findOne({ where: { deviceId: id } });
-  
-    if (!device) {
-      throw new CustomError('Device does not exist', 401);
-    }
-  
-    await Device.destroy({ where: { deviceId: id } });
-  
-    ctx.body = {
-      status: 'success',
-      data: {},
-    };
-  };
+  const newDevice = Device.build({
+    owner,
+    name,
+    description,
+    latitude,
+    longitude,
+    type,
+  });
 
-  const getMany = async (ctx: DefaultContext): Promise<void> => {
-    /*const id = ctx.request.params.id;
-  
-    const devices = await Device.findOne({ where: { userId: id } });
-  
-    if (!devices) {
-      throw new CustomError('Device does not exist', 401);
-    }
-  
-    ctx.body = {
-      status: 'success',
-      data: { devices },
-    };*/
-  };
+  const device = await newDevice.save().then((device) => device);
 
-  const getOne = async (ctx: DefaultContext): Promise<void> => {
-    const id = ctx.request.params.id;
-  
-    const device = await Device.findOne({ where: { deviceId: id } });
-  
-    if (!device) {
-      throw new CustomError('Device does not exist', 401);
-    }
-  
-    ctx.body = {
-      status: 'success',
-      data: { device },
-    };
+  ctx.body = {
+    status: 'success',
+    data: { device },
   };
+};
 
-  const modify = async (ctx: DefaultContext): Promise<void> => {
-    const id = ctx.request.params.id;
-  
-    const updateData = ctx.request.body;
-  
-    const existingDevice = await Device.findOne({
-      where: { deviceId: id },
-    });
-  
-    if (!existingDevice) {
-      throw new CustomError(
-        'Device you are trying to modify does not exist.',
-        401,
-      );
-    }
-  
-    const [affectedRows, result] = await Device.update(
-      { updateData },
-      { returning: true, where: { deviceId: id } },
+/**
+ * Modify device...
+ */
+
+const modify = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.request.params;
+
+  const existingDevice = await Device.findOne({
+    where: { id },
+  });
+
+  if (!existingDevice) {
+    throw new Error('Device you are trying to modify does not exist!');
+  }
+
+  if (!existingDevice.isActive)
+    throw new Error(
+      'This device is disabled, if you want to enable you device please visit dashboard page!',
     );
-  
-    ctx.body = {
-      status: 'success',
-      data: { result },
-    };
-  };
 
-  export {create, modify, destroy, getOne, getMany}
+  const { name, description, latitude, longitude, type } = ctx.request.body;
+
+  existingDevice.update({ name, description, latitude, longitude, type });
+
+  const device = await existingDevice.save().then((device) => device);
+
+  ctx.body = {
+    status: 'success',
+    data: { device },
+  };
+};
+
+/**
+ * Disable device...
+ */
+
+const disable = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.request.params;
+
+  const existingDevice = await Device.findOne({
+    where: { id },
+  });
+
+  if (!existingDevice) {
+    throw new Error('Cannot disable device that does not exist!');
+  }
+
+  existingDevice.set('isActive', false);
+
+  await existingDevice.save();
+
+  ctx.body = {
+    status: 'success',
+    data: {},
+  };
+};
+
+/**
+ * Get one device...
+ */
+
+const getOne = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.request.params;
+
+  const existingDevice = await Device.findOne({ where: { id } });
+
+  if (!existingDevice) {
+    throw new Error('Device does not exist!');
+  }
+
+  if (!existingDevice.isActive)
+    throw new Error(
+      'This device is disabled, if you want to enable you device please visit dashboard page!',
+    );
+
+  ctx.body = {
+    status: 'success',
+    data: { device: existingDevice },
+  };
+};
+
+/**
+ * Get many devices...
+ */
+
+const getMany = async (ctx: DefaultContext): Promise<void> => {
+  // const devices = await Device.findOne({ where: { id } });
+  // if (!devices) {
+  //   throw new Error('Device does not exist');
+  // }
+  // ctx.body = {
+  //   status: 'success',
+  //   data: { devices },
+  // };
+};
+
+export { create, modify, disable, getOne, getMany };

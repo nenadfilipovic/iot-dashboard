@@ -3,24 +3,34 @@ import { DefaultContext } from 'koa';
 import { User } from '../models/User';
 import { createToken } from '../services/jwt';
 
+/**
+ * Create user...
+ */
+
 const create = async (ctx: DefaultContext): Promise<void> => {
-  const { name, lastName, email, password, location } = ctx.request.body;
+  const {
+    name,
+    lastName,
+    email,
+    password,
+    latitude,
+    longitude,
+  } = ctx.request.body;
 
   const newUser = User.build({
     name,
     lastName,
     email,
     password,
-    location,
+    latitude,
+    longitude,
   });
 
   const user = await newUser.save().then((user) => user);
 
-  const token = createToken(user.userId);
+  const token = createToken(user.id);
 
-  ctx.session = {
-    jwt: token,
-  };
+  ctx.session = { token };
 
   Object.assign(user, { password: undefined });
 
@@ -30,21 +40,34 @@ const create = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
-const modify = async (ctx: DefaultContext): Promise<void> => {
-  const id = ctx.request.params.id;
+/**
+ * Modify user...
+ */
 
-  const existingUser = await User.findOne({ where: { userId: id } });
+const modify = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.request.params;
+
+  const existingUser = await User.findOne({
+    where: { id },
+  });
 
   if (!existingUser) throw new Error('Cannot modify user that does not exist!');
 
-  if (!existingUser.active)
+  if (!existingUser.isActive)
     throw new Error(
       'This user is disabled, if you want to enable you account please visit login page!',
     );
 
-  const { name, lastName, email, password, location } = ctx.request.body;
+  const {
+    name,
+    lastName,
+    email,
+    password,
+    latitude,
+    longitude,
+  } = ctx.request.body;
 
-  existingUser.update({ name, lastName, email, password, location });
+  existingUser.update({ name, lastName, email, password, latitude, longitude });
 
   const user = await existingUser.save().then((user) => user);
 
@@ -56,15 +79,21 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
-const disable = async (ctx: DefaultContext): Promise<void> => {
-  const id = ctx.request.params.id;
+/**
+ * Disable user...
+ */
 
-  const existingUser = await User.findOne({ where: { userId: id } });
+const disable = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.request.params;
+
+  const existingUser = await User.findOne({
+    where: { id },
+  });
 
   if (!existingUser)
     throw new Error('Cannot disable user that does not exist!');
 
-  existingUser.set('active', false);
+  existingUser.set('isActive', false);
 
   await existingUser.save();
 
@@ -76,16 +105,20 @@ const disable = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
+/**
+ * Get one user...
+ */
+
 const getOne = async (ctx: DefaultContext): Promise<void> => {
-  const id = ctx.request.params.id;
+  const { id } = ctx.request.params;
 
   const existingUser = await User.findOne({
-    where: { userId: id },
+    where: { id },
   });
 
   if (!existingUser) throw new Error('User does not exist!');
 
-  if (!existingUser.active)
+  if (!existingUser.isActive)
     throw new Error(
       'This user is disabled, if you want to enable you account please visit login page!',
     );

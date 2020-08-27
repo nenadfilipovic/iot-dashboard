@@ -7,32 +7,29 @@ import koaSession from 'koa-session';
 import zlib from 'zlib';
 import config from 'config';
 
-import { errorMiddleware } from '../middlewares/error';
 import { router } from '../api/user.routes';
 
-const serviceCookieKey: string = config.get('service.cookieKey');
-const serviceCookieKeyExpiresIn: number = config.get(
-  'service.cookieKeyExpiresIn',
-);
+const cookieKey: string = config.get('service.cookieKey');
+const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');
 
 const app = new Koa();
 
-if (process.env.NODE_ENV === 'development') {
-  app.use(koaLogger());
-}
+app.keys = [cookieKey];
 
-app.keys = [serviceCookieKey];
-
-const appConfig = {
+const sessionConfig = {
   key: 'session',
-  maxAge: serviceCookieKeyExpiresIn * 60 * 60 * 1000,
+  maxAge: cookieKeyExpiresIn * 60 * 60 * 1000,
   httpOnly: true,
   signed: true,
   secure: false,
 };
 
+if (process.env.NODE_ENV === 'development') {
+  app.use(koaLogger());
+}
+
 app
-  .use(koaSession(appConfig, app))
+  .use(koaSession(sessionConfig, app))
   .use(koaBodyparser())
   .use(koaHelmet())
   .use(
@@ -45,7 +42,7 @@ app
       },
     }),
   )
-  .use(errorMiddleware)
+  // todo error middleware
   .use(router.routes())
   .use(router.allowedMethods({ throw: true }));
 

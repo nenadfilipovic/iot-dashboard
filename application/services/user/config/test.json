@@ -1,5 +1,5 @@
 {
-  "dbConfig": {
+  "db": {
     "name": "test"
   }
 }

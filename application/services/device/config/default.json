@@ -2,7 +2,7 @@
   "service": {
     "name": "Device",
     "port": 3010,
-    "prefix": "/api/device",
+    "prefix": "/api/devices",
     "cookieKey": "qo8egoBEIckRK59IEEEGNH13u5B9ef5Hoj1ch7A4oSkACL8YzYYMDhZTvJLJM20",
     "cookieKeyExpiresIn": 1
   },

@@ -5,91 +5,123 @@ import { db } from '../core/database';
 import { logger } from '../utils/logger';
 
 export interface UserAttributes extends Model {
-  userId: string;
+  id: string;
   name: string;
   lastName: string;
   email: string;
   password: string;
-  location: string;
-  active: boolean;
+  latitude: number;
+  longitude: number;
+  isActive: boolean;
 }
 
 const User = db.define<UserAttributes>(
   'User',
   {
-    userId: {
+    id: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      unique: true,
       primaryKey: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+      unique: {
+        name: 'id',
+        msg: 'Two users with same identification string can not exist!',
+      },
     },
-
     name: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: {
-          msg: 'User name must be between 3 and 20 characters long',
-          args: [3, 20],
+          msg: 'Name must be between 3 and 25 characters long!',
+          args: [3, 25],
         },
         isAlpha: {
-          msg: 'User name can only contain letters',
+          msg: 'Name must contain only letters!',
         },
       },
     },
-
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: {
-          msg: 'User last name must be between 3 and 20 characters long',
-          args: [3, 20],
+          msg: 'Last name must be between 3 and 25 characters long!',
+          args: [3, 25],
         },
         isAlpha: {
-          msg: 'User last name can only contain letters',
+          msg: 'Last name must contain only letters!',
         },
       },
     },
-
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: {
-        name: 'unique',
-        msg: 'Provided email is already in use',
+        name: 'email',
+        msg: 'Two users with same email can not exist!',
       },
       validate: {
         isEmail: {
-          msg: 'Email address is not in valid format',
+          msg: 'Provided email is not in valid email format!',
         },
         isLowercase: true,
       },
     },
-
     password: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: {
-          msg: 'Password must be at least 6 characters long',
-          args: [6, 60],
+          msg: 'Password must be at least 6 characters long!',
+          args: [6, 255],
         },
       },
     },
-
-    location: {
-      type: DataTypes.STRING,
+    latitude: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: {
+          msg: 'Latitude can not be lower than -90!',
+          args: [-90],
+        },
+        max: {
+          msg: 'Latitude can not be higher than 90!',
+          args: [90],
+        },
+      },
     },
-
-    active: {
+    longitude: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: {
+          msg: 'Longitude can not be lower than -180!',
+          args: [-180],
+        },
+        max: {
+          msg: 'Longitude can not be lower than 180!',
+          args: [180],
+        },
+      },
+    },
+    isActive: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true,
       allowNull: false,
+      defaultValue: true,
     },
   },
-  {},
+  {
+    validate: {
+      // TODO - Fix this validation
+      locationValidator: function () {
+        if ((this.latitude === null) !== (this.longitude === null)) {
+          throw new Error(
+            'Either provide both latitude and longitude or none!',
+          );
+        }
+      },
+    },
+  },
 );
 
 User.beforeSave(async (user) => {
