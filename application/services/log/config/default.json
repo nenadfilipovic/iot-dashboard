@@ -1,0 +1,19 @@
+{
+  "service": {
+    "name": "Log",
+    "port": 3020,
+    "prefix": "/api/logs",
+    "cookieKey": "qo8egoBEIckRK59IEEEGNH13u5B9ef5Hoj1ch7A4oSkACL8YzYYMDhZTvJLJM20",
+    "cookieKeyExpiresIn": 1
+  },
+  "jwt": {
+    "secret": "0xXElKawk6iSUI9y6NPZKuRa8bwSrttsImmsWTNJqIfPT5cNfsdYzhI3PYtLdRQ",
+    "expiresIn": "5m"
+  },
+  "db": {
+    "host": "log-db",
+    "user": "user",
+    "password": "password",
+    "name": "development"
+  }
+}

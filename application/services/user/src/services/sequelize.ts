@@ -12,7 +12,7 @@ const db = new Sequelize(name, user, password, {
   define: {
     timestamps: true,
   },
-  logging: process.env.NODE_ENV === 'development',
+  logging: false,
 });
 
 export { db };

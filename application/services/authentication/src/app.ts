@@ -7,7 +7,7 @@ import koaSession from 'koa-session';
 import zlib from 'zlib';
 import config from 'config';
 
-import { router } from '../api/user.routes';
+import { router } from './api/auth.routes';
 
 const cookieKey: string = config.get('service.cookieKey');
 const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');
@@ -42,7 +42,7 @@ app
       },
     }),
   )
-  // todo error middleware
+  // todo - error middleware
   .use(router.routes())
   .use(router.allowedMethods({ throw: true }));
 

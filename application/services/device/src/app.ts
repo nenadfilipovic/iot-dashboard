@@ -1,18 +1,24 @@
-import Koa from 'koa';
+import Koa, { Context } from 'koa';
 import koaHelmet from 'koa-helmet';
 import koaBodyparser from 'koa-bodyparser';
 import koaCompress from 'koa-compress';
 import koaLogger from 'koa-logger';
 import koaSession from 'koa-session';
+import koaJwt from 'koa-jwt';
 import zlib from 'zlib';
 import config from 'config';
 
-import { router } from '../api/auth.routes';
+import { router } from './api/device.routes';
 
 const cookieKey: string = config.get('service.cookieKey');
 const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');
+const secret: string = config.get('jwt.secret');
 
 const app = new Koa();
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(koaLogger());
+}
 
 app.keys = [cookieKey];
 
@@ -24,11 +30,18 @@ const sessionConfig = {
   secure: false,
 };
 
-if (process.env.NODE_ENV === 'development') {
-  app.use(koaLogger());
-}
-
 app
+  .use(
+    koaJwt({
+      secret,
+      getToken: function name(ctx: Context) {
+        if (ctx.session) {
+          return ctx.session.token;
+        }
+        return null;
+      },
+    }),
+  )
   .use(koaSession(sessionConfig, app))
   .use(koaBodyparser())
   .use(koaHelmet())
@@ -42,7 +55,7 @@ app
       },
     }),
   )
-  // todo - error middleware
+  // todo error middleware
   .use(router.routes())
   .use(router.allowedMethods({ throw: true }));
 

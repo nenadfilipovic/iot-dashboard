@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { db } from '../core/database';
+import { db } from '../services/sequelize';
 import { logger } from '../utils/logger';
 
 enum Type {
@@ -124,7 +124,7 @@ const Device = db.define<DeviceAttributes>(
 
 Device.sync({ force: true })
   .then(() => {
-    logger.info('👍 Data model is in sync.');
+    logger.info('Data model is in sync.');
   })
   .catch((error) => {
     throw new Error(error);

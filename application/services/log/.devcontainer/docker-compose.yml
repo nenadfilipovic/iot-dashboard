@@ -1,0 +1,17 @@
+version: '3'
+services:
+  log-service:
+    image: node:14-alpine
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    depends_on:
+      - log-db
+
+  log-db:
+    image: influxdb:1.8.1-alpine
+    restart: unless-stopped
+    environment:
+      INFLUXDB_DB: development
+      INFLUXDB_USER: user
+      INFLUXDB_USER_PASSWORD: password

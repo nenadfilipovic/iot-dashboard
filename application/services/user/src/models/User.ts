@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
-import { db } from '../core/database';
+import { db } from '../services/sequelize';
 import { logger } from '../utils/logger';
 
 export interface UserAttributes extends Model {
@@ -132,7 +132,7 @@ User.beforeSave(async (user) => {
 
 User.sync({ force: true })
   .then(() => {
-    logger.info('👍 Data model is in sync.');
+    logger.info('Data model is in sync.');
   })
   .catch((error) => {
     throw new Error(error);

@@ -20,7 +20,12 @@ const login = async (ctx: DefaultContext): Promise<void> => {
     );
   }
 
-  const correctPassword = existingUser.validPassword(password);
+  if (!existingUser.isActive)
+    throw new Error(
+      'This user is disabled, if you want to enable you account please visit login page!',
+    );
+
+  const correctPassword = await existingUser.validPassword(password);
 
   if (!correctPassword) {
     throw new Error(
@@ -32,11 +37,9 @@ const login = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.session = { token };
 
-  Object.assign(existingUser, { password: undefined });
-
   ctx.body = {
     status: 'success',
-    data: { user: existingUser },
+    data: {},
   };
 };
 
@@ -48,5 +51,10 @@ const logout = async (ctx: DefaultContext): Promise<void> => {
   ctx.session = null;
   ctx.body = {};
 };
+
+/**
+ * Add user via event...
+ */
+const create = async (ctx: DefaultContext): Promise<void> => {};
 
 export { login, logout };

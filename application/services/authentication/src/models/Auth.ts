@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
-import { db } from '../core/database';
+import { db } from '../services/sequelize';
 import { logger } from '../utils/logger';
 
 export interface AuthAttributes extends Model {
@@ -9,7 +9,7 @@ export interface AuthAttributes extends Model {
   email: string;
   password: string;
   isActive: boolean;
-  validPassword: (password: string) => boolean;
+  validPassword: (password: string) => Promise<boolean>;
 }
 
 const Authentication = db.define<AuthAttributes>(
@@ -69,7 +69,7 @@ Authentication.prototype.validPassword = async function (password: string) {
 
 Authentication.sync({ force: true })
   .then(() => {
-    logger.info('👍 Data model is in sync.');
+    logger.info('Data model is in sync.');
   })
   .catch((error) => {
     throw new Error(error);

@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import koaJwt from 'koa-jwt';
 import config from 'config';
 
 const secret: string = config.get('jwt.secret');
@@ -11,9 +10,4 @@ const createToken = (id: string): string => {
   });
 };
 
-const validateToken = koaJwt({
-  secret,
-  cookie: 'session',
-});
-
-export { createToken, validateToken };
+export { createToken };

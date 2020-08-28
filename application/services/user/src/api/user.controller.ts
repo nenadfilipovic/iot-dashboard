@@ -28,11 +28,11 @@ const create = async (ctx: DefaultContext): Promise<void> => {
 
   const user = await newUser.save().then((user) => user);
 
+  Object.assign(user, { password: undefined });
+
   const token = createToken(user.id);
 
   ctx.session = { token };
-
-  Object.assign(user, { password: undefined });
 
   ctx.body = {
     status: 'success',
@@ -48,15 +48,15 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
   const { id } = ctx.request.params;
 
   const existingUser = await User.findOne({
-    where: { id },
+    where: { id, isActive: true },
   });
 
-  if (!existingUser) throw new Error('Cannot modify user that does not exist!');
+  if (!existingUser)
+    throw new Error('Cannot modify user that is disabled or does not exist!');
 
-  if (!existingUser.isActive)
-    throw new Error(
-      'This user is disabled, if you want to enable you account please visit login page!',
-    );
+  const currentUser = ctx.state.user.id;
+
+  if (currentUser !== id) throw new Error('You are not allowed to do this!');
 
   const {
     name,
@@ -71,7 +71,7 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
 
   const user = await existingUser.save().then((user) => user);
 
-  // remove password
+  Object.assign(user, { password: undefined });
 
   ctx.body = {
     status: 'success',
@@ -87,17 +87,23 @@ const disable = async (ctx: DefaultContext): Promise<void> => {
   const { id } = ctx.request.params;
 
   const existingUser = await User.findOne({
-    where: { id },
+    where: { id, isActive: true },
   });
 
   if (!existingUser)
-    throw new Error('Cannot disable user that does not exist!');
+    throw new Error(
+      'Cannot disable user that is already disabled or does not exist!',
+    );
+
+  const currentUser = ctx.state.user.id;
+
+  if (currentUser !== id) throw new Error('You are not allowed to do this!');
 
   existingUser.set('isActive', false);
 
   await existingUser.save();
 
-  // should probably destroy session
+  ctx.session = null;
 
   ctx.body = {
     status: 'success',
@@ -113,17 +119,16 @@ const getOne = async (ctx: DefaultContext): Promise<void> => {
   const { id } = ctx.request.params;
 
   const existingUser = await User.findOne({
-    where: { id },
+    where: { id, isActive: true },
+    attributes: { exclude: ['password'] },
   });
 
-  if (!existingUser) throw new Error('User does not exist!');
+  if (!existingUser)
+    throw new Error('Cannot display user that is disabled or does not exist!');
 
-  if (!existingUser.isActive)
-    throw new Error(
-      'This user is disabled, if you want to enable you account please visit login page!',
-    );
+  const currentUser = ctx.state.user.id;
 
-  // dont return password
+  if (currentUser !== id) throw new Error('You are not allowed to do this!');
 
   ctx.body = {
     status: 'success',

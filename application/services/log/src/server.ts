@@ -1,7 +1,7 @@
 import http from 'http';
 import config from 'config';
 
-import { db } from './services/sequelize';
+import { database } from './services/influx';
 import { app } from './app';
 import { logger } from './utils/logger';
 
@@ -15,9 +15,10 @@ const startServer = async () => {
    * Load server, db, etc...
    */
 
-  db.authenticate().then(() => {
-    logger.info('Database connection established successfully.');
-  });
+  database
+    .getDatabaseNames()
+    .then((names) => logger.info(`Databases available: ${names}`))
+    .then(() => logger.info('Database succesfuly started.'));
 
   http
     .createServer(app.callback())
