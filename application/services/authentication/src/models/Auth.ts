@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
-import { db } from '../services/sequelize';
+import { db } from '../db/sequelize';
 import { logger } from '../utils/logger';
 
 export interface AuthAttributes extends Model {

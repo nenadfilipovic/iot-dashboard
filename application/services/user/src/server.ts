@@ -1,7 +1,7 @@
 import http from 'http';
 import config from 'config';
 
-import { db } from './services/sequelize';
+import { db } from './db/sequelize';
 import { app } from './app';
 import { logger } from './utils/logger';
 

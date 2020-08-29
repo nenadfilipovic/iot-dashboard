@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 
-import { db } from '../services/sequelize';
+import { db } from '../db/sequelize';
 import { logger } from '../utils/logger';
 
 enum Type {

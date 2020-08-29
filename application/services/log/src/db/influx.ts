@@ -6,23 +6,12 @@ const user: string = config.get('db.user');
 const password: string = config.get('db.password');
 const name: string = config.get('db.name');
 
-const database = new Influx.InfluxDB({
+const db = new Influx.InfluxDB({
   database: name,
   host,
   port: 8086,
   username: user,
   password: password,
-  schema: [
-    {
-      measurement: 'sensor',
-      fields: {
-        temp: Influx.FieldType.FLOAT,
-        pressure: Influx.FieldType.INTEGER,
-        humidity: Influx.FieldType.INTEGER,
-      },
-      tags: ['sensor'],
-    },
-  ],
 });
 
-export { database };
+export { db };

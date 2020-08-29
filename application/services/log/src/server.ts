@@ -1,7 +1,7 @@
 import http from 'http';
 import config from 'config';
 
-import { database } from './services/influx';
+import { db } from './db/influx';
 import { app } from './app';
 import { logger } from './utils/logger';
 
@@ -15,8 +15,7 @@ const startServer = async () => {
    * Load server, db, etc...
    */
 
-  database
-    .getDatabaseNames()
+  db.getDatabaseNames()
     .then((names) => logger.info(`Databases available: ${names}`))
     .then(() => logger.info('Database succesfuly started.'));
 
@@ -32,7 +31,6 @@ startServer()
    * Need to hack around server.address().port if i want to show port because:
    * https://github.com/microsoft/ConversationLearner-Samples/issues/269
    */
-
   .then()
   .catch((error) => {
     logger.error(`Unable to start ${name} service!`);
