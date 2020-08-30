@@ -18,6 +18,8 @@ const loggerFormat = printf(({ level, message, timestamp, stack }) => {
 
 const logger = createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+  exitOnError: true,
+  handleExceptions: true,
   format: combine(
     colorize(),
     timestamp(),

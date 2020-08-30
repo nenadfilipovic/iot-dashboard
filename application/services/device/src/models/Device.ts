@@ -3,22 +3,11 @@ import { DataTypes, Model } from 'sequelize';
 import { db } from '../db/sequelize';
 import { logger } from '../utils/logger';
 
-enum Type {
-  'esp32',
-  'esp8266',
-  'uno',
-  'nano',
-}
-
 export interface DeviceAttributes extends Model {
   id: string;
   owner: string;
   name: string;
   description: string;
-  latitude: number;
-  longitude: number;
-  type: Type;
-  isActive: boolean;
 }
 
 const Device = db.define<DeviceAttributes>(
@@ -31,7 +20,7 @@ const Device = db.define<DeviceAttributes>(
       defaultValue: DataTypes.UUIDV4,
       unique: {
         name: 'id',
-        msg: 'Two devices with same identification string can not exist!',
+        msg: 'Device ID already in use!',
       },
     },
     owner: {
@@ -39,7 +28,7 @@ const Device = db.define<DeviceAttributes>(
       allowNull: false,
       validate: {
         isUUID: {
-          msg: 'Provided owner identification is not in valid format!',
+          msg: 'Owner ID is not valid ID format!',
           args: 4,
         },
       },
@@ -49,11 +38,11 @@ const Device = db.define<DeviceAttributes>(
       allowNull: false,
       validate: {
         len: {
-          msg: 'Name must be between 3 and 25 characters long!',
+          msg: 'Name length should be between 3 and 25 characters!',
           args: [3, 25],
         },
         isAlphanumeric: {
-          msg: 'Name must contain only alphanumeric characters!',
+          msg: 'Name should only consist of letters!',
         },
       },
     },
@@ -61,64 +50,14 @@ const Device = db.define<DeviceAttributes>(
       type: DataTypes.STRING,
       validate: {
         len: {
-          msg: 'Description can not contain more than 500 characters!',
+          msg: 'Description length should be between 0 and 500 characters!',
           args: [0, 500],
         },
       },
     },
-    latitude: {
-      type: DataTypes.INTEGER,
-      validate: {
-        min: {
-          msg: 'Latitude can not be lower than -90!',
-          args: [-90],
-        },
-        max: {
-          msg: 'Latitude can not be higher than 90!',
-          args: [90],
-        },
-      },
-    },
-    longitude: {
-      type: DataTypes.INTEGER,
-      validate: {
-        min: {
-          msg: 'Longitude can not be lower than -180!',
-          args: [-180],
-        },
-        max: {
-          msg: 'Longitude can not be lower than 180!',
-          args: [180],
-        },
-      },
-    },
-    type: {
-      type: DataTypes.ENUM('esp32', 'esp8266', 'arduino', 'uno', 'nano'),
-      allowNull: false,
-      validate: {
-        isIn: {
-          msg: 'Device type can only be esp32, esp8266, uno or nano!',
-          args: [['esp32', 'esp8266', 'uno', 'nano']],
-        },
-      },
-    },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
   },
   {
-    validate: {
-      // TODO - Need to fix this
-      validCoordinates() {
-        if ((this.latitude === null) !== (this.longitude === null)) {
-          throw new Error(
-            'Either provide both latitude and longitude or none!',
-          );
-        }
-      },
-    },
+    validate: {},
   },
 );
 

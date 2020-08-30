@@ -14,7 +14,7 @@ const createToken = (id: string): string => {
 
 const validateToken = koaJwt({
   secret,
-  getToken: function name(ctx: Context) {
+  getToken: function token(ctx: Context) {
     if (ctx.session) {
       return ctx.session.token;
     }

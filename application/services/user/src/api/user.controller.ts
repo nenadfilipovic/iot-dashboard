@@ -1,34 +1,24 @@
 import { DefaultContext } from 'koa';
 
 import { User } from '../models/User';
+import { logger } from '../utils/logger';
 import { createToken } from '../services/jwt';
 
 /**
- * Create user...
+ * Register user...
  */
 
-const create = async (ctx: DefaultContext): Promise<void> => {
-  const {
-    name,
-    lastName,
-    email,
-    password,
-    latitude,
-    longitude,
-  } = ctx.request.body;
+const register = async (ctx: DefaultContext): Promise<void> => {
+  const { firstName, lastName, email, password } = ctx.request.body;
 
   const newUser = User.build({
-    name,
+    firstName,
     lastName,
     email,
     password,
-    latitude,
-    longitude,
   });
 
   const user = await newUser.save().then((user) => user);
-
-  Object.assign(user, { password: undefined });
 
   const token = createToken(user.id);
 
@@ -38,6 +28,8 @@ const create = async (ctx: DefaultContext): Promise<void> => {
     status: 'success',
     data: { user },
   };
+
+  logger.info(`User: ${user.id} successfully registered.`);
 };
 
 /**
@@ -45,61 +37,42 @@ const create = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modify = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.request.params;
+  const { id } = ctx.state.user;
 
   const existingUser = await User.findOne({
-    where: { id, isActive: true },
+    where: { id },
   });
 
-  if (!existingUser)
-    throw new Error('Cannot modify user that is disabled or does not exist!');
+  if (!existingUser) throw new Error('User does not exist!');
 
-  const currentUser = ctx.state.user.id;
+  const { firstName, lastName, email, password } = ctx.request.body;
 
-  if (currentUser !== id) throw new Error('You are not allowed to do this!');
-
-  const {
-    name,
-    lastName,
-    email,
-    password,
-    latitude,
-    longitude,
-  } = ctx.request.body;
-
-  existingUser.update({ name, lastName, email, password, latitude, longitude });
+  existingUser.update({ firstName, lastName, email, password });
 
   const user = await existingUser.save().then((user) => user);
-
-  Object.assign(user, { password: undefined });
 
   ctx.body = {
     status: 'success',
     data: { user },
   };
+
+  logger.info(`User: ${user.id} data successfully modified.`);
 };
 
 /**
- * Disable user...
+ * Delete user...
  */
 
-const disable = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.request.params;
+const remove = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.state.user;
 
   const existingUser = await User.findOne({
-    where: { id, isActive: true },
+    where: { id },
   });
 
-  if (!existingUser)
-    throw new Error(
-      'Cannot disable user that is already disabled or does not exist!',
-    );
+  if (!existingUser) throw new Error('User does not exist!');
 
-  const currentUser = ctx.state.user.id;
-
-  if (currentUser !== id) throw new Error('You are not allowed to do this!');
-
-  existingUser.set('isActive', false);
+  existingUser.destroy();
 
   await existingUser.save();
 
@@ -109,26 +82,22 @@ const disable = async (ctx: DefaultContext): Promise<void> => {
     status: 'success',
     data: {},
   };
+
+  logger.info(`User: ${existingUser.id} successfully removed.`);
 };
 
 /**
- * Get one user...
+ * Get current user...
  */
 
-const getOne = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.request.params;
+const me = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.state.user;
 
   const existingUser = await User.findOne({
-    where: { id, isActive: true },
-    attributes: { exclude: ['password'] },
+    where: { id },
   });
 
-  if (!existingUser)
-    throw new Error('Cannot display user that is disabled or does not exist!');
-
-  const currentUser = ctx.state.user.id;
-
-  if (currentUser !== id) throw new Error('You are not allowed to do this!');
+  if (!existingUser) throw new Error('User does not exist!');
 
   ctx.body = {
     status: 'success',
@@ -136,4 +105,46 @@ const getOne = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
-export { create, modify, disable, getOne };
+/**
+ * Login user...
+ */
+
+const login = async (ctx: DefaultContext): Promise<void> => {
+  const { email, password } = ctx.request.body;
+
+  const existingUser = await User.findOne({
+    where: { email },
+  });
+
+  if (!existingUser) throw new Error('User does not exist!');
+
+  const correctPassword = await existingUser.validPassword(password);
+
+  if (!correctPassword) throw new Error('Bad credentials, please try again!');
+
+  const token = createToken(existingUser.id);
+
+  ctx.session = { token };
+
+  ctx.body = {
+    status: 'success',
+    data: { user: existingUser },
+  };
+
+  logger.info(`User: ${existingUser.id} successfully logged in.`);
+};
+
+/**
+ * Logout user...
+ */
+
+const logout = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.state.user;
+
+  ctx.session = null;
+  ctx.body = {};
+
+  logger.info(`User: ${id} successfully logged out.`);
+};
+
+export { register, modify, remove, me, login, logout };

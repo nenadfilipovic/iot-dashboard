@@ -1,19 +1,24 @@
 import KoaRouter from 'koa-router';
 import config from 'config';
 
-import { create, modify, disable, getOne } from './user.controller';
+import { register, modify, remove, me, login, logout } from './user.controller';
 import { validateToken } from '../services/jwt';
 
 const prefix: string = config.get('service.prefix');
 
 const router = new KoaRouter({ prefix });
 
-router.post('/', create);
+router
+  .get('/me', validateToken, me)
 
-router.patch('/:id', validateToken, modify);
+  .post('/', register)
 
-router.delete('/:id', validateToken, disable);
+  .post('/login', login)
 
-router.get('/:id', validateToken, getOne);
+  .post('/logout', validateToken, logout)
+
+  .patch('/', validateToken, modify)
+
+  .delete('/', validateToken, remove);
 
 export { router };

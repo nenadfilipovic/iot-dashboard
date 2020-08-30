@@ -6,13 +6,11 @@ import { logger } from '../utils/logger';
 
 export interface UserAttributes extends Model {
   id: string;
-  name: string;
+  firstName: string;
   lastName: string;
   email: string;
   password: string;
-  latitude: number;
-  longitude: number;
-  isActive: boolean;
+  validPassword: (password: string) => Promise<boolean>;
 }
 
 const User = db.define<UserAttributes>(
@@ -25,19 +23,19 @@ const User = db.define<UserAttributes>(
       defaultValue: DataTypes.UUIDV4,
       unique: {
         name: 'id',
-        msg: 'Two users with same identification string can not exist!',
+        msg: 'User ID already in use!',
       },
     },
-    name: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: {
-          msg: 'Name must be between 3 and 25 characters long!',
+          msg: 'First name length should be between 3 and 25 characters!',
           args: [3, 25],
         },
         isAlpha: {
-          msg: 'Name must contain only letters!',
+          msg: 'First name should only consist of letters!',
         },
       },
     },
@@ -46,11 +44,11 @@ const User = db.define<UserAttributes>(
       allowNull: false,
       validate: {
         len: {
-          msg: 'Last name must be between 3 and 25 characters long!',
+          msg: 'Last name length should be between 3 and 25 characters!',
           args: [3, 25],
         },
         isAlpha: {
-          msg: 'Last name must contain only letters!',
+          msg: 'Last name should only consist of letters!',
         },
       },
     },
@@ -59,11 +57,11 @@ const User = db.define<UserAttributes>(
       allowNull: false,
       unique: {
         name: 'email',
-        msg: 'Two users with same email can not exist!',
+        msg: 'Email address already in use!',
       },
       validate: {
         isEmail: {
-          msg: 'Provided email is not in valid email format!',
+          msg: 'Email address is not in valid email format!',
         },
         isLowercase: true,
       },
@@ -73,53 +71,15 @@ const User = db.define<UserAttributes>(
       allowNull: false,
       validate: {
         len: {
-          msg: 'Password must be at least 6 characters long!',
-          args: [6, 255],
+          msg: 'The password length should be between 7 and 100 characters!',
+          args: [7, 100],
         },
       },
-    },
-    latitude: {
-      type: DataTypes.INTEGER,
-      validate: {
-        min: {
-          msg: 'Latitude can not be lower than -90!',
-          args: [-90],
-        },
-        max: {
-          msg: 'Latitude can not be higher than 90!',
-          args: [90],
-        },
-      },
-    },
-    longitude: {
-      type: DataTypes.INTEGER,
-      validate: {
-        min: {
-          msg: 'Longitude can not be lower than -180!',
-          args: [-180],
-        },
-        max: {
-          msg: 'Longitude can not be lower than 180!',
-          args: [180],
-        },
-      },
-    },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
     },
   },
   {
-    validate: {
-      // TODO - Fix this validation
-      locationValidator: function () {
-        if ((this.latitude === null) !== (this.longitude === null)) {
-          throw new Error(
-            'Either provide both latitude and longitude or none!',
-          );
-        }
-      },
+    defaultScope: {
+      attributes: { exclude: ['password'] },
     },
   },
 );
@@ -129,6 +89,21 @@ User.beforeSave(async (user) => {
     user.password = await bcrypt.hash(user.password, 12);
   }
 });
+
+/**
+ * Removing password from user object works for every action except creating user,
+ * this is fix for that,
+ * use after create hook to refresh user object:
+ * https://stackoverflow.com/questions/27972271/sequelize-dont-return-password#comment109231194_48357983
+ */
+
+User.afterCreate(async (user) => {
+  await user.reload();
+});
+
+User.prototype.validPassword = async function (password: string) {
+  return await bcrypt.compare(password, this.password);
+};
 
 User.sync({ force: true })
   .then(() => {

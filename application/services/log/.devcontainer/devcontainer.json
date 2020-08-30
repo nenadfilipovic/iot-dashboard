@@ -8,7 +8,7 @@
     "extensions.ignoreRecommendations": true
   },
   "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
-  "forwardPorts": [3020],
+  "forwardPorts": [3003],
   "postCreateCommand": "sh .devcontainer/refresh.sh",
   "remoteUser": "node",
   "shutdownAction": "stopCompose",

@@ -1,51 +1,49 @@
 import { DefaultContext } from 'koa';
 
-import { db } from '../db/influx';
+import { Log } from '../models/Log';
+import { logger } from '../utils/logger';
 
 /**
  * Create log...
  */
 
-const create = async (ctx: Context): Promise<void> => {
-  // trying
-  db.writeMeasurement('test', [
-    {
-      tags: { device: 'device-1' },
-      fields: {},
-    },
-  ]).then(() =>
-    db
-      .query(
-        `
-  select * from test
-  where device = 'device-1'
-  order by time desc
-  limit 10
-`,
-      )
-      .then((result) => console.log(result)),
-  );
+const create = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.request.params;
+
+  const currentUser = ctx.state.user.id;
+
+  const { temperature, pressure, humidity } = ctx.request.body;
+
+  const newLog = Log.build({
+    user: currentUser,
+    device: id,
+    temperature,
+    pressure,
+    humidity,
+  });
+
+  await newLog.save();
+
+  logger.info(`User : ${currentUser} - Device : ${id} created log.`);
 };
 
 /**
- * Display all logs...
+ * Display all device logs...
  */
 
-const getAll = async (ctx: Context): Promise<void> => {
-  // trying
-  db.queryRaw(
-    `
-  select * from test
-  where device = 'device-1'
-  order by time desc
-  limit 10
-`,
-  ).then((rawData) => console.log(rawData));
+const all = async (ctx: DefaultContext): Promise<void> => {
+  const { id } = ctx.request.params;
+
+  const currentUser = ctx.state.user.id;
+
+  const logs = await Log.findAll({
+    where: { user: currentUser, device: id },
+  });
+
+  ctx.body = {
+    status: 'success',
+    data: { logs },
+  };
 };
-/**
- * Destroy all logs...
- */
 
-const destroyAll = async (ctx: Context): Promise<void> => {};
-
-export { create, getAll, destroyAll };
+export { create, all };

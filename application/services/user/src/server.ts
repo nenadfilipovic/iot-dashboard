@@ -31,7 +31,6 @@ startServer()
    * Need to hack around server.address().port if i want to show port because:
    * https://github.com/microsoft/ConversationLearner-Samples/issues/269
    */
-
   .then()
   .catch((error) => {
     logger.error(`Unable to start ${name} service!`);

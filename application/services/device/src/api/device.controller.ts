@@ -1,23 +1,23 @@
 import { DefaultContext } from 'koa';
 
 import { Device } from '../models/Device';
+import { logger } from '../utils/logger';
 
 /**
  * Create device...
  */
 
 const create = async (ctx: DefaultContext): Promise<void> => {
-  const { name, description, latitude, longitude, type } = ctx.request.body;
+  const { name, description } = ctx.request.body;
 
-  const currentUser = ctx.state.user.id;
+  const { id } = ctx.state.user;
+
+  console.log(id);
 
   const newDevice = Device.build({
-    owner: currentUser,
+    owner: id,
     name,
     description,
-    latitude,
-    longitude,
-    type,
   });
 
   const device = await newDevice.save().then((device) => device);
@@ -26,6 +26,8 @@ const create = async (ctx: DefaultContext): Promise<void> => {
     status: 'success',
     data: { device },
   };
+
+  logger.info(`Device: ${device.id} successfully created.`);
 };
 
 /**
@@ -39,23 +41,16 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
     where: { id },
   });
 
-  if (!existingDevice) {
-    throw new Error('Device you are trying to modify does not exist!');
-  }
-
-  if (!existingDevice.isActive)
-    throw new Error(
-      'This device is disabled, if you want to enable you device please visit dashboard page!',
-    );
+  if (!existingDevice) throw new Error('Device does not exist!');
 
   const currentUser = ctx.state.user.id;
 
   if (currentUser !== existingDevice.owner)
-    throw new Error('You are not allowed to do this!');
+    throw new Error('You have no permision to perform that action!');
 
-  const { name, description, latitude, longitude, type } = ctx.request.body;
+  const { name, description } = ctx.request.body;
 
-  existingDevice.update({ name, description, latitude, longitude, type });
+  existingDevice.update({ name, description });
 
   const device = await existingDevice.save().then((device) => device);
 
@@ -63,29 +58,29 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
     status: 'success',
     data: { device },
   };
+
+  logger.info(`Device: ${device.id} data successfully modified.`);
 };
 
 /**
- * Disable device...
+ * Remove device...
  */
 
-const disable = async (ctx: DefaultContext): Promise<void> => {
+const remove = async (ctx: DefaultContext): Promise<void> => {
   const { id } = ctx.request.params;
 
   const existingDevice = await Device.findOne({
     where: { id },
   });
 
-  if (!existingDevice) {
-    throw new Error('Cannot disable device that does not exist!');
-  }
+  if (!existingDevice) throw new Error('Device does not exist!');
 
   const currentUser = ctx.state.user.id;
 
   if (currentUser !== existingDevice.owner)
-    throw new Error('You are not allowed to do this!');
+    throw new Error('You have no permision to perform that action!');
 
-  existingDevice.set('isActive', false);
+  existingDevice.destroy();
 
   await existingDevice.save();
 
@@ -93,30 +88,27 @@ const disable = async (ctx: DefaultContext): Promise<void> => {
     status: 'success',
     data: {},
   };
+
+  logger.info(`Device: ${existingDevice.id} successfully removed.`);
 };
 
 /**
  * Get one device...
  */
 
-const getOne = async (ctx: DefaultContext): Promise<void> => {
+const one = async (ctx: DefaultContext): Promise<void> => {
   const { id } = ctx.request.params;
 
-  const existingDevice = await Device.findOne({ where: { id } });
+  const existingDevice = await Device.findOne({
+    where: { id },
+  });
 
-  if (!existingDevice) {
-    throw new Error('Device does not exist!');
-  }
-
-  if (!existingDevice.isActive)
-    throw new Error(
-      'This device is disabled, if you want to enable you device please visit dashboard page!',
-    );
+  if (!existingDevice) throw new Error('Device does not exist!');
 
   const currentUser = ctx.state.user.id;
 
   if (currentUser !== existingDevice.owner)
-    throw new Error('You are not allowed to do this!');
+    throw new Error('You have no permision to perform that action!');
 
   ctx.body = {
     status: 'success',
@@ -128,14 +120,12 @@ const getOne = async (ctx: DefaultContext): Promise<void> => {
  * Get all devices...
  */
 
-const getAll = async (ctx: DefaultContext): Promise<void> => {
+const all = async (ctx: DefaultContext): Promise<void> => {
   const { id } = ctx.state.user;
 
-  const devices = await Device.findAll({ where: { owner: id } });
-
-  if (!devices) {
-    throw new Error('Device does not exist');
-  }
+  const devices = await Device.findAll({
+    where: { owner: id },
+  });
 
   ctx.body = {
     status: 'success',
@@ -143,4 +133,4 @@ const getAll = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
-export { create, modify, disable, getOne, getAll };
+export { create, modify, remove, one, all };
