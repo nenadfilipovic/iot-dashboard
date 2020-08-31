@@ -8,6 +8,7 @@ export interface DeviceAttributes extends Model {
   owner: string;
   name: string;
   description: string;
+  topic: string;
 }
 
 const Device = db.define<DeviceAttributes>(
@@ -41,7 +42,7 @@ const Device = db.define<DeviceAttributes>(
           msg: 'Name length should be between 3 and 25 characters!',
           args: [3, 25],
         },
-        isAlphanumeric: {
+        isAlpha: {
           msg: 'Name should only consist of letters!',
         },
       },
@@ -55,13 +56,30 @@ const Device = db.define<DeviceAttributes>(
         },
       },
     },
+    topic: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: {
+        name: 'topic',
+        msg: 'Topic already in use!',
+      },
+      validate: {
+        len: {
+          msg: 'Topic length should be between 3 and 10 characters!',
+          args: [0, 10],
+        },
+        isAlphanumeric: {
+          msg: 'Name should only consist of letters and numbers!',
+        },
+      },
+    },
   },
   {
     validate: {},
   },
 );
 
-Device.sync({ force: true })
+Device.sync({ force: false })
   .then(() => {
     logger.info('Data model is in sync.');
   })

@@ -1,1 +1,44 @@
 version: "3"
+services:
+    user-service:
+        image: nenadfilipovic/user-service:latest
+        depends_on:
+            - db
+    
+    device-service:
+        image: nenadfilipovic/device-service:latest
+        depends_on:
+            - db
+
+    log-service:
+        image: nenadfilipovic/log-service:latest
+        depends_on:
+            - db
+    
+    db:
+        image: mysql:5.7
+        restart: unless-stopped
+        environment:
+            MYSQL_USER: user
+            MYSQL_PASSWORD: password
+            MYSQL_ROOT_PASSWORD: password
+        volumes:
+            - ./application/db:/docker-entrypoint-initdb.d
+
+    emqx:
+        image: emqx/emqx
+        environment:
+            EMQX_ACL_NOMATCH: 'deny'
+            EMQX_ALLOW_ANONYMOUS: 'false'
+            EMQX_AUTH__HTTP__AUTH_REQ__METHOD: post
+            EMQX_AUTH__HTTP__AUTH_REQ: "http://user-service:3001/api/users/mqtt/auth"
+            EMQX_AUTH__HTTP__ACL_REQ__METHOD: post
+            EMQX_AUTH__HTTP__ACL_REQ: "http://device-service:3002/api/devices/mqtt/acl"
+            EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard,emqx_auth_http"
+
+        volumes:
+            - ./application/broker/acl.conf:/opt/emqx/etc/acl.conf
+
+        depends_on:
+            - user-service
+            - device-service

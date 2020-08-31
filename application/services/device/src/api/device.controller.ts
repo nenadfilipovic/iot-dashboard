@@ -8,7 +8,7 @@ import { logger } from '../utils/logger';
  */
 
 const create = async (ctx: DefaultContext): Promise<void> => {
-  const { name, description } = ctx.request.body;
+  const { name, description, topic } = ctx.request.body;
 
   const { id } = ctx.state.user;
 
@@ -18,6 +18,7 @@ const create = async (ctx: DefaultContext): Promise<void> => {
     owner: id,
     name,
     description,
+    topic,
   });
 
   const device = await newDevice.save().then((device) => device);
@@ -133,4 +134,30 @@ const all = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
-export { create, modify, remove, one, all };
+/**
+ * MQTT acl route...
+ */
+
+const acl = async (ctx: DefaultContext): Promise<void> => {
+  const { clientid, topic } = ctx.request.body;
+
+  console.log(ctx.request.body);
+
+  const existingDevice = await Device.findOne({
+    where: { id: clientid },
+  });
+
+  if (!existingDevice) {
+    ctx.response.status = 400;
+    return;
+  }
+
+  if (existingDevice?.topic !== topic) {
+    ctx.response.status = 400;
+    return;
+  }
+
+  ctx.response.status = 200;
+};
+
+export { create, modify, remove, one, all, acl };

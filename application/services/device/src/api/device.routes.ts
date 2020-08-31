@@ -1,21 +1,24 @@
 import KoaRouter from 'koa-router';
 import config from 'config';
 
-import { create, modify, one, all, remove } from './device.controller';
+import { all, one, create, acl, modify, remove } from './device.controller';
+import { validateToken } from '../services/jwt';
 
 const prefix: string = config.get('service.prefix');
 
 const router = new KoaRouter({ prefix });
 
 router
-  .get('/', all)
+  .get('/', validateToken, all)
 
-  .get('/:id', one)
+  .get('/:id', validateToken, one)
 
-  .post('/', create)
+  .post('/', validateToken, create)
 
-  .patch('/:id', modify)
+  .post('/mqtt/acl', acl)
 
-  .delete('/:id', remove);
+  .patch('/:id', validateToken, modify)
+
+  .delete('/:id', validateToken, remove);
 
 export { router };

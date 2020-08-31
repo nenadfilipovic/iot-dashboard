@@ -11,9 +11,9 @@
     "expiresIn": "5m"
   },
   "db": {
-    "host": "user-db",
+    "host": "db",
     "user": "user",
     "password": "password",
-    "name": "development"
+    "name": "user"
   }
 }

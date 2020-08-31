@@ -147,4 +147,38 @@ const logout = async (ctx: DefaultContext): Promise<void> => {
   logger.info(`User: ${id} successfully logged out.`);
 };
 
-export { register, modify, remove, me, login, logout };
+/**
+ * MQTT auth route...
+ */
+
+const auth = async (ctx: DefaultContext): Promise<void> => {
+  const { username, password } = ctx.request.body;
+
+  if (username === 'app' && password == 'app') {
+    ctx.response.status = 200;
+    return;
+  }
+
+  const existingUser = await User.findOne({
+    where: {
+      email: username,
+    },
+    attributes: { include: ['password'] },
+  });
+
+  if (!existingUser) {
+    ctx.response.status = 400;
+    return;
+  }
+
+  const correctPassword = await existingUser.validPassword(password);
+
+  if (!correctPassword) {
+    ctx.response.status = 400;
+    return;
+  }
+
+  ctx.response.status = 200;
+};
+
+export { register, modify, remove, me, login, logout, auth };

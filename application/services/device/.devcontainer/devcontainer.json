@@ -1,7 +1,7 @@
 {
   "name": "Device-Service",
   "service": "device-service",
-  "dockerComposeFile": ["docker-compose.yml"],
+  "dockerComposeFile": ["../../../../docker-compose.yml", "../../../../docker-compose.dev.yml"],
   "settings": {
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
@@ -12,5 +12,5 @@
   "postCreateCommand": "sh .devcontainer/refresh.sh",
   "remoteUser": "node",
   "shutdownAction": "stopCompose",
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace/application/services/device"
 }

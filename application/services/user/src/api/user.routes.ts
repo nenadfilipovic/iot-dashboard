@@ -1,7 +1,15 @@
 import KoaRouter from 'koa-router';
 import config from 'config';
 
-import { register, modify, remove, me, login, logout } from './user.controller';
+import {
+  me,
+  register,
+  login,
+  logout,
+  auth,
+  modify,
+  remove,
+} from './user.controller';
 import { validateToken } from '../services/jwt';
 
 const prefix: string = config.get('service.prefix');
@@ -16,6 +24,8 @@ router
   .post('/login', login)
 
   .post('/logout', validateToken, logout)
+
+  .post('/mqtt/auth', auth)
 
   .patch('/', validateToken, modify)
 
