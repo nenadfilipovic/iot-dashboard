@@ -105,7 +105,7 @@ User.prototype.validPassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
 };
 
-User.sync({ force: false })
+User.sync({ force: true })
   .then(() => {
     logger.info('Data model is in sync.');
   })

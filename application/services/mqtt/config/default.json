@@ -1,0 +1,16 @@
+{
+  "service": {
+    "name": "MQTT"
+  },
+  "mqtt": {
+    "host": "emqx",
+    "port": 1883,
+    "username": "admin@admin.com",
+    "password": "1234567",
+    "clientId": "admin",
+    "topic": "#"
+  },
+  "amqp": {
+    "host": "amqp://rabbitmq"
+  }
+}

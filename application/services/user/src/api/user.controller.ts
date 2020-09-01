@@ -154,11 +154,6 @@ const logout = async (ctx: DefaultContext): Promise<void> => {
 const auth = async (ctx: DefaultContext): Promise<void> => {
   const { username, password } = ctx.request.body;
 
-  if (username === 'app' && password == 'app') {
-    ctx.response.status = 200;
-    return;
-  }
-
   const existingUser = await User.findOne({
     where: {
       email: username,

@@ -1,17 +1,53 @@
-import mqtt from 'mqtt';
+import MQTT from 'async-mqtt';
+import AMQP from 'amqplib';
+import config from 'config';
 
-const client = mqtt.connect('mqtt://emqx', {
-  username: 'app',
-  password: 'app',
-});
+const name: string = config.get('service.name');
+const mqttHost: string = config.get('mqtt.host');
+const port: number = config.get('mqtt.port');
+const username: string = config.get('mqtt.username');
+const password: string = config.get('mqtt.password');
+const clientId: string = config.get('mqtt.clientId');
+const topic: string = config.get('mqtt.topic');
+const amqpHost: string = config.get('amqp.host');
 
-client.on('connect', function () {
-  client.subscribe('#', function (err) {});
-});
+import { logger } from './utils/logger';
 
-client.on('message', function (topic, message) {
-  let message_str = message.toString(); //convert byte array to string
-  message_str = message_str.replace(/\n$/, ''); //remove new line
-  //payload syntax: clientID,topic,message
-  console.log(message_str, topic);
-});
+const startAMQP = async () => {
+  await AMQP.connect(amqpHost);
+};
+
+const startMQTT = async () => {
+  logger.info(`${name} service starting.`);
+
+  const client = await MQTT.connectAsync({
+    host: mqttHost,
+    port,
+    username,
+    password,
+    clientId,
+  });
+
+  client.on('connect', () => {
+    logger.info('Successfully connected to broker.');
+    client.subscribe(topic);
+  });
+
+  client.on('message', (topic, message) => {
+    console.log(topic, message);
+  });
+};
+
+startMQTT()
+  .then(() => {
+    startAMQP()
+      .then(() => logger.info('Successfully connected to AMQP server.'))
+      .catch((error) => {
+        logger.error('Unable to connect to AMQP server!');
+        throw new Error(error);
+      });
+  })
+  .catch((error) => {
+    logger.error(`Unable to start ${name} service!`);
+    throw new Error(error);
+  });
