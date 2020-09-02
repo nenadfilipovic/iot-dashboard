@@ -9,11 +9,12 @@ import { createToken } from '../services/jwt';
  */
 
 const register = async (ctx: DefaultContext): Promise<void> => {
-  const { firstName, lastName, email, password } = ctx.request.body;
+  const { name, surname, username, email, password } = ctx.request.body;
 
   const newUser = User.build({
-    firstName,
-    lastName,
+    name,
+    surname,
+    username,
     email,
     password,
   });
@@ -23,6 +24,8 @@ const register = async (ctx: DefaultContext): Promise<void> => {
   const token = createToken(user.id);
 
   ctx.session = { token };
+
+  Object.assign(user, { password: undefined });
 
   ctx.body = {
     status: 'success',
@@ -37,19 +40,21 @@ const register = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modify = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.state.user;
+  const loggedInUser = ctx.state.user;
 
   const existingUser = await User.findOne({
-    where: { id },
+    where: { id: loggedInUser.id },
   });
 
   if (!existingUser) throw new Error('User does not exist!');
 
-  const { firstName, lastName, email, password } = ctx.request.body;
+  const { name, surname, email, password } = ctx.request.body;
 
-  existingUser.update({ firstName, lastName, email, password });
+  existingUser.update({ name, surname, email, password });
 
   const user = await existingUser.save().then((user) => user);
+
+  Object.assign(user, { password: undefined });
 
   ctx.body = {
     status: 'success',
@@ -64,10 +69,10 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const remove = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.state.user;
+  const loggedInUser = ctx.state.user;
 
   const existingUser = await User.findOne({
-    where: { id },
+    where: { id: loggedInUser.id },
   });
 
   if (!existingUser) throw new Error('User does not exist!');
@@ -91,13 +96,15 @@ const remove = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const me = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.state.user;
+  const loggedInUser = ctx.state.user;
 
   const existingUser = await User.findOne({
-    where: { id },
+    where: { id: loggedInUser.id },
   });
 
   if (!existingUser) throw new Error('User does not exist!');
+
+  Object.assign(existingUser, { password: undefined });
 
   ctx.body = {
     status: 'success',
@@ -110,10 +117,17 @@ const me = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const login = async (ctx: DefaultContext): Promise<void> => {
-  const { email, password } = ctx.request.body;
+  const { username, email, password } = ctx.request.body;
+
+  /**
+   * Support for logging in via email and username.
+   */
+
+  const loginOptions = username ? { username: username } : { email: email };
 
   const existingUser = await User.findOne({
-    where: { email },
+    where: { ...loginOptions },
+    attributes: { include: ['password'] },
   });
 
   if (!existingUser) throw new Error('User does not exist!');
@@ -125,6 +139,8 @@ const login = async (ctx: DefaultContext): Promise<void> => {
   const token = createToken(existingUser.id);
 
   ctx.session = { token };
+
+  Object.assign(existingUser, { password: undefined });
 
   ctx.body = {
     status: 'success',
@@ -139,12 +155,12 @@ const login = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logout = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.state.user;
+  const loggedInUser = ctx.state.user;
 
   ctx.session = null;
   ctx.body = {};
 
-  logger.info(`User: ${id} successfully logged out.`);
+  logger.info(`User: ${loggedInUser.id} successfully logged out.`);
 };
 
 /**
@@ -156,7 +172,7 @@ const auth = async (ctx: DefaultContext): Promise<void> => {
 
   const existingUser = await User.findOne({
     where: {
-      email: username,
+      username,
     },
     attributes: { include: ['password'] },
   });

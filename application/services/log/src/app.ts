@@ -31,17 +31,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app
-  .use(
-    koaJwt({
-      secret,
-      getToken: function name(ctx: Context) {
-        if (ctx.session) {
-          return ctx.session.token;
-        }
-        return null;
-      },
-    }),
-  )
   .use(koaSession(sessionConfig, app))
   .use(koaBodyparser())
   .use(koaHelmet())

@@ -5,7 +5,7 @@ import { logger } from '../utils/logger';
 
 export interface DeviceAttributes extends Model {
   id: string;
-  owner: string;
+  user: string;
   name: string;
   description: string;
   topic: string;
@@ -24,12 +24,12 @@ const Device = db.define<DeviceAttributes>(
         msg: 'Device ID already in use!',
       },
     },
-    owner: {
+    user: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
         isUUID: {
-          msg: 'Owner ID is not valid ID format!',
+          msg: 'User ID is not valid ID format!',
           args: 4,
         },
       },
@@ -37,13 +37,17 @@ const Device = db.define<DeviceAttributes>(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: {
+        name: 'name',
+        msg: 'Device name already in use!',
+      },
       validate: {
         len: {
           msg: 'Name length should be between 3 and 25 characters!',
           args: [3, 25],
         },
-        isAlpha: {
-          msg: 'Name should only consist of letters!',
+        isAlphanumeric: {
+          msg: 'Name should only consist of letters and numbers!',
         },
       },
     },
@@ -74,12 +78,10 @@ const Device = db.define<DeviceAttributes>(
       },
     },
   },
-  {
-    validate: {},
-  },
+  {},
 );
 
-Device.sync({ force: false })
+Device.sync({ force: true })
   .then(() => {
     logger.info('Data model is in sync.');
   })

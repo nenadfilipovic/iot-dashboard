@@ -17,13 +17,13 @@ const startServer = async () => {
 
   db.authenticate().then(() => {
     logger.info('Database connection established successfully.');
-  });
 
-  http
-    .createServer(app.callback())
-    .listen(port, () =>
-      logger.info(`Server successfully started at port ${port}.`),
-    );
+    http
+      .createServer(app.callback())
+      .listen(port, () =>
+        logger.info(`Server successfully started at port ${port}.`),
+      );
+  });
 };
 
 startServer()

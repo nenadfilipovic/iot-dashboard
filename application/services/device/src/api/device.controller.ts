@@ -10,12 +10,10 @@ import { logger } from '../utils/logger';
 const create = async (ctx: DefaultContext): Promise<void> => {
   const { name, description, topic } = ctx.request.body;
 
-  const { id } = ctx.state.user;
-
-  console.log(id);
+  const loggedInUser = ctx.state.user;
 
   const newDevice = Device.build({
-    owner: id,
+    user: loggedInUser.id,
     name,
     description,
     topic,
@@ -44,14 +42,14 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
 
   if (!existingDevice) throw new Error('Device does not exist!');
 
-  const currentUser = ctx.state.user.id;
+  const loggedInUser = ctx.state.user;
 
-  if (currentUser !== existingDevice.owner)
+  if (loggedInUser.id !== existingDevice.user)
     throw new Error('You have no permision to perform that action!');
 
-  const { name, description } = ctx.request.body;
+  const { name, description, topic } = ctx.request.body;
 
-  existingDevice.update({ name, description });
+  existingDevice.update({ name, description, topic });
 
   const device = await existingDevice.save().then((device) => device);
 
@@ -76,9 +74,9 @@ const remove = async (ctx: DefaultContext): Promise<void> => {
 
   if (!existingDevice) throw new Error('Device does not exist!');
 
-  const currentUser = ctx.state.user.id;
+  const loggedInUser = ctx.state.user;
 
-  if (currentUser !== existingDevice.owner)
+  if (loggedInUser.id !== existingDevice.user)
     throw new Error('You have no permision to perform that action!');
 
   existingDevice.destroy();
@@ -106,9 +104,9 @@ const one = async (ctx: DefaultContext): Promise<void> => {
 
   if (!existingDevice) throw new Error('Device does not exist!');
 
-  const currentUser = ctx.state.user.id;
+  const loggedInUser = ctx.state.user;
 
-  if (currentUser !== existingDevice.owner)
+  if (loggedInUser !== existingDevice.user)
     throw new Error('You have no permision to perform that action!');
 
   ctx.body = {
@@ -122,10 +120,10 @@ const one = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const all = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.state.user;
+  const loggedInUser = ctx.state.user;
 
   const devices = await Device.findAll({
-    where: { owner: id },
+    where: { user: loggedInUser.id },
   });
 
   ctx.body = {
@@ -139,12 +137,15 @@ const all = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const acl = async (ctx: DefaultContext): Promise<void> => {
-  const { clientid, topic } = ctx.request.body;
+  const { username: user, clientid: name, topic } = ctx.request.body;
 
-  console.log(ctx.request.body);
+  if (user === 'admin') {
+    ctx.response.status = 200;
+    return;
+  }
 
   const existingDevice = await Device.findOne({
-    where: { id: clientid },
+    where: { name },
   });
 
   if (!existingDevice) {

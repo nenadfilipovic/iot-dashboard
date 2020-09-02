@@ -1,31 +1,26 @@
 import { DefaultContext } from 'koa';
+import * as AMQP from 'amqp-ts';
 
-import { Log } from '../models/Log';
-import { logger } from '../utils/logger';
+import { db } from '../db/influx';
+
+const connection = new AMQP.Connection('amqp://rabbitmq');
+const exchange = connection.declareExchange('log.added');
+const queue = connection.declareQueue('queue');
+queue.bind(exchange);
 
 /**
  * Create log...
  */
 
-const create = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.request.params;
-
-  const currentUser = ctx.state.user.id;
-
-  const { temperature, pressure, humidity } = ctx.request.body;
-
-  const newLog = Log.build({
-    user: currentUser,
-    device: id,
-    temperature,
-    pressure,
-    humidity,
-  });
-
-  await newLog.save();
-
-  logger.info(`User : ${currentUser} - Device : ${id} created log.`);
-};
+queue.activateConsumer((message) => {
+  const parseMessage = JSON.parse(message.content.toString());
+  db.writeMeasurement(parseMessage.topic, [
+    {
+      fields: { ...parseMessage.message },
+    },
+  ]);
+  message.ack();
+});
 
 /**
  * Display all device logs...
@@ -34,16 +29,15 @@ const create = async (ctx: DefaultContext): Promise<void> => {
 const all = async (ctx: DefaultContext): Promise<void> => {
   const { id } = ctx.request.params;
 
-  const currentUser = ctx.state.user.id;
-
-  const logs = await Log.findAll({
-    where: { user: currentUser, device: id },
-  });
+  const logs = await db.query(`
+    select * from ${id}
+    order by time desc
+  `);
 
   ctx.body = {
     status: 'success',
-    data: { logs },
+    data: logs,
   };
 };
 
-export { create, all };
+export { all };

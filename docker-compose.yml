@@ -30,10 +30,16 @@ services:
         volumes:
             - ./application/db:/docker-entrypoint-initdb.d
 
+    influx-db:
+        image: influxdb:1.8.2-alpine
+        environment: 
+            INFLUXDB_DB: log
+            INFLUXDB_USER: user
+            INFLUXDB_USER_PASSWORD: password
+
     emqx:
         image: emqx/emqx
         environment:
-            EMQX_ACL_NOMATCH: 'deny'
             EMQX_ALLOW_ANONYMOUS: 'false'
             EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard,emqx_auth_http"
         volumes:

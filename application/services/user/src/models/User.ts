@@ -6,8 +6,9 @@ import { logger } from '../utils/logger';
 
 export interface UserAttributes extends Model {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
+  surname: string;
+  username: string;
   email: string;
   password: string;
   validPassword: (password: string) => Promise<boolean>;
@@ -26,29 +27,29 @@ const User = db.define<UserAttributes>(
         msg: 'User ID already in use!',
       },
     },
-    firstName: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: {
-          msg: 'First name length should be between 3 and 25 characters!',
+          msg: 'Name length should be between 3 and 25 characters!',
           args: [3, 25],
         },
         isAlpha: {
-          msg: 'First name should only consist of letters!',
+          msg: 'Name should only consist of letters!',
         },
       },
     },
-    lastName: {
+    surname: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: {
-          msg: 'Last name length should be between 3 and 25 characters!',
+          msg: 'Surname length should be between 3 and 25 characters!',
           args: [3, 25],
         },
         isAlpha: {
-          msg: 'Last name should only consist of letters!',
+          msg: 'Surname should only consist of letters!',
         },
       },
     },
@@ -66,6 +67,23 @@ const User = db.define<UserAttributes>(
         isLowercase: true,
       },
     },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: {
+        name: 'username',
+        msg: 'Username already in use!',
+      },
+      validate: {
+        len: {
+          msg: 'Username length should be between 3 and 25 characters!',
+          args: [3, 25],
+        },
+        isAlphanumeric: {
+          msg: 'Username should only consist of letters and numbers!',
+        },
+      },
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -77,11 +95,7 @@ const User = db.define<UserAttributes>(
       },
     },
   },
-  {
-    defaultScope: {
-      attributes: { exclude: ['password'] },
-    },
-  },
+  {},
 );
 
 User.beforeSave(async (user) => {
@@ -90,24 +104,21 @@ User.beforeSave(async (user) => {
   }
 });
 
-/**
- * Removing password from user object works for every action except creating user,
- * this is fix for that,
- * use after create hook to refresh user object:
- * https://stackoverflow.com/questions/27972271/sequelize-dont-return-password#comment109231194_48357983
- */
-
-User.afterCreate(async (user) => {
-  await user.reload();
-});
-
 User.prototype.validPassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
 };
 
 User.sync({ force: true })
-  .then(() => {
+  .then(async () => {
     logger.info('Data model is in sync.');
+    await User.create({
+      name: 'dashboard',
+      surname: 'user',
+      username: 'admin',
+      email: 'admin@home.com',
+      password: 'adminpassword',
+    });
+    logger.info('Default user created.');
   })
   .catch((error) => {
     throw new Error(error);

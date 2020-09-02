@@ -11,7 +11,7 @@
     "expiresIn": "5m"
   },
   "db": {
-    "host": "db",
+    "host": "influx-db",
     "user": "user",
     "password": "password",
     "name": "log"

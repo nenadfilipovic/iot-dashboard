@@ -1,53 +1,55 @@
-import MQTT from 'async-mqtt';
-import AMQP from 'amqplib';
+import MQTT from 'mqtt';
+import * as AMQP from 'amqp-ts';
 import config from 'config';
-
-const name: string = config.get('service.name');
-const mqttHost: string = config.get('mqtt.host');
-const port: number = config.get('mqtt.port');
-const username: string = config.get('mqtt.username');
-const password: string = config.get('mqtt.password');
-const clientId: string = config.get('mqtt.clientId');
-const topic: string = config.get('mqtt.topic');
-const amqpHost: string = config.get('amqp.host');
 
 import { logger } from './utils/logger';
 
-const startAMQP = async () => {
-  await AMQP.connect(amqpHost);
+const host: string = config.get('mqtt.host');
+const port: number = config.get('mqtt.port');
+const username: string = config.get('mqtt.username');
+const password: string = config.get('mqtt.password');
+const topic: string = config.get('mqtt.topic');
+
+const connection = new AMQP.Connection('amqp://rabbitmq');
+const exchange = connection.declareExchange('log.added');
+
+const mqttOptions = {
+  host,
+  port,
+  username,
+  password,
 };
 
-const startMQTT = async () => {
-  logger.info(`${name} service starting.`);
+const client = MQTT.connect(mqttOptions);
 
-  const client = await MQTT.connectAsync({
-    host: mqttHost,
-    port,
-    username,
-    password,
-    clientId,
-  });
+client.on('connect', () => {
+  logger.info(`MQTT client is connecting to ${host} at port ${port}`);
 
-  client.on('connect', () => {
-    logger.info('Successfully connected to broker.');
-    client.subscribe(topic);
-  });
+  client.subscribe(topic);
+
+  const measurement = {
+    temperature: 30,
+    pressure: 1005,
+    humidity: 55,
+  };
+
+  client.publish('nenad', JSON.stringify(measurement));
 
   client.on('message', (topic, message) => {
-    console.log(topic, message);
+    if (!topic.startsWith('$')) {
+      const msg = new AMQP.Message(
+        JSON.stringify({
+          topic: topic,
+          message: JSON.parse(message.toString()),
+        }),
+      );
+      exchange.send(msg);
+    }
   });
-};
+  client.end();
+});
 
-startMQTT()
-  .then(() => {
-    startAMQP()
-      .then(() => logger.info('Successfully connected to AMQP server.'))
-      .catch((error) => {
-        logger.error('Unable to connect to AMQP server!');
-        throw new Error(error);
-      });
-  })
-  .catch((error) => {
-    logger.error(`Unable to start ${name} service!`);
-    throw new Error(error);
-  });
+client.on('error', (error) => {
+  logger.error('Something is wrong!');
+  throw error;
+});
