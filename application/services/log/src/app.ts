@@ -1,16 +1,15 @@
-import Koa, { Context } from 'koa';
+import Koa from 'koa';
 import koaHelmet from 'koa-helmet';
 import koaBodyparser from 'koa-bodyparser';
 import koaCompress from 'koa-compress';
 import koaLogger from 'koa-logger';
 import koaSession from 'koa-session';
-import koaJwt from 'koa-jwt';
 import zlib from 'zlib';
 import config from 'config';
 
 import { router } from './api/log.routes';
+import { errorMiddleware } from './services/error';
 
-const secret: string = config.get('jwt.secret');
 const cookieKey: string = config.get('service.cookieKey');
 const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');
 
@@ -31,6 +30,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app
+  .use(errorMiddleware)
   .use(koaSession(sessionConfig, app))
   .use(koaBodyparser())
   .use(koaHelmet())
@@ -44,7 +44,6 @@ app
       },
     }),
   )
-  // todo error middleware
   .use(router.routes())
   .use(router.allowedMethods({ throw: true }));
 

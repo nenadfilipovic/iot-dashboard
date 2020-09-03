@@ -8,6 +8,8 @@ import zlib from 'zlib';
 import config from 'config';
 
 import { router } from './api/user.routes';
+import { errorMiddleware } from './services/error';
+import { AuthenticationError } from './errors/AuthenticationError';
 
 const cookieKey: string = config.get('service.cookieKey');
 const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');
@@ -29,6 +31,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app
+  .use(errorMiddleware)
+  .use(async function (ctx, next) {
+    return next().catch((error) => {
+      if (401 == error.status) {
+        ctx.status = 401;
+        throw new AuthenticationError(error.message);
+      } else {
+        throw error;
+      }
+    });
+  })
   .use(koaSession(sessionConfig, app))
   .use(koaBodyparser())
   .use(koaHelmet())
@@ -42,7 +55,6 @@ app
       },
     }),
   )
-  // todo error middleware
   .use(router.routes())
   .use(router.allowedMethods({ throw: true }));
 

@@ -2,6 +2,7 @@ import { DefaultContext } from 'koa';
 import * as AMQP from 'amqp-ts';
 
 import { db } from '../db/influx';
+import { BadRequestError } from '../errors/BadRequestError';
 
 const connection = new AMQP.Connection('amqp://rabbitmq');
 const exchange = connection.declareExchange('log.added');
@@ -13,13 +14,17 @@ queue.bind(exchange);
  */
 
 queue.activateConsumer((message) => {
-  const parseMessage = JSON.parse(message.content.toString());
-  db.writeMeasurement(parseMessage.topic, [
-    {
-      fields: { ...parseMessage.message },
-    },
-  ]);
-  message.ack();
+  try {
+    const parseMessage = JSON.parse(message.content.toString());
+    db.writeMeasurement(parseMessage.topic, [
+      {
+        fields: { ...parseMessage.message },
+      },
+    ]);
+    message.ack();
+  } catch (error) {
+    throw new BadRequestError(error.message);
+  }
 });
 
 /**
@@ -27,17 +32,21 @@ queue.activateConsumer((message) => {
  */
 
 const all = async (ctx: DefaultContext): Promise<void> => {
-  const { id } = ctx.request.params;
+  try {
+    const { id } = ctx.request.params;
 
-  const logs = await db.query(`
-    select * from ${id}
-    order by time desc
-  `);
+    const logs = await db.query(`
+      select * from ${id}
+      order by time desc
+    `);
 
-  ctx.body = {
-    status: 'success',
-    data: logs,
-  };
+    ctx.body = {
+      status: 'success',
+      data: logs,
+    };
+  } catch (error) {
+    throw new BadRequestError(error.message);
+  }
 };
 
 export { all };
