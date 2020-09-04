@@ -118,7 +118,7 @@ User.sync({ force: true })
       email: 'admin@home.com',
       password: 'adminpassword',
     });
-    logger.info('Default user created.');
+    logger.info('Admin user created.');
   })
   .catch((error) => {
     throw new Error(error);

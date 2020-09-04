@@ -14,7 +14,6 @@ const startServer = async () => {
   /**
    * Load server, db, etc...
    */
-
   db.authenticate().then(() => {
     logger.info('Database connection established successfully.');
 

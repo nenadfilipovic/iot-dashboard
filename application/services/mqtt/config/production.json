@@ -1,0 +1,9 @@
+{
+  "mqtt": {
+    "host": "emqx",
+    "port": 1883,
+    "username": "admin",
+    "password": "adminpassword",
+    "topic": "#"
+  }
+}

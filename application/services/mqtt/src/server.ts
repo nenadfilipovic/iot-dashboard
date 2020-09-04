@@ -23,17 +23,9 @@ const mqttOptions = {
 const client = MQTT.connect(mqttOptions);
 
 client.on('connect', () => {
-  logger.info(`MQTT client is connecting to ${host} at port ${port}`);
+  logger.info(`MQTT client is connected to ${host} at port ${port}`);
 
   client.subscribe(topic);
-
-  const measurement = {
-    temperature: 30,
-    pressure: 1005,
-    humidity: 55,
-  };
-
-  client.publish('nenad', JSON.stringify(measurement));
 
   client.on('message', (topic, message) => {
     if (!topic.startsWith('$')) {

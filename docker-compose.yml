@@ -1,22 +1,22 @@
 version: "3"
 services:
     user-service:
-        image: nenadfilipovic/user-service:latest
+        image: nenadfilipovic/user-service:0.0.1
         depends_on:
             - db
     
     device-service:
-        image: nenadfilipovic/device-service:latest
+        image: nenadfilipovic/device-service:0.0.1
         depends_on:
             - db
 
     log-service:
-        image: nenadfilipovic/log-service:latest
+        image: nenadfilipovic/log-service:0.0.1
         depends_on:
-            - db
+            - influx-db
 
     mqtt-service:
-        image: nenadfilipovic/mqtt-service:latest
+        image: nenadfilipovic/mqtt-service:0.0.1
         depends_on:
             - emqx
     
@@ -44,9 +44,6 @@ services:
             EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard,emqx_auth_http"
         volumes:
             - ./application/broker/emqx_auth_http.conf:/opt/emqx/etc/plugins/emqx_auth_http.conf
-        depends_on:
-            - user-service
-            - device-service
 
     rabbitmq:
         image: rabbitmq:3.8.7-alpine

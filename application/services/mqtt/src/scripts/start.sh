@@ -1,0 +1,1 @@
+(rm -rf dist) && tsc && NODE_ENV=production node dist/server.js
