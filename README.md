@@ -36,7 +36,15 @@ git clone https://github.com/nenadfilipovic/iot-dashboard
 
 ## Built With
 
--
+* [NodeJS](https://nodejs.org/en/)
+* [Docker](https://www.docker.com/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [RabbitMQ](https://www.rabbitmq.com/)
+* [EMQX](https://www.emqx.io/)
+* [Sequelize](https://sequelize.org/)
+* [MySQL](https://www.mysql.com/)
+* [JWT](https://jwt.io/)
+* [InfluxDB](https://www.influxdata.com/)
 
 ## Authors
 
