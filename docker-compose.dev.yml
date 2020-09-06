@@ -1,25 +1,25 @@
 version: "3"
 services:
-    user-service:
-        image: node:14-alpine
-        volumes:
-          - .:/workspace:cached
-        command: sleep infinity
+  user-service:
+    image: node:14-alpine
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
 
-    device-service:
-        image: node:14-alpine
-        volumes:
-            - .:/workspace:cached
-        command: sleep infinity
+  device-service:
+    image: node:14-alpine
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
 
-    log-service:
-        image: node:14-alpine
-        volumes:
-            - .:/workspace:cached
-        command: sleep infinity
+  log-service:
+    image: node:14-alpine
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
 
-    mqtt-service:
-        image: node:14-alpine
-        volumes:
-            - .:/workspace:cached
-        command: sleep infinity
+  mqtt-service:
+    image: node:14-alpine
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity

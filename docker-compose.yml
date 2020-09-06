@@ -1,59 +1,64 @@
 version: "3"
 services:
-    user-service:
-        image: nenadfilipovic/user-service:0.0.1
-        depends_on:
-            - db
-    
-    device-service:
-        image: nenadfilipovic/device-service:0.0.1
-        depends_on:
-            - db
+  user-service:
+    image: nenadfilipovic/user-service:0.0.1
+    depends_on:
+      - db
 
-    log-service:
-        image: nenadfilipovic/log-service:0.0.1
-        depends_on:
-            - influx-db
+  device-service:
+    image: nenadfilipovic/device-service:0.0.1
+    depends_on:
+      - db
 
-    mqtt-service:
-        image: nenadfilipovic/mqtt-service:0.0.1
-        restart: on-failure
-        depends_on:
-            - emqx
-            - user-service
-            - device-service
-            
-    db:
-        image: mysql:5.7
-        restart: unless-stopped
-        environment:
-            MYSQL_USER: user
-            MYSQL_PASSWORD: password
-            MYSQL_ROOT_PASSWORD: password
-        volumes:
-            - ./application/db:/docker-entrypoint-initdb.d
+  log-service:
+    image: nenadfilipovic/log-service:0.0.1
+    depends_on:
+      - influx-db
 
-    influx-db:
-        image: influxdb:1.8.2-alpine
-        environment: 
-            INFLUXDB_DB: log
-            INFLUXDB_USER: user
-            INFLUXDB_USER_PASSWORD: password
+  mqtt-service:
+    image: nenadfilipovic/mqtt-service:0.0.1
+    restart: on-failure
+    depends_on:
+      - emqx
+      - user-service
+      - device-service
 
-    emqx:
-        image: emqx/emqx
-        environment:
-            EMQX_ALLOW_ANONYMOUS: 'false'
-            EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard,emqx_auth_http"
-        volumes:
-            - ./application/broker/emqx_auth_http.conf:/opt/emqx/etc/plugins/emqx_auth_http.conf
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./application/db:/docker-entrypoint-initdb.d
 
-    rabbitmq:
-        image: rabbitmq:3.8.7-alpine
+  influx-db:
+    image: influxdb:1.8.2-alpine
+    environment:
+      INFLUXDB_DB: log
+      INFLUXDB_USER: user
+      INFLUXDB_USER_PASSWORD: password
 
-    nginx:
-        image: nginx:1.19.2-alpine
-        ports:
-            - "8080:80"
-        volumes:
-            - ./application/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+  emqx:
+    image: emqx/emqx
+    environment:
+      EMQX_ALLOW_ANONYMOUS: "false"
+      EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard,emqx_auth_http"
+    volumes:
+      - ./application/broker/emqx_auth_http.conf:/opt/emqx/etc/plugins/emqx_auth_http.conf
+
+  rabbitmq:
+    image: rabbitmq:3.8.7-alpine
+
+  nginx:
+    image: nginx:1.19.2-alpine
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./application/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - user-service
+      - device-service
+      - mqtt-service
+      - log-service

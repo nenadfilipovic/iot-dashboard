@@ -123,7 +123,7 @@ const one = async (ctx: DefaultContext): Promise<void> => {
   
     const loggedInUser = ctx.state.user;
   
-    if (loggedInUser !== existingDevice.user)
+    if (loggedInUser.id !== existingDevice.user)
       throw new Error('You have no permision to perform that action!');
   
     ctx.body = {
