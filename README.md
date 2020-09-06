@@ -1,3 +1,5 @@
+![IOT-Dashboard](https://github.com/nenadfilipovic/iot-dashboard/blob/master/IOT%20Dashboard%20(Stack).svg)
+
 # IOT Dashboard
 
 Complete system that enables you to receive, store and monitor your sensor data.
