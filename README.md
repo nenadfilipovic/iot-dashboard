@@ -1,4 +1,4 @@
-![IOT-Dashboard](https://github.com/nenadfilipovic/iot-dashboard/blob/master/IOT%20Dashboard%20(Stack).svg)
+![IOT-Dashboard](<https://github.com/nenadfilipovic/iot-dashboard/blob/master/IOT%20Dashboard%20(Stack).svg>)
 
 # IOT Dashboard
 
@@ -48,6 +48,8 @@ git clone https://github.com/nenadfilipovic/iot-dashboard
 - [JWT](https://jwt.io/)
 - [InfluxDB](https://www.influxdata.com/)
 - [Nginx](https://www.nginx.com/)
+- [React](https://reactjs.org/)
+- [Material-UI](https://material-ui.com/)
 
 ## Authors
 
@@ -59,4 +61,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
--
+- [Flaticon](https://www.flaticon.com/)

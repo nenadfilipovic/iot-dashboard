@@ -2,8 +2,6 @@ version: "3"
 services:
   frontend:
     image: nenadfilipovic/frontend:0.0.1
-    depends_on:
-      - db
 
   user-service:
     image: nenadfilipovic/user-service:0.0.1
