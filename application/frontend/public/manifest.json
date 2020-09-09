@@ -1,6 +1,6 @@
 {
-  "short_name": "IOT Dashboard",
-  "name": "Complete system that enables you to receive, store and monitor your sensor data.",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",

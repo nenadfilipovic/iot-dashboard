@@ -2,15 +2,6 @@ import React from 'react';
 
 import logo from '../assets/images/logo.svg';
 
-const Logo = () => (
-  <div>
-    <img
-      style={{ verticalAlign: 'middle' }}
-      src={logo}
-      alt="IOT Dashboard"
-      height="50"
-    />
-  </div>
-);
+const Logo = () => <img src={logo} alt="Logo" width="50" />;
 
 export { Logo };

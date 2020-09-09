@@ -1,14 +1,24 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as AppRouter, Switch, Route } from 'react-router-dom';
 
-import { Home } from '../pages/Home';
+import { Dashboard } from '../pages/Dashboard';
+import { Devices } from '../pages/Devices';
+import { Login } from '../pages/Login';
+import { Profile } from '../pages/Profile';
+import { Register } from '../pages/Register';
+import { Settings } from '../pages/Settings';
 
 const Router = () => (
-  <BrowserRouter>
+  <AppRouter>
     <Switch>
-      <Route exact path="/" component={Home} />
+      <Route exact path="/" component={Dashboard} />
+      <Route path="/devices" component={Devices} />
+      <Route path="/login" component={Login} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/register" component={Register} />
+      <Route path="/settings" component={Settings} />
     </Switch>
-  </BrowserRouter>
+  </AppRouter>
 );
 
 export { Router };

@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { Header } from '../components/Header';
-import { Navigation } from '../components/Navigation';
+import { Sidebar } from '../components/Sidebar';
 
-const Home = () => (
+const Dashboard = () => (
   <React.Fragment>
     <Header />
-    <Navigation />
+    <Sidebar />
   </React.Fragment>
 );
 
-export { Home };
+export { Dashboard };
