@@ -2,7 +2,7 @@ import React from 'react';
 import InsertChartIcon from '@material-ui/icons/InsertChart';
 import MemoryIcon from '@material-ui/icons/Memory';
 import FaceIcon from '@material-ui/icons/Face';
-import SettingsIcon from '@material-ui/icons/Settings';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {
   Hidden,
   Drawer,
@@ -26,6 +26,11 @@ const user = {
   email: 'nenad@nenad.com',
 };
 
+interface Sidebar {
+  onNavClose: () => void;
+  open: boolean;
+}
+
 const navigationItems = [
   {
     path: '/',
@@ -43,9 +48,9 @@ const navigationItems = [
     icon: FaceIcon as React.SFC<React.SVGProps<SVGSVGElement>>,
   },
   {
-    path: '/settings',
-    title: 'Settings',
-    icon: SettingsIcon as React.SFC<React.SVGProps<SVGSVGElement>>,
+    path: '/logout',
+    title: 'Logout',
+    icon: ExitToAppIcon as React.SFC<React.SVGProps<SVGSVGElement>>,
   },
 ];
 
@@ -66,7 +71,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const Sidebar = () => {
+const Sidebar = ({ onNavClose, open }: Sidebar) => {
   const classes = useStyles();
   const content = (
     <Box height="100%" display="flex" flexDirection="column">
@@ -88,7 +93,12 @@ const Sidebar = () => {
   return (
     <React.Fragment>
       <Hidden lgUp>
-        <Drawer open classes={{ paper: classes.mobile }} variant="temporary">
+        <Drawer
+          onClose={onNavClose}
+          classes={{ paper: classes.mobile }}
+          variant="temporary"
+          open={open}
+        >
           {content}
         </Drawer>
       </Hidden>

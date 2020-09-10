@@ -14,6 +14,10 @@ import ListIcon from '@material-ui/icons/List';
 
 import { Logo } from './Logo';
 
+interface Header {
+  onNavOpen: () => void;
+}
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
@@ -23,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const Header = () => {
+const Header = ({ onNavOpen }: Header) => {
   const classes = useStyles();
   return (
     <AppBar>
@@ -38,7 +42,7 @@ const Header = () => {
           </IconButton>
         </Hidden>
         <Hidden lgUp>
-          <IconButton color="inherit">
+          <IconButton color="inherit" onClick={onNavOpen}>
             <ListIcon />
           </IconButton>
         </Hidden>
