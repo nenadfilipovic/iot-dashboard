@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Grid,
@@ -11,10 +11,19 @@ import {
   createStyles,
   Theme,
   CardHeader,
+  IconButton,
+  Fab,
+  Modal,
+  Divider,
+  Avatar,
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
+import MemoryIcon from '@material-ui/icons/Memory';
 
 import { Layout } from '../components';
+import { New } from './NewDevice';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,6 +51,17 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1 1 auto',
       height: '100%',
       overflow: 'auto',
+    },
+    fab: {
+      position: 'fixed',
+      bottom: theme.spacing(5),
+      right: theme.spacing(5),
+    },
+    card: {
+      border: '1px solid rgba(16, 24, 32, 0.2)',
+    },
+    avatar: {
+      backgroundColor: theme.palette.primary.main,
     },
   }),
 );
@@ -100,20 +120,31 @@ const Devices = () => {
   ];
 
   const classes = useStyles();
-
+  const [modal, setModal] = useState(false);
   const list = devices.map((device) => {
     return (
-      <Grid item md={3} xs={12}>
-        <Card>
+      <Grid item xs={12} sm={6} md={3}>
+        <Card className={classes.card} variant="outlined">
           <CardHeader
-            title={<Typography variant="h6">Device: {device.name}</Typography>}
+            title={<Typography variant="h6">{device.name}</Typography>}
+            avatar={
+              <Avatar className={classes.avatar}>
+                <MemoryIcon />
+              </Avatar>
+            }
+            action={
+              <IconButton>
+                <DeleteIcon />
+              </IconButton>
+            }
           />
+          <Divider />
           <CardContent>
-            <Typography variant="h5"></Typography>
             <Typography variant="body2">Topic: {device.topic}</Typography>
             <Typography variant="body2">Type: {device.type}</Typography>
             <Typography variant="body2">Created: {device.createdAt}</Typography>
           </CardContent>
+          <Divider />
           <CardActions>
             <Button
               fullWidth
@@ -138,6 +169,22 @@ const Devices = () => {
             <Grid container spacing={2}>
               {list}
             </Grid>
+            <Fab
+              onClick={() => setModal(true)}
+              className={classes.fab}
+              color="primary"
+              aria-label="add"
+            >
+              <AddIcon />
+            </Fab>
+            <Modal
+              open={modal}
+              onClose={() => setModal(false)}
+              aria-labelledby="simple-modal-title"
+              aria-describedby="simple-modal-description"
+            >
+              <New />
+            </Modal>
           </Box>
         </Box>
       </Box>

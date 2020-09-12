@@ -1,20 +1,16 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-const sailorBlue = '#00203FFF';
-const mint = '#ADEFD1FF';
-const cultured = '#F7F9FB';
+const oldMauve = '#64223c';
 
 const theme = createMuiTheme({
   palette: {
     background: {
-      default: cultured,
+      default: '#EBEBEB',
     },
     primary: {
-      main: sailorBlue,
+      main: oldMauve,
     },
-    secondary: {
-      main: mint,
-    },
+    divider: 'rgb(230, 236, 240)',
   },
   typography: {
     fontFamily: '"Raleway", sans-serif',

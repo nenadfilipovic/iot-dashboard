@@ -14,8 +14,12 @@ import {
   CardHeader,
   IconButton,
   InputAdornment,
+  Divider,
+  CardActions,
+  Avatar,
 } from '@material-ui/core';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import FaceIcon from '@material-ui/icons/Face';
 
 import { Layout } from '../components';
 
@@ -45,7 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     card: {
       borderRadius: '5px',
-      padding: '10px',
+    },
+    cardAction: {
+      padding: '16px',
     },
     contentContainer: {
       display: 'flex',
@@ -56,6 +62,9 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1 1 auto',
       height: '100%',
       overflow: 'auto',
+    },
+    avatar: {
+      backgroundColor: theme.palette.primary.main,
     },
   }),
 );
@@ -84,7 +93,13 @@ const Profile = () => {
                     title={
                       <Typography variant="h6">Profile details:</Typography>
                     }
+                    avatar={
+                      <Avatar className={classes.avatar}>
+                        <FaceIcon />
+                      </Avatar>
+                    }
                   />
+                  <Divider />
                   <CardContent>
                     <Grid container spacing={2}>
                       <Grid item md={4} xs={12}>
@@ -164,11 +179,15 @@ const Profile = () => {
                       </Grid>
                     </Grid>
                   </CardContent>
-                  <Box display="flex" justifyContent="flex-end" p={2}>
-                    <Button type="submit" color="primary">
+                  <Divider />
+                  <CardActions className={classes.cardAction}>
+                    <Button variant="contained" type="submit" color="primary">
                       Save
                     </Button>
-                  </Box>
+                    <Button variant="contained" color="primary">
+                      Delete Account
+                    </Button>
+                  </CardActions>
                 </Card>
               </Box>
             </form>

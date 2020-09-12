@@ -57,6 +57,7 @@ const navigationItems = [
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     desktop: {
+      zIndex: 0,
       width: 270,
       top: 64,
       height: 'calc(100%-64px)',
