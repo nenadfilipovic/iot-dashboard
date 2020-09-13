@@ -1,46 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   makeStyles,
   Theme,
   createStyles,
-  Typography,
-  Divider,
-  CardHeader,
-  Card,
-  CardContent,
+  Button,
   Grid,
-  Avatar,
 } from '@material-ui/core';
-
-import InfoIcon from '@material-ui/icons/Info';
+import { useForm } from 'react-hook-form';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import {
-  LineChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Line,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import InfoIcon from '@material-ui/icons/Info';
 
-import { Layout } from '../components';
+import { Chart } from '../components/Chart';
+import { PageSegment } from '../components/PageSegment';
+import { InputField } from '../components/InputField';
+import { DeviceAttributes } from '../types';
+import { Type } from '../types';
+
+// Dirty
+import { Layout } from '../parts';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      display: 'flex',
-      height: '100%',
-      overflow: 'hidden',
-      width: '100%',
-    },
-
-    paper: {
-      flexGrow: 1,
-      maxWidth: 500,
-    },
     wrapper: {
       display: 'flex',
       flex: '1 1 auto',
@@ -60,99 +41,113 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1 1 auto',
       height: '100%',
     },
-    avatar: {
-      backgroundColor: theme.palette.primary.main,
-    },
   }),
 );
+// Dirty
 
-const data = [
-  { time: '2015-03-25', temperature: 33, pressure: 1005, humidity: 55 },
-  { time: '2015-03-26', temperature: 32, pressure: 1025, humidity: 33 },
-  { time: '2015-03-27', temperature: 23, pressure: 950, humidity: 22 },
-  { time: '2015-03-28', temperature: 35, pressure: 1100, humidity: 55 },
-  { time: '2015-03-29', temperature: 31, pressure: 1006, humidity: 50 },
-  { time: '2015-03-30', temperature: 32, pressure: 1003, humidity: 70 },
-];
+const Render = () => {
+  // Maybe change state later
+  const [deviceData, setDeviceData] = useState<DeviceAttributes>({
+    name: 'Device',
+    topic: 'home',
+    type: Type.esp32,
+    description: 'Sensor from living room',
+    // add creation date
+  });
 
-const Information = () => {
-  const classes = useStyles();
+  const { register, handleSubmit } = useForm<DeviceAttributes>();
+
+  const onSubmit = (data: DeviceAttributes) => console.log(data);
+
+  const inputFieldData = [
+    {
+      label: 'Name',
+      value: deviceData.name,
+      name: 'name',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setDeviceData({
+          ...deviceData,
+          name: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+    {
+      label: 'topic',
+      value: deviceData.topic,
+      name: 'topic',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setDeviceData({
+          ...deviceData,
+          topic: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+    {
+      label: 'description',
+      value: deviceData.description,
+      name: 'description',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setDeviceData({
+          ...deviceData,
+          description: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+  ];
+
   return (
-    <Grid item>
-      <Card>
-        <CardHeader
-          title={<Typography variant="h6">Info:</Typography>}
-          avatar={
-            <Avatar className={classes.avatar}>
-              <InfoIcon />
-            </Avatar>
-          }
+    <React.Fragment>
+      <Grid item>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <PageSegment
+            title="Information"
+            subheader="You can review or edit your device properties here."
+            icon={InfoIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+            content={
+              <Grid container spacing={2}>
+                {inputFieldData.map((item) => (
+                  <Grid item md={4} xs={12}>
+                    <InputField {...item} fullWidth />
+                  </Grid>
+                ))}
+              </Grid>
+            }
+            actions={
+              <Button type="submit" variant="contained" color="primary">
+                Save
+              </Button>
+            }
+          />
+        </form>
+      </Grid>
+      <Grid item>
+        <PageSegment
+          title="Readings"
+          subheader="Check data readings from your device."
+          icon={TimelineIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+          content={<Chart />}
         />
-        <Divider />
-        <CardContent>
-          <Typography variant="subtitle1">Device name:</Typography>
-          <Typography variant="subtitle1">Topic:</Typography>
-          <Typography variant="subtitle1">Type:</Typography>
-          <Typography variant="subtitle1">Creation date:</Typography>
-          <Typography variant="subtitle1">Last update:</Typography>
-        </CardContent>
-      </Card>
-    </Grid>
-  );
-};
-
-const Readings = () => {
-  const classes = useStyles();
-  return (
-    <Grid item>
-      <Card>
-        <CardHeader
-          title={<Typography variant="h6">Readings:</Typography>}
-          avatar={
-            <Avatar className={classes.avatar}>
-              <TimelineIcon />
-            </Avatar>
-          }
-        />
-        <Divider />
-        <CardContent>
-          <ResponsiveContainer width="99%" height={400}>
-            <LineChart data={data}>
-              <CartesianGrid
-                stroke="rgba(16, 24, 32, 0.20)"
-                strokeDasharray="5 5 5"
-              />
-              <Line type="monotone" dataKey="temperature" stroke="#FC766AFF" />
-              <Line type="monotone" dataKey="pressure" stroke="#00203FFF" />
-              <Line type="monotone" dataKey="humidity" stroke="#5B84B1FF" />
-              <Legend />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-    </Grid>
+      </Grid>
+    </React.Fragment>
   );
 };
 
 const Device = () => {
   const classes = useStyles();
+
   return (
-    <>
+    <React.Fragment>
       <Layout />
       <Box className={classes.wrapper}>
         <Box className={classes.contentContainer}>
           <Box className={classes.content} m={2}>
             <Grid container direction="column" spacing={2}>
-              <Information />
-              <Readings />
+              {<Render />}
             </Grid>
           </Box>
         </Box>
       </Box>
-    </>
+    </React.Fragment>
   );
 };
 

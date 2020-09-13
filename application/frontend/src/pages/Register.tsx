@@ -1,132 +1,128 @@
 import React, { useState } from 'react';
 import {
-  CardContent,
-  TextField,
-  CardActions,
+  Grid,
   Button,
-  Card,
   makeStyles,
   Theme,
   createStyles,
-  Box,
   Container,
-  CardHeader,
 } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { NavLink } from 'react-router-dom';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 
-import { Logo } from '../components/Logo';
-
-interface Register {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  password: string;
-}
+import { PageSegment } from '../components/PageSegment';
+import { RegisterAttributes } from '../types';
+import { InputField } from '../components/InputField';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      margin: 'auto',
-    },
-    card: {
-      borderRadius: '5px',
-      padding: '10px',
-    },
-    input: {
-      margin: '2px 0',
+      marginTop: '25px',
     },
   }),
 );
 
 const Register = () => {
+  const { register, handleSubmit } = useForm<RegisterAttributes>();
+
   const classes = useStyles();
-  const { register, handleSubmit } = useForm<Register>();
-  const onSubmit = (data: Register) => console.log(data);
-  const [values, setValues] = useState({
+
+  const [registerData, setRegisterData] = useState<RegisterAttributes>({
     firstName: '',
     lastName: '',
     username: '',
     email: '',
     password: '',
   });
-  return (
-    <Container maxWidth="sm">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box m={1}>
-          <Card className={classes.card}>
-            <CardHeader
-              avatar={<Logo />}
-              title="Register:"
-              subheader="Please enter data into required fields."
-            />
-            <CardContent>
-              <TextField
-                className={classes.input}
-                label="firstname"
-                value={values.firstName}
-                name="firstname"
-                inputRef={register}
-                fullWidth
-                onChange={(event) =>
-                  setValues({ ...values, firstName: event.target.value })
-                }
-              />
-              <TextField
-                className={classes.input}
-                label="lastname"
-                value={values.lastName}
-                name="lastname"
-                inputRef={register}
-                fullWidth
-                onChange={(event) =>
-                  setValues({ ...values, lastName: event.target.value })
-                }
-              />
-              <TextField
-                className={classes.input}
-                label="username"
-                value={values.username}
-                name="username"
-                inputRef={register}
-                fullWidth
-                onChange={(event) =>
-                  setValues({ ...values, username: event.target.value })
-                }
-              />
-              <TextField
-                className={classes.input}
-                label="email"
-                value={values.email}
-                name="email"
-                inputRef={register}
-                fullWidth
-                onChange={(event) =>
-                  setValues({ ...values, email: event.target.value })
-                }
-              />
 
-              <TextField
-                className={classes.input}
-                label="password"
-                value={values.password}
-                name="password"
-                inputRef={register}
-                fullWidth
-                onChange={(event) =>
-                  setValues({ ...values, password: event.target.value })
-                }
-              />
-            </CardContent>
-            <CardActions>
-              <Button type="submit">Register</Button>
-              <Button component={NavLink} to={'/login'}>
+  const inputFieldData = [
+    {
+      label: 'First name',
+      value: registerData.firstName,
+      name: 'firstname',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setRegisterData({
+          ...registerData,
+          firstName: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+    {
+      label: 'Last name',
+      value: registerData.lastName,
+      name: 'lastname',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setRegisterData({
+          ...registerData,
+          lastName: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+    {
+      label: 'Username',
+      value: registerData.username,
+      name: 'username',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setRegisterData({
+          ...registerData,
+          username: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+    {
+      label: 'Email',
+      value: registerData.email,
+      name: 'email',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setRegisterData({
+          ...registerData,
+          email: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+    {
+      label: 'Password',
+      value: registerData.password,
+      name: 'password',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setRegisterData({
+          ...registerData,
+          password: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+  ];
+
+  const onSubmit = (data: RegisterAttributes) => console.log(data);
+
+  return (
+    <Container className={classes.root} maxWidth="sm">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <PageSegment
+          title="Register"
+          subheader="Please enter data into required fields."
+          icon={VpnKeyIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+          content={
+            <Grid container direction="column" spacing={2}>
+              {inputFieldData.map((item) => (
+                <Grid item>
+                  <InputField {...item} fullWidth />
+                </Grid>
+              ))}
+            </Grid>
+          }
+          actions={
+            <React.Fragment>
+              <Button color="primary" variant="contained" type="submit">
+                Register
+              </Button>
+              <Button color="primary" component={NavLink} to={'/login'}>
                 Login
               </Button>
-            </CardActions>
-          </Card>
-        </Box>
+            </React.Fragment>
+          }
+        />
       </form>
     </Container>
   );

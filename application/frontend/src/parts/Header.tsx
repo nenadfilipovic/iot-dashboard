@@ -12,7 +12,7 @@ import {
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ListIcon from '@material-ui/icons/List';
 
-import { Logo } from './Logo';
+import { Logo } from '../components/Logo';
 
 interface Header {
   onNavOpen: () => void;

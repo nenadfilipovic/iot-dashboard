@@ -20,8 +20,9 @@ import {
 } from '@material-ui/core';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import FaceIcon from '@material-ui/icons/Face';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
-import { Layout } from '../components';
+import { Layout } from '../parts';
 
 interface Profile {
   firstName: String;
@@ -52,6 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     cardAction: {
       padding: '16px',
+      justifyContent: 'flex-end',
     },
     contentContainer: {
       display: 'flex',
@@ -88,107 +90,143 @@ const Profile = () => {
           <Box className={classes.content} m={1}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Box m={1}>
-                <Card className={classes.card}>
-                  <CardHeader
-                    title={
-                      <Typography variant="h6">Profile details:</Typography>
-                    }
-                    avatar={
-                      <Avatar className={classes.avatar}>
-                        <FaceIcon />
-                      </Avatar>
-                    }
-                  />
-                  <Divider />
-                  <CardContent>
-                    <Grid container spacing={2}>
-                      <Grid item md={4} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="First name"
-                          name="firstName"
-                          value={values.firstName}
-                          inputRef={register({ required: true })}
-                          onChange={(event) =>
-                            setValues({
-                              ...values,
-                              firstName: event.target.value,
-                            })
-                          }
-                        />
-                        {errors.firstName && 'First name is required'}
-                      </Grid>
-                      <Grid item md={4} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Last name"
-                          name="lastName"
-                          value={values.lastName}
-                          inputRef={register({ required: true })}
-                          onChange={(event) =>
-                            setValues({
-                              ...values,
-                              lastName: event.target.value,
-                            })
-                          }
-                        />
-                        {errors.lastName && 'Last name is required'}
-                      </Grid>
-                      <Grid item md={4} xs={12}>
-                        <TextField
-                          fullWidth
-                          label="Email"
-                          name="email"
-                          value={values.email}
-                          inputRef={register({ required: true })}
-                          onChange={(event) =>
-                            setValues({ ...values, email: event.target.value })
-                          }
-                        />
-                        {errors.email && 'Email is required'}
-                      </Grid>
-                      <Grid style={{ display: 'flex' }} item md={4} xs={12}>
-                        <TextField
-                          type={showPassword ? 'text' : 'password'}
-                          fullWidth
-                          label="password"
-                          name="password"
-                          value={values.password}
-                          inputRef={register({ required: true })}
-                          onChange={(event) =>
-                            setValues({
-                              ...values,
-                              password: event.target.value,
-                            })
-                          }
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  disableRipple
-                                  onClick={() => setShowPassword(!showPassword)}
-                                >
-                                  <VisibilityIcon />
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
+                <Grid direction="column" container spacing={2}>
+                  <Grid item>
+                    <Card className={classes.card}>
+                      <CardHeader
+                        title={
+                          <Typography variant="subtitle1">
+                            Profile details:
+                          </Typography>
+                        }
+                        subheader="Review or edit you profile details."
+                        avatar={
+                          <Avatar className={classes.avatar}>
+                            <FaceIcon />
+                          </Avatar>
+                        }
+                      />
+                      <Divider />
+                      <CardContent>
+                        <Grid container spacing={2}>
+                          <Grid item md={4} xs={12}>
+                            <TextField
+                              fullWidth
+                              label="First name"
+                              name="firstName"
+                              value={values.firstName}
+                              inputRef={register({ required: true })}
+                              onChange={(event) =>
+                                setValues({
+                                  ...values,
+                                  firstName: event.target.value,
+                                })
+                              }
+                            />
+                            {errors.firstName && 'First name is required'}
+                          </Grid>
+                          <Grid item md={4} xs={12}>
+                            <TextField
+                              fullWidth
+                              label="Last name"
+                              name="lastName"
+                              value={values.lastName}
+                              inputRef={register({ required: true })}
+                              onChange={(event) =>
+                                setValues({
+                                  ...values,
+                                  lastName: event.target.value,
+                                })
+                              }
+                            />
+                            {errors.lastName && 'Last name is required'}
+                          </Grid>
+                          <Grid item md={4} xs={12}>
+                            <TextField
+                              fullWidth
+                              label="Email"
+                              name="email"
+                              value={values.email}
+                              inputRef={register({ required: true })}
+                              onChange={(event) =>
+                                setValues({
+                                  ...values,
+                                  email: event.target.value,
+                                })
+                              }
+                            />
+                            {errors.email && 'Email is required'}
+                          </Grid>
+                          <Grid style={{ display: 'flex' }} item md={4} xs={12}>
+                            <TextField
+                              type={showPassword ? 'text' : 'password'}
+                              fullWidth
+                              label="password"
+                              name="password"
+                              value={values.password}
+                              inputRef={register({ required: true })}
+                              onChange={(event) =>
+                                setValues({
+                                  ...values,
+                                  password: event.target.value,
+                                })
+                              }
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      disableRipple
+                                      onClick={() =>
+                                        setShowPassword(!showPassword)
+                                      }
+                                    >
+                                      <VisibilityIcon />
+                                    </IconButton>
+                                  </InputAdornment>
+                                ),
+                              }}
+                            />
 
-                        {errors.password && 'Password is required'}
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                  <Divider />
-                  <CardActions className={classes.cardAction}>
-                    <Button variant="contained" type="submit" color="primary">
-                      Save
-                    </Button>
-                    <Button variant="contained" color="primary">
-                      Delete Account
-                    </Button>
-                  </CardActions>
-                </Card>
+                            {errors.password && 'Password is required'}
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                      <Divider />
+                      <CardActions className={classes.cardAction}>
+                        <Button
+                          variant="contained"
+                          type="submit"
+                          color="primary"
+                        >
+                          Save
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                  <Grid item>
+                    <Card>
+                      <CardHeader
+                        title={
+                          <Typography variant="subtitle1">
+                            Remove account:
+                          </Typography>
+                        }
+                        subheader="With this option you can disable your account."
+                        avatar={
+                          <Avatar className={classes.avatar}>
+                            <HighlightOffIcon />
+                          </Avatar>
+                        }
+                      />
+                      <Divider />
+                      <CardActions className={classes.cardAction}>
+                        <Button variant="contained" color="primary">
+                          Delete
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                </Grid>
               </Box>
             </form>
           </Box>

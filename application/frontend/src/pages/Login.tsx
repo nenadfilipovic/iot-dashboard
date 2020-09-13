@@ -1,92 +1,92 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  TextField,
   Button,
-  Box,
-  makeStyles,
-  createStyles,
-  Theme,
   Container,
+  Grid,
+  Theme,
+  createStyles,
+  makeStyles,
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 
-import { Logo } from '../components/Logo';
-
-interface Login {
-  userName: string;
-  password: string;
-}
+import { PageSegment } from '../components/PageSegment';
+import { InputField } from '../components/InputField';
+import { LoginAttributes } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      margin: 'auto',
-    },
-    card: {
-      borderRadius: '5px',
-      padding: '10px',
-    },
-    input: {
-      margin: '2px 0',
+      marginTop: '25px',
     },
   }),
 );
 
 const Login = () => {
-  const classes = useStyles();
-  const { register, handleSubmit } = useForm<Login>();
-  const [values, setValues] = useState({
-    userName: '',
+  const { register, handleSubmit } = useForm<LoginAttributes>();
+
+  const [loginData, setLoginData] = useState<LoginAttributes>({
+    username: '',
     password: '',
   });
-  const onSubmit = (data: Login) => console.log(data);
+
+  const classes = useStyles();
+
+  const inputFieldData = [
+    {
+      label: 'Username',
+      value: loginData.username,
+      name: 'username',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setLoginData({
+          ...loginData,
+          username: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+    {
+      label: 'Password',
+      value: loginData.password,
+      name: 'password',
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+        setLoginData({
+          ...loginData,
+          password: event.currentTarget.value,
+        }),
+      inputRef: register,
+    },
+  ];
+
+  const onSubmit = (data: LoginAttributes) => console.log(data);
+
   return (
-    <Container maxWidth="sm">
+    <Container className={classes.root} maxWidth="sm">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box m={1}>
-          <Card className={classes.card}>
-            <CardHeader
-              avatar={<Logo />}
-              title="Login:"
-              subheader="Please enter your login details."
-            />
-            <CardContent>
-              <TextField
-                className={classes.input}
-                label="username"
-                value={values.userName}
-                name="username"
-                inputRef={register}
-                fullWidth
-                onChange={(event) =>
-                  setValues({ ...values, userName: event.target.value })
-                }
-              />
-              <TextField
-                className={classes.input}
-                label="password"
-                value={values.password}
-                name="password"
-                inputRef={register}
-                fullWidth
-                onChange={(event) =>
-                  setValues({ ...values, password: event.target.value })
-                }
-              />
-            </CardContent>
-            <CardActions>
-              <Button type="submit">Login</Button>
-              <Button component={NavLink} to={'/register'}>
+        <PageSegment
+          title="Login"
+          subheader="Please enter your login details."
+          icon={LockOpenIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+          content={
+            <Grid container direction="column" spacing={2}>
+              {inputFieldData.map((item) => (
+                <Grid item>
+                  <InputField {...item} fullWidth />
+                </Grid>
+              ))}
+            </Grid>
+          }
+          actions={
+            <React.Fragment>
+              <Button color="primary" variant="contained" type="submit">
+                Login
+              </Button>
+              <Button color="primary" component={NavLink} to={'/register'}>
                 Register
               </Button>
-            </CardActions>
-          </Card>
-        </Box>
+            </React.Fragment>
+          }
+        />
       </form>
     </Container>
   );

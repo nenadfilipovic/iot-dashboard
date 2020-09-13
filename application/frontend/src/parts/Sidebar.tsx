@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 
 import avatar from '../assets/images/avatar.svg';
-import { Item } from './Item';
+import { Item } from '../components/Item';
 
 const user = {
   image: avatar,
