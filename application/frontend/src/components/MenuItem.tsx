@@ -5,13 +5,14 @@ import {
   createStyles,
   makeStyles,
   Theme,
+  Typography,
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 
-interface Item {
-  path: string;
-  title: string;
-  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+interface ItemAttributes {
+  itemPath: string;
+  itemTitle: string;
+  itemIcon: React.FC<React.SVGProps<SVGSVGElement>>;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,30 +21,34 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       display: 'flex',
     },
-    icon: {
+    itemIcon: {
       marginRight: theme.spacing(1),
     },
-    text: {
+    itemTitle: {
       textTransform: 'none',
     },
-    button: {
-      width: '100%',
+    itemButton: {
       padding: '10px 20px',
       justifyContent: 'flex-start',
     },
   }),
 );
 
-const Item = ({ path, title, icon: Icon }: Item) => {
+const MenuItem = ({ itemPath, itemTitle, itemIcon: Icon }: ItemAttributes) => {
   const classes = useStyles();
   return (
     <ListItem className={classes.item} disableGutters>
-      <Button className={classes.button} component={NavLink} to={path}>
-        {Icon && <Icon className={classes.icon} />}
-        <span className={classes.text}>{title}</span>
+      <Button
+        fullWidth
+        className={classes.itemButton}
+        component={NavLink}
+        to={itemPath}
+      >
+        <Icon className={classes.itemIcon} />
+        <Typography className={classes.itemTitle}>{itemTitle}</Typography>
       </Button>
     </ListItem>
   );
 };
 
-export { Item };
+export { MenuItem };

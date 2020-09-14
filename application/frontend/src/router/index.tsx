@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as AppRouter, Switch, Route } from 'react-router-dom';
 
 import { Dashboard } from '../pages/Dashboard';
-import { Devices } from '../pages/Devices';
+import { Devices } from '../pages/DeviceList';
 import { Login } from '../pages/Login';
 import { Profile } from '../pages/Profile';
 import { Register } from '../pages/Register';

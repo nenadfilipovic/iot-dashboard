@@ -25,7 +25,7 @@ import MemoryIcon from '@material-ui/icons/Memory';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { Layout } from '../parts';
-import { New } from './NewDevice';
+import { CreateDevice } from './CreateDevice';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -158,13 +158,8 @@ const Devices = () => {
             >
               <AddIcon />
             </Fab>
-            <Modal
-              open={modal}
-              onClose={() => setModal(false)}
-              aria-labelledby="simple-modal-title"
-              aria-describedby="simple-modal-description"
-            >
-              <New />
+            <Modal open={modal} onClose={() => setModal(false)}>
+              <CreateDevice />
             </Modal>
           </Box>
         </Box>

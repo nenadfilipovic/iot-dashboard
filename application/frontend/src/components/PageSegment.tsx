@@ -12,14 +12,20 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { PageSegmentAttributes } from '../types';
+interface PageSegmentAttributes {
+  headerTitle: string;
+  headerSubtitle: string;
+  headerIcon: React.FC<React.SVGProps<SVGSVGElement>>;
+  bodyContent?: JSX.Element;
+  bodyActions?: JSX.Element;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     avatar: {
       backgroundColor: theme.palette.primary.main,
     },
-    cardActions: {
+    bodyActions: {
       padding: '16px',
       justifyContent: 'flex-end',
     },
@@ -27,31 +33,37 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const PageSegment = ({
-  title,
-  subheader,
-  icon: Icon,
-  content,
-  actions,
+  headerTitle,
+  headerSubtitle,
+  headerIcon: Icon,
+  bodyContent,
+  bodyActions,
 }: PageSegmentAttributes) => {
   const classes = useStyles();
 
   return (
     <Card>
       <CardHeader
-        title={<Typography variant="subtitle1">{title}</Typography>}
-        subheader={subheader}
+        title={<Typography variant="subtitle1">{headerTitle}</Typography>}
+        subheader={headerSubtitle}
         avatar={
           <Avatar className={classes.avatar}>
             <Icon />
           </Avatar>
         }
       />
-      {content && <Divider />}
-      <CardContent>{content}</CardContent>
-      {actions && (
+      {bodyContent && (
         <React.Fragment>
           <Divider />
-          <CardActions className={classes.cardActions}>{actions}</CardActions>
+          <CardContent>{bodyContent}</CardContent>
+        </React.Fragment>
+      )}
+      {bodyActions && (
+        <React.Fragment>
+          <Divider />
+          <CardActions className={classes.bodyActions}>
+            {bodyActions}
+          </CardActions>
         </React.Fragment>
       )}
     </Card>

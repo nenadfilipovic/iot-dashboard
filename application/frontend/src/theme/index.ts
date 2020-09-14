@@ -1,16 +1,16 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
 const oldMauve = '#64223c';
+const platinum = '#EBEBEB';
 
 const theme = createMuiTheme({
   palette: {
     background: {
-      default: '#EBEBEB',
+      default: platinum,
     },
     primary: {
       main: oldMauve,
     },
-    divider: 'rgb(230, 236, 240)',
   },
   typography: {
     fontFamily: '"Raleway", sans-serif',

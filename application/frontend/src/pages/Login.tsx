@@ -7,13 +7,21 @@ import {
   Theme,
   createStyles,
   makeStyles,
+  TextField,
+  Box,
+  InputAdornment,
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
+import LockIcon from '@material-ui/icons/Lock';
 
 import { PageSegment } from '../components/PageSegment';
-import { InputField } from '../components/InputField';
-import { LoginAttributes } from '../types';
+
+interface LoginAttributes {
+  username: string;
+  password: string;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,7 +41,7 @@ const Login = () => {
 
   const classes = useStyles();
 
-  const inputFieldData = [
+  const loginFormFields = [
     {
       label: 'Username',
       value: loginData.username,
@@ -44,6 +52,7 @@ const Login = () => {
           username: event.currentTarget.value,
         }),
       inputRef: register,
+      icon: PermIdentityIcon,
     },
     {
       label: 'Password',
@@ -55,40 +64,54 @@ const Login = () => {
           password: event.currentTarget.value,
         }),
       inputRef: register,
+      icon: LockIcon,
     },
   ];
 
   const onSubmit = (data: LoginAttributes) => console.log(data);
 
   return (
-    <Container className={classes.root} maxWidth="sm">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <PageSegment
-          title="Login"
-          subheader="Please enter your login details."
-          icon={LockOpenIcon as React.FC<React.SVGProps<SVGSVGElement>>}
-          content={
-            <Grid container direction="column" spacing={2}>
-              {inputFieldData.map((item) => (
-                <Grid item>
-                  <InputField {...item} fullWidth />
-                </Grid>
-              ))}
-            </Grid>
-          }
-          actions={
-            <React.Fragment>
-              <Button color="primary" variant="contained" type="submit">
-                Login
-              </Button>
-              <Button color="primary" component={NavLink} to={'/register'}>
-                Register
-              </Button>
-            </React.Fragment>
-          }
-        />
-      </form>
-    </Container>
+    <Box className={classes.root}>
+      <Container maxWidth="sm">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <PageSegment
+            headerTitle="Login"
+            headerSubtitle="Please enter your login details."
+            headerIcon={LockOpenIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+            bodyContent={
+              <Grid container direction="column" spacing={2}>
+                {loginFormFields.map((field) => (
+                  <Grid item>
+                    <TextField
+                      variant="outlined"
+                      {...field}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {<field.icon />}
+                          </InputAdornment>
+                        ),
+                      }}
+                      fullWidth
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            }
+            bodyActions={
+              <React.Fragment>
+                <Button color="primary" variant="contained" type="submit">
+                  Login
+                </Button>
+                <Button color="primary" component={NavLink} to={'/register'}>
+                  Register
+                </Button>
+              </React.Fragment>
+            }
+          />
+        </form>
+      </Container>
+    </Box>
   );
 };
 

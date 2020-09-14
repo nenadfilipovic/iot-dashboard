@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 
 import avatar from '../assets/images/avatar.svg';
-import { Item } from '../components/Item';
+import { MenuItem } from '../components/MenuItem';
 
 const user = {
   image: avatar,
@@ -85,7 +85,11 @@ const Sidebar = ({ onNavClose, open }: Sidebar) => {
       <Box p={1}>
         <List>
           {navigationItems.map((item) => (
-            <Item path={item.path} title={item.title} icon={item.icon} />
+            <MenuItem
+              itemPath={item.path}
+              itemTitle={item.title}
+              itemIcon={item.icon}
+            />
           ))}
         </List>
       </Box>
