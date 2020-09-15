@@ -16,6 +16,7 @@ interface PageSegmentAttributes {
   headerTitle: string;
   headerSubtitle: string;
   headerIcon: React.FC<React.SVGProps<SVGSVGElement>>;
+  headerActions?: JSX.Element;
   bodyContent?: JSX.Element;
   bodyActions?: JSX.Element;
 }
@@ -24,6 +25,10 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     avatar: {
       backgroundColor: theme.palette.primary.main,
+    },
+    headerActions: {
+      margin: 0,
+      alignSelf: 'center',
     },
     bodyActions: {
       padding: '16px',
@@ -36,6 +41,7 @@ const PageSegment = ({
   headerTitle,
   headerSubtitle,
   headerIcon: Icon,
+  headerActions,
   bodyContent,
   bodyActions,
 }: PageSegmentAttributes) => {
@@ -44,6 +50,7 @@ const PageSegment = ({
   return (
     <Card>
       <CardHeader
+        classes={{ action: classes.headerActions }}
         title={<Typography variant="subtitle1">{headerTitle}</Typography>}
         subheader={headerSubtitle}
         avatar={
@@ -51,6 +58,7 @@ const PageSegment = ({
             <Icon />
           </Avatar>
         }
+        action={<React.Fragment>{headerActions}</React.Fragment>}
       />
       {bodyContent && (
         <React.Fragment>

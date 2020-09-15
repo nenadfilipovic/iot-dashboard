@@ -7,9 +7,9 @@ import {
   Button,
   MenuItem,
   Grid,
-  Box,
+  Container,
 } from '@material-ui/core';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import MemoryIcon from '@material-ui/icons/Memory';
 
 import { PageSegment } from '../components/PageSegment';
@@ -24,18 +24,26 @@ interface CreateDeviceAttributes {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      top: '50%',
-      left: '50%',
-      position: 'absolute',
-      transform: `translate(-50%, -50%)`,
+      marginTop: '25px',
     },
   }),
 );
 
+const deviceTypes = [
+  {
+    label: 'esp32',
+    value: 'esp32',
+  },
+  {
+    label: 'esp8266',
+    value: 'esp8266',
+  },
+];
+
 const CreateDevice = () => {
   const classes = useStyles();
 
-  const { register, handleSubmit } = useForm<CreateDeviceAttributes>();
+  const { register, control, handleSubmit } = useForm<CreateDeviceAttributes>();
 
   const onSubmit = (data: CreateDeviceAttributes) => console.log(data);
 
@@ -45,29 +53,14 @@ const CreateDevice = () => {
     deviceName: '',
     deviceTopic: '',
     deviceDescription: '',
-    deviceType: 'esp32',
+    deviceType: '',
   });
-
-  const deviceTypes = [
-    {
-      value: 'esp32',
-      label: 'esp32',
-    },
-    {
-      value: 'esp8266',
-      label: 'esp8266',
-    },
-  ].map((type) => (
-    <MenuItem key={type.value} value={type.value}>
-      {type.label}
-    </MenuItem>
-  ));
 
   const createDeviceFormFields = [
     {
       label: 'Name',
       value: createDeviceData.deviceName,
-      name: 'name',
+      name: 'deviceName',
       onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
         setCreateDeviceData({
           ...createDeviceData,
@@ -78,7 +71,7 @@ const CreateDevice = () => {
     {
       label: 'Topic',
       value: createDeviceData.deviceTopic,
-      name: 'topic',
+      name: 'deviceTopic',
       onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
         setCreateDeviceData({
           ...createDeviceData,
@@ -89,7 +82,7 @@ const CreateDevice = () => {
     {
       label: 'Description',
       value: createDeviceData.deviceDescription,
-      name: 'description',
+      name: 'deviceDescription',
       onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
         setCreateDeviceData({
           ...createDeviceData,
@@ -99,7 +92,7 @@ const CreateDevice = () => {
     },
   ];
 
-  const render = (
+  const createDeviceForm = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PageSegment
         headerTitle="Add device"
@@ -113,22 +106,26 @@ const CreateDevice = () => {
               </Grid>
             ))}
             <Grid item>
-              <TextField
-                variant="outlined"
-                fullWidth
-                select
-                label="Type"
-                value={createDeviceData.deviceType}
-                name="type"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  setCreateDeviceData({
-                    ...createDeviceData,
-                    deviceType: event.target.value,
-                  })
+              <Controller
+                as={
+                  <TextField
+                    label="Type"
+                    name="deviceType"
+                    variant="outlined"
+                    fullWidth
+                  >
+                    {deviceTypes.map((type) => (
+                      <MenuItem key={type.value} value={type.value}>
+                        {type.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 }
-              >
-                {deviceTypes}
-              </TextField>
+                select
+                name="deviceType"
+                control={control}
+                defaultValue={createDeviceData.deviceType}
+              />
             </Grid>
           </Grid>
         }
@@ -141,7 +138,11 @@ const CreateDevice = () => {
     </form>
   );
 
-  return <Box className={classes.root}>{render}</Box>;
+  return (
+    <Container className={classes.root} maxWidth="sm">
+      {createDeviceForm}
+    </Container>
+  );
 };
 
 export { CreateDevice };

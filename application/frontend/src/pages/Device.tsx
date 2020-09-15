@@ -123,7 +123,6 @@ const Render = () => {
   const button = editable ? (
     <Button
       onClick={() => setEditable(!editable)}
-      type="submit"
       variant="contained"
       color="primary"
     >
@@ -132,6 +131,7 @@ const Render = () => {
   ) : (
     <Button
       onClick={() => setEditable(!editable)}
+      type="submit"
       variant="contained"
       color="primary"
     >

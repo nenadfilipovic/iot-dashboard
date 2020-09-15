@@ -20,8 +20,8 @@ import { PageSegment } from '../components/PageSegment';
 
 //diry
 import { Layout } from '../parts';
-
 //dirty
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     wrapper: {

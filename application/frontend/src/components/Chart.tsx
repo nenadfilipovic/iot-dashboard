@@ -65,16 +65,13 @@ const Chart = () => {
     <Box className={classes.chartWrapper}>
       <Box className={classes.chartContainer}>
         <ResponsiveContainer height={400}>
-          <LineChart
-            margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-            data={data}
-          >
-            <CartesianGrid />
+          <LineChart data={data}>
+            <CartesianGrid stroke="#EBEBEB" />
             <XAxis dataKey="time" />
             {renderLines}
-            <YAxis />
+            <YAxis width={35} />
             <Tooltip />
-            <Legend iconType="circle" />
+            <Legend iconSize={10} iconType="circle" />
           </LineChart>
         </ResponsiveContainer>
       </Box>
