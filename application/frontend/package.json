@@ -5,6 +5,7 @@
   "author": "Nenad Filipovic",
   "license": "MIT",
   "private": true,
+  "devDependencies": {},
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -16,10 +17,11 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/recharts": "^1.8.15",
+    "history": "^5.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hook-form": "^6.8.1",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^6.0.0-beta.0",
     "react-scripts": "3.4.3",
     "recharts": "^1.8.5",
     "typescript": "~3.7.2"
@@ -52,8 +54,5 @@
   "keywords": [
     "typescript",
     "node"
-  ],
-  "devDependencies": {
-    "@types/react-router-dom": "^5.1.5"
-  }
+  ]
 }

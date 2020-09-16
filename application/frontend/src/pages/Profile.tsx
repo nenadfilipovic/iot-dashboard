@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import {
   Grid,
   TextField,
   Button,
-  Box,
   makeStyles,
   Theme,
   createStyles,
@@ -17,105 +16,44 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import { PageSegment } from '../components/PageSegment';
+import { UserAttributes, UserAttributesCasting } from '../types';
 
-//diry
-import { Layout } from '../parts';
-//dirty
+const useStyles = makeStyles((theme: Theme) => createStyles({}));
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    wrapper: {
-      display: 'flex',
-      flex: '1 1 auto',
-      overflow: 'hidden',
-      paddingTop: 64,
-      [theme.breakpoints.up('lg')]: {
-        paddingLeft: 270,
-      },
-    },
-
-    contentContainer: {
-      display: 'flex',
-      flex: '1 1 auto',
-      overflow: 'hidden',
-    },
-    content: {
-      flex: '1 1 auto',
-      height: '100%',
-      overflow: 'auto',
-    },
-  }),
-);
-//
-
-interface ProfileAttributes {
-  firstName: String;
-  lastName: string;
-  email: string;
-  password: string;
-}
+const { firstName, lastName, password, email } = UserAttributesCasting;
 
 const Profile = () => {
-  const { register, handleSubmit } = useForm<ProfileAttributes>();
+  const classes = useStyles();
 
-  const [profileData, setProfileData] = useState<ProfileAttributes>({
-    firstName: 'Nenad',
-    lastName: 'Filipovic',
-    email: 'nenad@nenad.com',
-    password: 'nenad123',
+  const { control, handleSubmit } = useForm<UserAttributes>({
+    defaultValues: {
+      firstName: 'Nenad',
+      lastName: 'Filipovic',
+      password: 'nenad123',
+      email: 'nenad@nenad.com',
+    },
   });
 
   const [visiblePassword, setVisiblePassword] = useState<boolean>(false);
 
-  const onSubmit = (data: ProfileAttributes) => console.log(data);
-
-  const classes = useStyles();
+  const onSubmit = (data: UserAttributes) => console.log(data);
 
   const profileFormFields = [
     {
       label: 'First Name',
-      value: profileData.firstName,
-      name: 'firstname',
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        setProfileData({
-          ...profileData,
-          firstName: event.currentTarget.value,
-        }),
-      inputRef: register,
+      name: firstName,
+      control,
     },
     {
       label: 'Last Name',
-      value: profileData.lastName,
-      name: 'lastname',
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        setProfileData({
-          ...profileData,
-          lastName: event.currentTarget.value,
-        }),
-      inputRef: register,
-    },
-    {
-      label: 'Email',
-      value: profileData.email,
-      name: 'email',
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        setProfileData({
-          ...profileData,
-          email: event.currentTarget.value,
-        }),
-      inputRef: register,
+      name: lastName,
+      control,
     },
     {
       label: 'Password',
-      value: profileData.password,
-      name: 'password',
+      name: password,
+      control,
       type: visiblePassword ? 'text' : 'password',
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        setProfileData({
-          ...profileData,
-          password: event.currentTarget.value,
-        }),
-      inputRef: register,
       InputProps: {
         endAdornment: (
           <InputAdornment position="start">
@@ -126,33 +64,44 @@ const Profile = () => {
         ),
       },
     },
+    {
+      label: 'Email',
+      name: email,
+      control,
+    },
   ];
 
-  const Render = () => (
-    <React.Fragment>
-      <Grid item>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <PageSegment
-            headerTitle="Profile details"
-            headerSubtitle="Review or edit you profile details."
-            headerIcon={FaceIcon as React.FC<React.SVGProps<SVGSVGElement>>}
-            bodyContent={
-              <Grid container spacing={2}>
-                {profileFormFields.map((field) => (
-                  <Grid item md={4} xs={12}>
-                    <TextField variant="outlined" {...field} fullWidth />
-                  </Grid>
-                ))}
+  const profileForm = (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <PageSegment
+        headerTitle="Profile details"
+        headerSubtitle="Review or edit you profile details."
+        headerIcon={FaceIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        bodyContent={
+          <Grid container spacing={2}>
+            {profileFormFields.map((field) => (
+              <Grid item md={4} xs={12}>
+                <Controller
+                  as={<TextField {...field} variant="outlined" fullWidth />}
+                  name={field.name}
+                  control={field.control}
+                />
               </Grid>
-            }
-            bodyActions={
-              <Button variant="contained" type="submit" color="primary">
-                Save
-              </Button>
-            }
-          />
-        </form>
-      </Grid>
+            ))}
+          </Grid>
+        }
+        bodyActions={
+          <Button variant="contained" type="submit" color="primary">
+            Save
+          </Button>
+        }
+      />
+    </form>
+  );
+
+  return (
+    <Grid direction="column" container spacing={2}>
+      <Grid item>{profileForm}</Grid>
       <Grid item>
         <PageSegment
           headerTitle="Remove account"
@@ -167,22 +116,7 @@ const Profile = () => {
           }
         />
       </Grid>
-    </React.Fragment>
-  );
-
-  return (
-    <>
-      <Layout />
-      <Box className={classes.wrapper}>
-        <Box className={classes.contentContainer}>
-          <Box className={classes.content} m={2}>
-            <Grid direction="column" container spacing={2}>
-              <Render />
-            </Grid>
-          </Box>
-        </Box>
-      </Box>
-    </>
+    </Grid>
   );
 };
 

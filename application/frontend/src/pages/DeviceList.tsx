@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Grid,
   Button,
-  Box,
   makeStyles,
   createStyles,
   Theme,
@@ -22,31 +21,9 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { PageSegment } from '../components/PageSegment';
 import { CreateDevice } from './CreateDevice';
-// clean
-import { Layout } from '../parts';
 
-//
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    wrapper: {
-      display: 'flex',
-      flex: '1 1 auto',
-      overflow: 'hidden',
-      paddingTop: 64,
-      [theme.breakpoints.up('lg')]: {
-        paddingLeft: 270,
-      },
-    },
-    contentContainer: {
-      display: 'flex',
-      flex: '1 1 auto',
-      overflow: 'hidden',
-    },
-    content: {
-      flex: '1 1 auto',
-      height: '100%',
-      overflow: 'auto',
-    },
     fab: {
       position: 'fixed',
       bottom: theme.spacing(5),
@@ -54,7 +31,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
-//
 
 const deviceData = [
   {
@@ -135,7 +111,7 @@ const DeviceList = () => {
             variant="contained"
             color="primary"
             component={NavLink}
-            to={`/devices/${device.id}`}
+            to={`/app/devices/${device.id}`}
           >
             Details
           </Button>
@@ -145,29 +121,22 @@ const DeviceList = () => {
   ));
 
   return (
-    <>
-      <Layout />
-      <Box className={classes.wrapper}>
-        <Box className={classes.contentContainer}>
-          <Box className={classes.content} m={2}>
-            <Grid container spacing={2}>
-              {devices}
-            </Grid>
-            <Fab
-              onClick={() => setModalOpen(true)}
-              className={classes.fab}
-              color="primary"
-              aria-label="add"
-            >
-              <AddIcon />
-            </Fab>
-            <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-              <CreateDevice />
-            </Modal>
-          </Box>
-        </Box>
-      </Box>
-    </>
+    <React.Fragment>
+      <Grid container spacing={2}>
+        {devices}
+      </Grid>
+      <Fab
+        onClick={() => setModalOpen(true)}
+        className={classes.fab}
+        color="primary"
+        aria-label="add"
+      >
+        <AddIcon />
+      </Fab>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <CreateDevice />
+      </Modal>
+    </React.Fragment>
   );
 };
 

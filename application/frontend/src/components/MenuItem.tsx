@@ -9,12 +9,9 @@ import {
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 
-interface ItemAttributes {
-  itemPath: string;
-  itemTitle: string;
-  itemIcon: React.FC<React.SVGProps<SVGSVGElement>>;
-}
+import { MenuItemAttributes } from '../types';
 
+//dirty
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     item: {
@@ -33,8 +30,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
+//
 
-const MenuItem = ({ itemPath, itemTitle, itemIcon: Icon }: ItemAttributes) => {
+const MenuItem = ({
+  itemPath,
+  itemTitle,
+  itemIcon: Icon,
+}: MenuItemAttributes) => {
   const classes = useStyles();
   return (
     <ListItem className={classes.item} disableGutters>

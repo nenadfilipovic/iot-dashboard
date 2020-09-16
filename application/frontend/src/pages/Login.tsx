@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import {
   Button,
   Container,
@@ -17,11 +17,7 @@ import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import LockIcon from '@material-ui/icons/Lock';
 
 import { PageSegment } from '../components/PageSegment';
-
-interface LoginAttributes {
-  username: string;
-  password: string;
-}
+import { UserAttributes, UserAttributesCasting } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,59 +27,45 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const Login = () => {
-  const { register, handleSubmit } = useForm<LoginAttributes>();
+const { username, password } = UserAttributesCasting;
 
-  const [loginData, setLoginData] = useState<LoginAttributes>({
-    username: '',
-    password: '',
+const Login = () => {
+  const classes = useStyles();
+
+  const { control, handleSubmit } = useForm<UserAttributes>({
+    defaultValues: { username: '', password: '' },
   });
 
-  const classes = useStyles();
+  const onSubmit = (data: UserAttributes) => console.log(data);
 
   const loginFormFields = [
     {
       label: 'Username',
-      value: loginData.username,
-      name: 'username',
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        setLoginData({
-          ...loginData,
-          username: event.currentTarget.value,
-        }),
-      inputRef: register,
+      name: username,
+      control,
       icon: PermIdentityIcon,
     },
     {
       label: 'Password',
-      value: loginData.password,
-      name: 'password',
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        setLoginData({
-          ...loginData,
-          password: event.currentTarget.value,
-        }),
-      inputRef: register,
+      name: password,
+      control,
       icon: LockIcon,
     },
   ];
 
-  const onSubmit = (data: LoginAttributes) => console.log(data);
-
-  return (
-    <Box className={classes.root}>
-      <Container maxWidth="sm">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <PageSegment
-            headerTitle="Login"
-            headerSubtitle="Please enter your login details."
-            headerIcon={LockOpenIcon as React.FC<React.SVGProps<SVGSVGElement>>}
-            bodyContent={
-              <Grid container direction="column" spacing={2}>
-                {loginFormFields.map((field) => (
-                  <Grid item>
+  const loginForm = (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <PageSegment
+        headerTitle="Login"
+        headerSubtitle="Please enter your login details."
+        headerIcon={LockOpenIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        bodyContent={
+          <Grid container direction="column" spacing={2}>
+            {loginFormFields.map((field) => (
+              <Grid item>
+                <Controller
+                  as={
                     <TextField
-                      variant="outlined"
                       {...field}
                       InputProps={{
                         startAdornment: (
@@ -92,25 +74,34 @@ const Login = () => {
                           </InputAdornment>
                         ),
                       }}
+                      variant="outlined"
                       fullWidth
                     />
-                  </Grid>
-                ))}
+                  }
+                  name={field.name}
+                  control={field.control}
+                />
               </Grid>
-            }
-            bodyActions={
-              <React.Fragment>
-                <Button color="primary" variant="contained" type="submit">
-                  Login
-                </Button>
-                <Button color="primary" component={NavLink} to={'/register'}>
-                  Register
-                </Button>
-              </React.Fragment>
-            }
-          />
-        </form>
-      </Container>
+            ))}
+          </Grid>
+        }
+        bodyActions={
+          <React.Fragment>
+            <Button color="primary" variant="contained" type="submit">
+              Login
+            </Button>
+            <Button color="primary" component={NavLink} to={'/register'}>
+              Register
+            </Button>
+          </React.Fragment>
+        }
+      />
+    </form>
+  );
+
+  return (
+    <Box className={classes.root}>
+      <Container maxWidth="sm">{loginForm}</Container>
     </Box>
   );
 };
