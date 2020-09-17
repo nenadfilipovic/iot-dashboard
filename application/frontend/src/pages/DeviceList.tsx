@@ -13,11 +13,15 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 import AddIcon from '@material-ui/icons/Add';
 import MemoryIcon from '@material-ui/icons/Memory';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
+import InfoIcon from '@material-ui/icons/Info';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 import { PageSegment } from '../components/PageSegment';
 import { CreateDevice } from './CreateDevice';
@@ -33,6 +37,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const deviceData = [
+  {
+    id: '123',
+    deviceName: 'Device-1',
+    deviceTopic: 'home',
+    deviceType: 'esp32',
+    deviceDescription: 'Living room sensor.',
+    deviceCreated: '18:05:03:19-02-2020',
+  },
   {
     id: '123',
     deviceName: 'Device-1',
@@ -84,22 +96,37 @@ const DeviceList = () => {
               onClose={handleClose}
             >
               <MenuItem dense onClick={handleClose}>
-                Delete
+                Remove
               </MenuItem>
             </Menu>
           </React.Fragment>
         }
         bodyContent={
           <List dense>
-            <ListItem divider alignItems="flex-start">
-              <ListItemText primary="Topic" secondary={device.deviceTopic} />
+            <ListItem divider>
+              <ListItemIcon>
+                <SettingsRemoteIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="This is device topic or channel."
+                secondary={device.deviceTopic}
+              />
             </ListItem>
             <ListItem divider>
-              <ListItemText primary="Type" secondary={device.deviceType} />
+              <ListItemIcon>
+                <InfoIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Device type."
+                secondary={device.deviceType}
+              />
             </ListItem>
             <ListItem>
+              <ListItemIcon>
+                <DescriptionIcon />
+              </ListItemIcon>
               <ListItemText
-                primary="Description"
+                primary="Device description, like where is device located."
                 secondary={device.deviceDescription}
               />
             </ListItem>

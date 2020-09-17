@@ -6,6 +6,7 @@ import {
   Paper,
   Typography,
   Button,
+  Box,
 } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}));
@@ -17,14 +18,16 @@ const Home = () => {
 
   const landingPage = (
     <Paper>
-      <Typography variant="h5">
-        Welcome to IOT Dashboard landing page
-      </Typography>
-      <Typography variant="subtitle1">
-        Please consider logging in or registering new account
-      </Typography>
-      <Button>Login</Button>
-      <Button>Register</Button>
+      <Box p={2}>
+        <Typography variant="h4">Welcome back, Nenad.</Typography>
+        <Typography variant="body1">
+          Your last login: 19-09-2020 - 22days ago.
+        </Typography>
+        <Typography variant="subtitle1">Your devices</Typography>
+        <Button>Go to devices</Button>
+        <Typography variant="subtitle1">Your profile</Typography>
+        <Button>Go to profile</Button>
+      </Box>
     </Paper>
   );
 

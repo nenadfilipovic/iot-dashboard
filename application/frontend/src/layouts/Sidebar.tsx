@@ -10,14 +10,14 @@ import {
   Avatar,
   Typography,
   Divider,
-  List,
   makeStyles,
   Theme,
   createStyles,
+  List,
 } from '@material-ui/core';
 
 import avatar from '../assets/images/avatar.svg';
-import { MenuItem } from './MenuItem';
+import { MenuItem } from '../components/MenuItem';
 
 const navigationItems = [
   {
@@ -61,13 +61,18 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'center',
       flexDirection: 'column',
-      padding: '25px 0 15px 0',
+      boxShadow: theme.customProperties.boxShadow,
     },
-    sidebarAvatar: {
+    headerAvatar: {
       width: 75,
       height: 75,
+      border: `3px solid #fff`,
+      margin: '10px',
+      boxShadow: theme.customProperties.boxShadow,
     },
-    sidebarNavigation: {},
+    headerTitle: {
+      fontWeight: theme.typography.fontWeightBold,
+    },
   }),
 );
 
@@ -76,6 +81,7 @@ const user = {
   firstName: 'Nenad',
   lastName: 'Filipovic',
   email: 'nenad@nenad.com',
+  location: 'Serbia',
 };
 
 const Sidebar = ({
@@ -89,13 +95,16 @@ const Sidebar = ({
 
   const sidebarContent = (
     <Box className={classes.sidebarContainer}>
-      <Box className={classes.sidebarHeader}>
-        <Avatar className={classes.sidebarAvatar} src={user.image} />
-        <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
-        <Typography variant="body2">{`${user.email}`}</Typography>
+      <Box className={classes.sidebarHeader} p={2}>
+        <Avatar className={classes.headerAvatar} src={user.image} />
+        <Typography
+          className={classes.headerTitle}
+          variant="h6"
+        >{`${user.firstName} ${user.lastName}`}</Typography>
+        <Typography variant="overline">@username</Typography>
       </Box>
       <Divider />
-      <Box className={classes.sidebarNavigation}>
+      <Box>
         <List>
           {navigationItems.map((item) => (
             <MenuItem
@@ -110,6 +119,7 @@ const Sidebar = ({
       </Box>
     </Box>
   );
+
   return (
     <React.Fragment>
       <Hidden lgUp>

@@ -12,14 +12,7 @@ import {
   Typography,
 } from '@material-ui/core';
 
-interface PageSegmentAttributes {
-  headerTitle: string;
-  headerSubtitle: string;
-  headerIcon: React.FC<React.SVGProps<SVGSVGElement>>;
-  headerActions?: JSX.Element;
-  bodyContent?: JSX.Element;
-  bodyActions?: JSX.Element;
-}
+import { PageSegmentAttributes } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

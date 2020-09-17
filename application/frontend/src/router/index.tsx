@@ -8,11 +8,12 @@ import { Profile } from '../pages/Profile';
 import { Register } from '../pages/Register';
 import { Device } from '../pages/Device';
 import { Dashboard } from '../layouts/Dashboard';
+import { Basic } from '../layouts/Basic';
 
 const routes = [
   {
     path: '/',
-    element: <Dashboard />,
+    element: <Basic />,
     children: [
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },

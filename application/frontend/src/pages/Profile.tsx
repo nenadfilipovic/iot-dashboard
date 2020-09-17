@@ -4,9 +4,6 @@ import {
   Grid,
   TextField,
   Button,
-  makeStyles,
-  Theme,
-  createStyles,
   InputAdornment,
   IconButton,
 } from '@material-ui/core';
@@ -18,13 +15,9 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserAttributesCasting } from '../types';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({}));
-
 const { firstName, lastName, password, email } = UserAttributesCasting;
 
 const Profile = () => {
-  const classes = useStyles();
-
   const { control, handleSubmit } = useForm<UserAttributes>({
     defaultValues: {
       firstName: 'Nenad',

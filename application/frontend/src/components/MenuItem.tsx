@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  ListItem,
   Button,
   createStyles,
   makeStyles,
   Theme,
   Typography,
+  ListItem,
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 
@@ -14,19 +14,22 @@ import { MenuItemAttributes } from '../types';
 //dirty
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    item: {
-      padding: 0,
-      display: 'flex',
+    menuItemButton: {
+      padding: '10px',
     },
-    itemIcon: {
+    menuItemButtonActive: {
+      color: theme.palette.primary.main,
+      '& $icon': {
+        color: theme.palette.primary.main,
+      },
+      backgroundColor: theme.palette.grey[100],
+    },
+    menuItemIcon: {
       marginRight: theme.spacing(1),
     },
-    itemTitle: {
+    menuItemTitle: {
       textTransform: 'none',
-    },
-    itemButton: {
-      padding: '10px 20px',
-      justifyContent: 'flex-start',
+      marginRight: 'auto',
     },
   }),
 );
@@ -38,16 +41,20 @@ const MenuItem = ({
   itemIcon: Icon,
 }: MenuItemAttributes) => {
   const classes = useStyles();
+
   return (
-    <ListItem className={classes.item} disableGutters>
+    <ListItem dense>
       <Button
+        activeClassName={classes.menuItemButtonActive}
+        className={classes.menuItemButton}
         fullWidth
-        className={classes.itemButton}
         component={NavLink}
         to={itemPath}
       >
-        <Icon className={classes.itemIcon} />
-        <Typography className={classes.itemTitle}>{itemTitle}</Typography>
+        <Icon className={classes.menuItemIcon} />
+        <Typography className={classes.menuItemTitle} variant="button">
+          {itemTitle}
+        </Typography>
       </Button>
     </ListItem>
   );

@@ -3,12 +3,14 @@ declare module '@material-ui/core/styles/createMuiTheme' {
     customProperties: {
       sidebarWidth: React.CSSProperties['width'];
       appBarHeight: React.CSSProperties['height'];
+      boxShadow: React.CSSProperties['boxShadow'];
     };
   }
   interface ThemeOptions {
     customProperties?: {
       sidebarWidth?: React.CSSProperties['width'];
       appBarHeight?: React.CSSProperties['height'];
+      boxShadow?: React.CSSProperties['boxShadow'];
     };
   }
 }
@@ -17,7 +19,7 @@ export interface DeviceAttributes {
   deviceName: string;
   deviceTopic: string;
   deviceDescription: string;
-  deviceType: string;
+  deviceType: DeviceTypes;
   deviceCreationDate: string;
 }
 
@@ -33,6 +35,8 @@ export enum DeviceTypesCasting {
   esp32 = 'esp32',
   esp8266 = 'esp8266',
 }
+
+type DeviceTypes = 'esp32' | 'esp8266';
 
 export interface UserAttributes {
   firstName: string;
@@ -54,4 +58,13 @@ export interface MenuItemAttributes {
   itemPath: string;
   itemTitle: string;
   itemIcon: React.FC<React.SVGProps<SVGSVGElement>>;
+}
+
+export interface PageSegmentAttributes {
+  headerTitle: string;
+  headerSubtitle: string;
+  headerIcon: React.FC<React.SVGProps<SVGSVGElement>>;
+  headerActions?: JSX.Element;
+  bodyContent?: JSX.Element;
+  bodyActions?: JSX.Element;
 }

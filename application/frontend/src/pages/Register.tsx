@@ -2,12 +2,8 @@ import React from 'react';
 import {
   Grid,
   Button,
-  makeStyles,
-  Theme,
-  createStyles,
   Container,
   TextField,
-  Box,
   InputAdornment,
 } from '@material-ui/core';
 import { useForm, Controller } from 'react-hook-form';
@@ -30,17 +26,7 @@ const {
   email,
 } = UserAttributesCasting;
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      marginTop: '25px',
-    },
-  }),
-);
-
 const Register = () => {
-  const classes = useStyles();
-
   const { control, handleSubmit } = useForm<UserAttributes>({
     defaultValues: {
       firstName: '',
@@ -132,11 +118,7 @@ const Register = () => {
     </form>
   );
 
-  return (
-    <Box className={classes.root}>
-      <Container maxWidth="sm">{registerForm}</Container>
-    </Box>
-  );
+  return <Container maxWidth="sm">{registerForm}</Container>;
 };
 
 export { Register };

@@ -3,7 +3,6 @@ import { Box, makeStyles, Theme, createStyles } from '@material-ui/core';
 import { Outlet } from 'react-router-dom';
 
 import { Header } from '../components/Header';
-import { Sidebar } from './Sidebar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -16,11 +15,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1 1 auto',
     },
     bodyContainer: { display: 'flex' },
-    sidebarContainer: {
-      [theme.breakpoints.up('lg')]: {
-        flex: '0 1 250px',
-      },
-    },
     contentContainer: {
       flex: '1',
       padding: '20px',
@@ -28,22 +22,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const Dashboard = () => {
+const Basic = () => {
   const classes = useStyles();
 
-  const [isNavOpen, setNavOpen] = useState(false);
-
-  const dashboardContent = (
+  const basicLayoutContent = (
     <Box className={classes.dashboardWrapper}>
       <Box className={classes.dashboardContainer}>
-        <Header onNavOpen={() => setNavOpen(true)} />
+        <Header onNavOpen={() => {}} />
         <Box className={classes.bodyContainer}>
-          <Box className={classes.sidebarContainer}>
-            <Sidebar
-              isNavOpen={isNavOpen}
-              onNavClose={() => setNavOpen(false)}
-            />
-          </Box>
           <Box className={classes.contentContainer}>
             <Outlet />
           </Box>
@@ -52,7 +38,7 @@ const Dashboard = () => {
     </Box>
   );
 
-  return <div>{dashboardContent}</div>;
+  return <div>{basicLayoutContent}</div>;
 };
 
-export { Dashboard };
+export { Basic };

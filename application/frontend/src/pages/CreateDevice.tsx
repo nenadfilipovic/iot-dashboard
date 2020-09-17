@@ -50,7 +50,7 @@ const CreateDevice = () => {
       deviceName: '',
       deviceTopic: '',
       deviceDescription: '',
-      deviceType: '',
+      deviceType: 'esp32',
     },
   });
 

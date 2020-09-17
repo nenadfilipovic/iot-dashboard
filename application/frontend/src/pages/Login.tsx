@@ -4,11 +4,7 @@ import {
   Button,
   Container,
   Grid,
-  Theme,
-  createStyles,
-  makeStyles,
   TextField,
-  Box,
   InputAdornment,
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
@@ -19,19 +15,9 @@ import LockIcon from '@material-ui/icons/Lock';
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserAttributesCasting } from '../types';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      marginTop: '25px',
-    },
-  }),
-);
-
 const { username, password } = UserAttributesCasting;
 
 const Login = () => {
-  const classes = useStyles();
-
   const { control, handleSubmit } = useForm<UserAttributes>({
     defaultValues: { username: '', password: '' },
   });
@@ -99,11 +85,7 @@ const Login = () => {
     </form>
   );
 
-  return (
-    <Box className={classes.root}>
-      <Container maxWidth="sm">{loginForm}</Container>
-    </Box>
-  );
+  return <Container maxWidth="sm">{loginForm}</Container>;
 };
 
 export { Login };
