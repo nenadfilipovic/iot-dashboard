@@ -14,26 +14,31 @@ import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import AlternateEmailIcon from '@material-ui/icons/AlternateEmail';
 import LockIcon from '@material-ui/icons/Lock';
 import PeopleIcon from '@material-ui/icons/People';
+import PublicIcon from '@material-ui/icons/Public';
 
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserAttributesCasting } from '../types';
 
 const {
-  firstName,
-  lastName,
-  username,
-  password,
-  email,
+  userFirstName,
+  userLastName,
+  userUniqueId,
+  userEmail,
+  userCountry,
+  userImage,
+  userPassword,
 } = UserAttributesCasting;
 
 const Register = () => {
   const { control, handleSubmit } = useForm<UserAttributes>({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      username: '',
-      password: '',
-      email: '',
+      userFirstName: '',
+      userLastName: '',
+      userUniqueId: '',
+      userEmail: '',
+      userCountry: '',
+      userImage: '',
+      userPassword: '',
     },
   });
 
@@ -42,33 +47,40 @@ const Register = () => {
   const inputFieldData = [
     {
       label: 'First Name',
-      name: firstName,
+      name: userFirstName,
       control,
       icon: PersonIcon,
     },
     {
       label: 'Last Name',
-      name: lastName,
+      name: userLastName,
       control,
       icon: PeopleIcon,
     },
     {
       label: 'Username',
-      name: username,
+      name: userUniqueId,
       control,
       icon: PermIdentityIcon,
     },
     {
       label: 'Password',
-      name: password,
+      name: userPassword,
       control,
       icon: LockIcon,
     },
     {
       label: 'Email',
-      name: email,
+      name: userEmail,
       control,
       icon: AlternateEmailIcon,
+    },
+    {
+      label: 'Country',
+      name: userCountry,
+      control,
+      icon: PublicIcon,
+      select: true,
     },
   ];
 

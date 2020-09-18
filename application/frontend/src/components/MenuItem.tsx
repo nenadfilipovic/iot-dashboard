@@ -16,11 +16,16 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     menuItemButton: {
       padding: '10px',
+      '& $span': {
+        fontWeight: theme.typography.fontWeightBold,
+      },
     },
     menuItemButtonActive: {
-      color: theme.palette.primary.main,
-      '& $icon': {
-        color: theme.palette.primary.main,
+      '& $span': {
+        color: theme.palette.secondary.main,
+      },
+      '& $svg': {
+        color: theme.palette.secondary.main,
       },
       backgroundColor: theme.palette.grey[100],
     },
@@ -43,7 +48,7 @@ const MenuItem = ({
   const classes = useStyles();
 
   return (
-    <ListItem dense>
+    <ListItem disableGutters dense>
       <Button
         activeClassName={classes.menuItemButtonActive}
         className={classes.menuItemButton}
@@ -52,9 +57,11 @@ const MenuItem = ({
         to={itemPath}
       >
         <Icon className={classes.menuItemIcon} />
-        <Typography className={classes.menuItemTitle} variant="button">
-          {itemTitle}
-        </Typography>
+        <Typography
+          children={itemTitle}
+          className={classes.menuItemTitle}
+          variant="button"
+        />
       </Button>
     </ListItem>
   );

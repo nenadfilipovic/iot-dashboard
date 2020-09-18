@@ -1,16 +1,14 @@
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
-    customProperties: {
+    custom: {
       sidebarWidth: React.CSSProperties['width'];
-      appBarHeight: React.CSSProperties['height'];
-      boxShadow: React.CSSProperties['boxShadow'];
+      sidebarBackgroundColor: React.CSSProperties['backgroundColor'];
     };
   }
   interface ThemeOptions {
-    customProperties?: {
+    custom?: {
       sidebarWidth?: React.CSSProperties['width'];
-      appBarHeight?: React.CSSProperties['height'];
-      boxShadow?: React.CSSProperties['boxShadow'];
+      sidebarBackgroundColor?: React.CSSProperties['backgroundColor'];
     };
   }
 }
@@ -39,19 +37,24 @@ export enum DeviceTypesCasting {
 type DeviceTypes = 'esp32' | 'esp8266';
 
 export interface UserAttributes {
-  firstName: string;
-  lastName: string;
-  username: string;
-  password: string;
-  email: string;
+  userFirstName: string;
+  userLastName: string;
+  userUniqueId: string;
+  userPassword?: string;
+  userEmail: string;
+  userCountry: string;
+  userImage: string;
+  userLastLogin: string;
 }
 
 export enum UserAttributesCasting {
-  firstName = 'firstName',
-  lastName = 'lastName',
-  username = 'username',
-  password = 'password',
-  email = 'email',
+  userFirstName = 'userFirstName',
+  userLastName = 'userLastName',
+  userUniqueId = 'userUniqueId',
+  userPassword = 'userPassword',
+  userEmail = 'userEmail',
+  userCountry = 'userCountry',
+  userImage = 'userImage',
 }
 
 export interface MenuItemAttributes {

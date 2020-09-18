@@ -15,15 +15,21 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserAttributesCasting } from '../types';
 
-const { firstName, lastName, password, email } = UserAttributesCasting;
+const {
+  userFirstName,
+  userLastName,
+  userPassword,
+  userEmail,
+  userImage,
+} = UserAttributesCasting;
 
 const Profile = () => {
   const { control, handleSubmit } = useForm<UserAttributes>({
     defaultValues: {
-      firstName: 'Nenad',
-      lastName: 'Filipovic',
-      password: 'nenad123',
-      email: 'nenad@nenad.com',
+      userFirstName: 'Nenad',
+      userLastName: 'Filipovic',
+      userPassword: 'nenad123',
+      userEmail: 'nenad@nenad.com',
     },
   });
 
@@ -34,17 +40,17 @@ const Profile = () => {
   const profileFormFields = [
     {
       label: 'First Name',
-      name: firstName,
+      name: userFirstName,
       control,
     },
     {
       label: 'Last Name',
-      name: lastName,
+      name: userLastName,
       control,
     },
     {
       label: 'Password',
-      name: password,
+      name: userPassword,
       control,
       type: visiblePassword ? 'text' : 'password',
       InputProps: {
@@ -59,7 +65,7 @@ const Profile = () => {
     },
     {
       label: 'Email',
-      name: email,
+      name: userEmail,
       control,
     },
   ];

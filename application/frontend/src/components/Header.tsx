@@ -9,8 +9,7 @@ import {
   createStyles,
 } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
-
-import { Logo } from './Logo';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,18 +22,16 @@ const useStyles = makeStyles((theme: Theme) =>
 const Header = ({ onNavOpen }: { onNavOpen: () => void }) => {
   const classes = useStyles();
   return (
-    <AppBar position="relative">
+    <AppBar color="transparent" elevation={0} position="relative">
       <Toolbar>
-        <Logo />
         <Hidden lgUp>
-          <IconButton
-            onClick={onNavOpen}
-            className={classes.menuButton}
-            color="inherit"
-          >
+          <IconButton onClick={onNavOpen}>
             <ViewListIcon />
           </IconButton>
         </Hidden>
+        <IconButton className={classes.menuButton} onClick={() => {}}>
+          <ExitToAppIcon />
+        </IconButton>
       </Toolbar>
     </AppBar>
   );

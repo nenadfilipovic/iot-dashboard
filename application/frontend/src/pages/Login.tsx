@@ -15,11 +15,11 @@ import LockIcon from '@material-ui/icons/Lock';
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserAttributesCasting } from '../types';
 
-const { username, password } = UserAttributesCasting;
+const { userUniqueId, userPassword } = UserAttributesCasting;
 
 const Login = () => {
   const { control, handleSubmit } = useForm<UserAttributes>({
-    defaultValues: { username: '', password: '' },
+    defaultValues: { userUniqueId: '', userPassword: '' },
   });
 
   const onSubmit = (data: UserAttributes) => console.log(data);
@@ -27,13 +27,13 @@ const Login = () => {
   const loginFormFields = [
     {
       label: 'Username',
-      name: username,
+      name: userUniqueId,
       control,
       icon: PermIdentityIcon,
     },
     {
       label: 'Password',
-      name: password,
+      name: userPassword,
       control,
       icon: LockIcon,
     },

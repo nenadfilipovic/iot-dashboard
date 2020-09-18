@@ -2,22 +2,25 @@ import React from 'react';
 import InsertChartIcon from '@material-ui/icons/InsertChart';
 import MemoryIcon from '@material-ui/icons/Memory';
 import FaceIcon from '@material-ui/icons/Face';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { NavLink } from 'react-router-dom';
 import {
   Hidden,
   Drawer,
   Box,
-  Avatar,
   Typography,
   Divider,
   makeStyles,
   Theme,
   createStyles,
   List,
+  Link,
 } from '@material-ui/core';
 
 import avatar from '../assets/images/avatar.svg';
 import { MenuItem } from '../components/MenuItem';
+import { Logo } from '../components/Logo';
+import { UserAvatar } from '../components/UserAvatar';
+import { UserAttributes } from '../types';
 
 const navigationItems = [
   {
@@ -35,40 +38,21 @@ const navigationItems = [
     itemTitle: 'Profile',
     itemIcon: FaceIcon,
   },
-  {
-    itemPath: '/logout',
-    itemTitle: 'Logout',
-    itemIcon: ExitToAppIcon,
-  },
 ];
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    desktopSidebar: {
-      zIndex: 0,
-      width: theme.customProperties.sidebarWidth,
-      top: theme.customProperties.appBarHeight,
-      height: `calc(100%-${theme.customProperties.appBarHeight})`,
-    },
-    mobileSidebar: {
-      width: theme.customProperties.sidebarWidth,
-    },
-    sidebarContainer: {
+    sidebarContent: {
+      backgroundColor: theme.custom.sidebarBackgroundColor,
+      width: theme.custom.sidebarWidth,
       display: 'flex',
       flexDirection: 'column',
+      height: '100%',
     },
     sidebarHeader: {
       display: 'flex',
-      alignItems: 'center',
       flexDirection: 'column',
-      boxShadow: theme.customProperties.boxShadow,
-    },
-    headerAvatar: {
-      width: 75,
-      height: 75,
-      border: `3px solid #fff`,
-      margin: '10px',
-      boxShadow: theme.customProperties.boxShadow,
+      padding: '0 16px 16px 16px',
     },
     headerTitle: {
       fontWeight: theme.typography.fontWeightBold,
@@ -76,13 +60,17 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const user = {
-  image: avatar,
-  firstName: 'Nenad',
-  lastName: 'Filipovic',
-  email: 'nenad@nenad.com',
-  location: 'Serbia',
+// replace with global state
+const userData: UserAttributes = {
+  userImage: avatar,
+  userFirstName: 'Nenad',
+  userLastName: 'Filipovic',
+  userUniqueId: 'nenadfilipovic',
+  userEmail: 'nenad@nenad.com',
+  userCountry: 'Serbia',
+  userLastLogin: '18/09/2020',
 };
+//
 
 const Sidebar = ({
   isNavOpen,
@@ -94,18 +82,59 @@ const Sidebar = ({
   const classes = useStyles();
 
   const sidebarContent = (
-    <Box className={classes.sidebarContainer}>
-      <Box className={classes.sidebarHeader} p={2}>
-        <Avatar className={classes.headerAvatar} src={user.image} />
-        <Typography
-          className={classes.headerTitle}
-          variant="h6"
-        >{`${user.firstName} ${user.lastName}`}</Typography>
-        <Typography variant="overline">@username</Typography>
+    <Box className={classes.sidebarContent}>
+      <Box className={classes.sidebarHeader}>
+        <Logo />
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          margin={'50px 0 50px 0'}
+        >
+          <UserAvatar image={userData.userImage} />
+          <Typography
+            children={`${userData.userFirstName} ${userData.userLastName}`}
+            className={classes.headerTitle}
+            variant="h5"
+          />
+          <Link underline="none" component={NavLink} to="/app/profile">
+            <Typography
+              children={userData.userUniqueId}
+              color="secondary"
+              variant="body2"
+            />
+          </Link>
+        </Box>
+        <Box textAlign="center" display="flex" justifyContent="space-around">
+          <Box>
+            <Typography
+              children={'Location'}
+              className={classes.headerTitle}
+              variant="body2"
+            />
+            <Typography
+              children={userData.userCountry}
+              color="textSecondary"
+              variant="body2"
+            />
+          </Box>
+          <Box>
+            <Typography
+              children={'Last login'}
+              className={classes.headerTitle}
+              variant="body2"
+            />
+            <Typography
+              children={userData.userLastLogin}
+              color="textSecondary"
+              variant="body2"
+            />
+          </Box>
+        </Box>
       </Box>
       <Divider />
-      <Box>
-        <List>
+      <Box p={2}>
+        <List disablePadding>
           {navigationItems.map((item) => (
             <MenuItem
               itemIcon={
@@ -123,21 +152,12 @@ const Sidebar = ({
   return (
     <React.Fragment>
       <Hidden lgUp>
-        <Drawer
-          classes={{ paper: classes.mobileSidebar }}
-          variant="temporary"
-          open={isNavOpen}
-          onClose={onNavClose}
-        >
+        <Drawer variant="temporary" open={isNavOpen} onClose={onNavClose}>
           {sidebarContent}
         </Drawer>
       </Hidden>
       <Hidden mdDown>
-        <Drawer
-          open
-          classes={{ paper: classes.desktopSidebar }}
-          variant="persistent"
-        >
+        <Drawer open variant="persistent">
           {sidebarContent}
         </Drawer>
       </Hidden>

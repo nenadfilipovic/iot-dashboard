@@ -1,30 +1,51 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-const boxShadow = '0 0 10px 3px rgba(162, 161, 161, 0.3)';
-
-const theme = createMuiTheme({
-  palette: {
-    background: {
-      default: '#EBEBEB',
-    },
-    primary: {
-      main: '#101820FF',
+const themeSettings = {
+  colors: {
+    main: '#3E3E3E',
+    secondary: '#FE5676',
+    background: '#ffffff',
+    divider: '#EBEBEB',
+    text: {
+      primary: '#3E3E3E',
+      secondary: '#A0A3A7',
     },
   },
   typography: {
-    fontFamily: '"Nunito", sans-serif',
+    fontFamily: 'Raleway',
   },
-  customProperties: {
-    sidebarWidth: '250px',
-    appBarHeight: '64px',
-    boxShadow: boxShadow,
+  custom: {
+    sidebarWidth: 300,
+    sidebarBackgroundColor: '#fbfbfb',
   },
-  overrides: {
-    MuiPaper: {
-      elevation1: {
-        boxShadow: boxShadow,
-      },
+};
+
+const { colors, typography, custom } = themeSettings;
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: colors.main,
     },
+    secondary: {
+      main: colors.secondary,
+    },
+    divider: colors.divider,
+    background: {
+      default: colors.background,
+    },
+    text: colors.text,
+  },
+  custom: custom,
+  typography: typography,
+  props: {
+    MuiButtonBase: {
+      disableRipple: true,
+    },
+    MuiSvgIcon: {
+      color: 'primary',
+    },
+    MuiPaper: { variant: 'outlined' },
   },
 });
 

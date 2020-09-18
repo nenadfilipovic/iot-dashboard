@@ -7,23 +7,10 @@ import { Sidebar } from './Sidebar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    dashboardWrapper: {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-    },
-    dashboardContainer: {
-      flex: '1 1 auto',
-    },
-    bodyContainer: { display: 'flex' },
     sidebarContainer: {
       [theme.breakpoints.up('lg')]: {
-        flex: '0 1 250px',
+        flex: '0 1 300px',
       },
-    },
-    contentContainer: {
-      flex: '1',
-      padding: '20px',
     },
   }),
 );
@@ -34,17 +21,14 @@ const Dashboard = () => {
   const [isNavOpen, setNavOpen] = useState(false);
 
   const dashboardContent = (
-    <Box className={classes.dashboardWrapper}>
-      <Box className={classes.dashboardContainer}>
-        <Header onNavOpen={() => setNavOpen(true)} />
-        <Box className={classes.bodyContainer}>
-          <Box className={classes.sidebarContainer}>
-            <Sidebar
-              isNavOpen={isNavOpen}
-              onNavClose={() => setNavOpen(false)}
-            />
-          </Box>
-          <Box className={classes.contentContainer}>
+    <Box width="100%" height="100%" display="flex">
+      <Box display="flex" flex="1 1 auto">
+        <Box className={classes.sidebarContainer}>
+          <Sidebar isNavOpen={isNavOpen} onNavClose={() => setNavOpen(false)} />
+        </Box>
+        <Box flex="1">
+          <Header onNavOpen={() => setNavOpen(true)} />
+          <Box p={2}>
             <Outlet />
           </Box>
         </Box>

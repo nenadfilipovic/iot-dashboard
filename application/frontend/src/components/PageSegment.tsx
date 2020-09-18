@@ -5,7 +5,6 @@ import {
   CardContent,
   CardActions,
   Divider,
-  Avatar,
   makeStyles,
   Theme,
   createStyles,
@@ -16,12 +15,12 @@ import { PageSegmentAttributes } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    avatar: {
-      backgroundColor: theme.palette.primary.main,
-    },
     headerActions: {
       margin: 0,
       alignSelf: 'center',
+    },
+    headerTitle: {
+      fontWeight: theme.typography.fontWeightBold,
     },
     bodyActions: {
       padding: '16px',
@@ -44,13 +43,15 @@ const PageSegment = ({
     <Card>
       <CardHeader
         classes={{ action: classes.headerActions }}
-        title={<Typography variant="subtitle1">{headerTitle}</Typography>}
-        subheader={headerSubtitle}
-        avatar={
-          <Avatar className={classes.avatar}>
-            <Icon />
-          </Avatar>
+        title={
+          <Typography
+            className={classes.headerTitle}
+            children={headerTitle}
+            variant="subtitle1"
+          />
         }
+        subheader={headerSubtitle}
+        avatar={<Icon />}
         action={<React.Fragment>{headerActions}</React.Fragment>}
       />
       {bodyContent && (

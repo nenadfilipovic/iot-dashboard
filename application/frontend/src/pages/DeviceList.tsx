@@ -95,9 +95,7 @@ const DeviceList = () => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem dense onClick={handleClose}>
-                Remove
-              </MenuItem>
+              <MenuItem children={'Remove'} dense onClick={handleClose} />
             </Menu>
           </React.Fragment>
         }
@@ -152,12 +150,7 @@ const DeviceList = () => {
       <Grid container spacing={2}>
         {devices}
       </Grid>
-      <Fab
-        onClick={() => setModalOpen(true)}
-        className={classes.fab}
-        color="primary"
-        aria-label="add"
-      >
+      <Fab onClick={() => setModalOpen(true)} className={classes.fab}>
         <AddIcon />
       </Fab>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
