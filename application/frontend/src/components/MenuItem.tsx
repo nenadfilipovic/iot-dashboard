@@ -11,17 +11,13 @@ import { NavLink } from 'react-router-dom';
 
 import { MenuItemAttributes } from '../types';
 
-//dirty
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     menuItemButton: {
       padding: '10px',
-      '& $span': {
-        fontWeight: theme.typography.fontWeightBold,
-      },
     },
     menuItemButtonActive: {
-      '& $span': {
+      '& $p': {
         color: theme.palette.secondary.main,
       },
       '& $svg': {
@@ -33,12 +29,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
     },
     menuItemTitle: {
-      textTransform: 'none',
       marginRight: 'auto',
     },
   }),
 );
-//
 
 const MenuItem = ({
   itemPath,
@@ -60,7 +54,7 @@ const MenuItem = ({
         <Typography
           children={itemTitle}
           className={classes.menuItemTitle}
-          variant="button"
+          variant="body1"
         />
       </Button>
     </ListItem>

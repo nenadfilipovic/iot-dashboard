@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, createStyles, makeStyles, Theme } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import {
   LineChart,
   CartesianGrid,
@@ -11,24 +11,7 @@ import {
   Legend,
 } from 'recharts';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    chartWrapper: {
-      position: 'relative',
-      width: '100%',
-      paddingBottom: '400px',
-    },
-    chartContainer: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      top: 0,
-    },
-  }),
-);
-
-// Mock data
+// TODO Replace with global state
 const data = [
   { time: '2015-03-25', temperature: 33, pressure: 1005, humidity: 55 },
   { time: '2015-03-26', temperature: 32, pressure: 1025, humidity: 33 },
@@ -55,25 +38,27 @@ const dataOptions = [
 ];
 
 const Chart = () => {
-  const classes = useStyles();
-
   const renderLines = dataOptions.map((item) => (
     <Line type="monotone" dataKey={item.name} stroke={item.color} />
   ));
 
+  const chartContent = (
+    <ResponsiveContainer height={400}>
+      <LineChart data={data}>
+        <CartesianGrid stroke="#EBEBEB" />
+        <XAxis dataKey="time" />
+        {renderLines}
+        <YAxis width={35} />
+        <Tooltip />
+        <Legend iconSize={10} iconType="circle" />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+
   return (
-    <Box className={classes.chartWrapper}>
-      <Box className={classes.chartContainer}>
-        <ResponsiveContainer height={400}>
-          <LineChart data={data}>
-            <CartesianGrid stroke="#EBEBEB" />
-            <XAxis dataKey="time" />
-            {renderLines}
-            <YAxis width={35} />
-            <Tooltip />
-            <Legend iconSize={10} iconType="circle" />
-          </LineChart>
-        </ResponsiveContainer>
+    <Box position="relative" width="100%" paddingBottom="400px">
+      <Box position="absolute" top="0" right="0" bottom="0" left="0">
+        {chartContent}
       </Box>
     </Box>
   );

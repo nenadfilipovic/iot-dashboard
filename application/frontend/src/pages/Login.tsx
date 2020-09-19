@@ -13,7 +13,11 @@ import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import LockIcon from '@material-ui/icons/Lock';
 
 import { PageSegment } from '../components/PageSegment';
-import { UserAttributes, UserAttributesCasting } from '../types';
+import {
+  UserAttributes,
+  UserAttributesCasting,
+  ReactIconComponent,
+} from '../types';
 
 const { userUniqueId, userPassword } = UserAttributesCasting;
 
@@ -44,7 +48,7 @@ const Login = () => {
       <PageSegment
         headerTitle="Login"
         headerSubtitle="Please enter your login details."
-        headerIcon={LockOpenIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        headerIcon={LockOpenIcon as ReactIconComponent}
         bodyContent={
           <Grid container direction="column" spacing={2}>
             {loginFormFields.map((field) => (

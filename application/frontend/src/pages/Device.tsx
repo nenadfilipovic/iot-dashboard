@@ -6,14 +6,18 @@ import InfoIcon from '@material-ui/icons/Info';
 
 import { Chart } from '../components/Chart';
 import { PageSegment } from '../components/PageSegment';
-import { DeviceAttributes, DeviceAttributesCasting } from '../types';
+import {
+  DeviceAttributes,
+  DeviceAttributesCasting,
+  ReactIconComponent,
+} from '../types';
 
 const {
   deviceName,
   deviceTopic,
   deviceDescription,
   deviceType,
-  deviceCreationDate,
+  deviceCreatedDate,
 } = DeviceAttributesCasting;
 
 const Device = () => {
@@ -25,7 +29,7 @@ const Device = () => {
       deviceTopic: 'home',
       deviceType: 'esp32',
       deviceDescription: 'Sensor from living room',
-      deviceCreationDate: new Date().toLocaleString(),
+      deviceCreatedDate: new Date().toLocaleString(),
     },
   });
 
@@ -55,7 +59,7 @@ const Device = () => {
     },
     {
       label: 'Created',
-      name: deviceCreationDate,
+      name: deviceCreatedDate,
       control,
       disabled: true,
     },
@@ -85,7 +89,7 @@ const Device = () => {
       <PageSegment
         headerTitle="Information"
         headerSubtitle="You can review or edit your device properties here."
-        headerIcon={InfoIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        headerIcon={InfoIcon as ReactIconComponent}
         bodyContent={
           <Grid container spacing={2}>
             {deviceFormFields.map((field) => (
@@ -118,7 +122,7 @@ const Device = () => {
         <PageSegment
           headerTitle="Readings"
           headerSubtitle="Check data readings from your device."
-          headerIcon={TimelineIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+          headerIcon={TimelineIcon as ReactIconComponent}
           bodyContent={<Chart />}
         />
       </Grid>

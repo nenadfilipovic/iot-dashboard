@@ -20,7 +20,7 @@ import avatar from '../assets/images/avatar.svg';
 import { MenuItem } from '../components/MenuItem';
 import { Logo } from '../components/Logo';
 import { UserAvatar } from '../components/UserAvatar';
-import { UserAttributes } from '../types';
+import { UserAttributes, ReactIconComponent } from '../types';
 
 const navigationItems = [
   {
@@ -45,30 +45,20 @@ const useStyles = makeStyles((theme: Theme) =>
     sidebarContent: {
       backgroundColor: theme.custom.sidebarBackgroundColor,
       width: theme.custom.sidebarWidth,
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-    },
-    sidebarHeader: {
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '0 16px 16px 16px',
-    },
-    headerTitle: {
-      fontWeight: theme.typography.fontWeightBold,
     },
   }),
 );
 
-// replace with global state
+// TODO replace with global state
 const userData: UserAttributes = {
   userImage: avatar,
   userFirstName: 'Nenad',
   userLastName: 'Filipovic',
   userUniqueId: 'nenadfilipovic',
   userEmail: 'nenad@nenad.com',
-  userCountry: 'Serbia',
-  userLastLogin: '18/09/2020',
+  userLocation: 'Serbia',
+  userLastLogin: '2 days ago',
+  userCreatedAccount: '18/09/2020',
 };
 //
 
@@ -82,8 +72,13 @@ const Sidebar = ({
   const classes = useStyles();
 
   const sidebarContent = (
-    <Box className={classes.sidebarContent}>
-      <Box className={classes.sidebarHeader}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      className={classes.sidebarContent}
+    >
+      <Box display="flex" flexDirection="column" padding="0 16px 16px 16px">
         <Logo />
         <Box
           display="flex"
@@ -94,7 +89,6 @@ const Sidebar = ({
           <UserAvatar image={userData.userImage} />
           <Typography
             children={`${userData.userFirstName} ${userData.userLastName}`}
-            className={classes.headerTitle}
             variant="h5"
           />
           <Link underline="none" component={NavLink} to="/app/profile">
@@ -107,23 +101,16 @@ const Sidebar = ({
         </Box>
         <Box textAlign="center" display="flex" justifyContent="space-around">
           <Box>
+            <Typography children={'Location'} variant="body1" />
             <Typography
-              children={'Location'}
-              className={classes.headerTitle}
-              variant="body2"
-            />
-            <Typography
-              children={userData.userCountry}
+              children={userData.userLocation}
               color="textSecondary"
               variant="body2"
             />
           </Box>
+          <Divider orientation="vertical" />
           <Box>
-            <Typography
-              children={'Last login'}
-              className={classes.headerTitle}
-              variant="body2"
-            />
+            <Typography children={'Last login'} variant="body1" />
             <Typography
               children={userData.userLastLogin}
               color="textSecondary"
@@ -137,9 +124,7 @@ const Sidebar = ({
         <List disablePadding>
           {navigationItems.map((item) => (
             <MenuItem
-              itemIcon={
-                item.itemIcon as React.FC<React.SVGProps<SVGSVGElement>>
-              }
+              itemIcon={item.itemIcon as ReactIconComponent}
               itemPath={item.itemPath}
               itemTitle={item.itemTitle}
             />

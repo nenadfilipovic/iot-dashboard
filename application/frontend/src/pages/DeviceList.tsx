@@ -25,6 +25,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 
 import { PageSegment } from '../components/PageSegment';
 import { CreateDevice } from './CreateDevice';
+import { DeviceAttributes, ReactIconComponent } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,30 +37,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const deviceData = [
+const deviceData: DeviceAttributes[] = [
   {
-    id: '123',
+    deviceId: '123',
     deviceName: 'Device-1',
     deviceTopic: 'home',
     deviceType: 'esp32',
     deviceDescription: 'Living room sensor.',
-    deviceCreated: '18:05:03:19-02-2020',
-  },
-  {
-    id: '123',
-    deviceName: 'Device-1',
-    deviceTopic: 'home',
-    deviceType: 'esp32',
-    deviceDescription: 'Living room sensor.',
-    deviceCreated: '18:05:03:19-02-2020',
-  },
-  {
-    id: '123',
-    deviceName: 'Device-1',
-    deviceTopic: 'home',
-    deviceType: 'esp32',
-    deviceDescription: 'Living room sensor.',
-    deviceCreated: '18:05:03:19-02-2020',
+    deviceCreatedDate: '18:05:03:19-02-2020',
   },
 ];
 
@@ -78,8 +63,8 @@ const DeviceList = () => {
     <Grid item xs={12} sm={6} md={4}>
       <PageSegment
         headerTitle={device.deviceName}
-        headerSubtitle={device.deviceCreated}
-        headerIcon={MemoryIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        headerSubtitle={device.deviceCreatedDate}
+        headerIcon={MemoryIcon as ReactIconComponent}
         headerActions={
           <React.Fragment>
             <IconButton
@@ -136,7 +121,7 @@ const DeviceList = () => {
             variant="contained"
             color="primary"
             component={NavLink}
-            to={`/app/devices/${device.id}`}
+            to={`/app/devices/${device.deviceId}`}
           >
             Details
           </Button>

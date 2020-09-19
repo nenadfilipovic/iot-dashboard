@@ -17,6 +17,7 @@ import {
   DeviceAttributes,
   DeviceAttributesCasting,
   DeviceTypesCasting,
+  ReactIconComponent,
 } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -86,7 +87,7 @@ const CreateDevice = () => {
       <PageSegment
         headerTitle="Add new device"
         headerSubtitle="Please enter data for device you want to create."
-        headerIcon={MemoryIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        headerIcon={MemoryIcon as ReactIconComponent}
         bodyContent={
           <Grid container direction="column" spacing={2}>
             {createDeviceFormFields.map((field) => (

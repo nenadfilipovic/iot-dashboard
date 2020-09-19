@@ -13,12 +13,15 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
+export type ReactIconComponent = React.FC<React.SVGProps<SVGSVGElement>>;
+
 export interface DeviceAttributes {
+  deviceId: string;
   deviceName: string;
   deviceTopic: string;
   deviceDescription: string;
   deviceType: DeviceTypes;
-  deviceCreationDate: string;
+  deviceCreatedDate: string;
 }
 
 export enum DeviceAttributesCasting {
@@ -26,7 +29,7 @@ export enum DeviceAttributesCasting {
   deviceTopic = 'deviceTopic',
   deviceDescription = 'deviceDescription',
   deviceType = 'deviceType',
-  deviceCreationDate = 'deviceCreationDate',
+  deviceCreatedDate = 'deviceCreatedDate',
 }
 
 export enum DeviceTypesCasting {
@@ -42,9 +45,10 @@ export interface UserAttributes {
   userUniqueId: string;
   userPassword?: string;
   userEmail: string;
-  userCountry: string;
   userImage: string;
+  userLocation: string;
   userLastLogin: string;
+  userCreatedAccount: string;
 }
 
 export enum UserAttributesCasting {
@@ -53,20 +57,20 @@ export enum UserAttributesCasting {
   userUniqueId = 'userUniqueId',
   userPassword = 'userPassword',
   userEmail = 'userEmail',
-  userCountry = 'userCountry',
   userImage = 'userImage',
+  userLocation = 'userLocation',
 }
 
 export interface MenuItemAttributes {
   itemPath: string;
   itemTitle: string;
-  itemIcon: React.FC<React.SVGProps<SVGSVGElement>>;
+  itemIcon: ReactIconComponent;
 }
 
 export interface PageSegmentAttributes {
   headerTitle: string;
   headerSubtitle: string;
-  headerIcon: React.FC<React.SVGProps<SVGSVGElement>>;
+  headerIcon: ReactIconComponent;
   headerActions?: JSX.Element;
   bodyContent?: JSX.Element;
   bodyActions?: JSX.Element;

@@ -13,7 +13,11 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import { PageSegment } from '../components/PageSegment';
-import { UserAttributes, UserAttributesCasting } from '../types';
+import {
+  UserAttributes,
+  UserAttributesCasting,
+  ReactIconComponent,
+} from '../types';
 
 const {
   userFirstName,
@@ -75,7 +79,7 @@ const Profile = () => {
       <PageSegment
         headerTitle="Profile details"
         headerSubtitle="Review or edit you profile details."
-        headerIcon={FaceIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        headerIcon={FaceIcon as ReactIconComponent}
         bodyContent={
           <Grid container spacing={2}>
             {profileFormFields.map((field) => (
@@ -105,9 +109,7 @@ const Profile = () => {
         <PageSegment
           headerTitle="Remove account"
           headerSubtitle="With this option you can disable your account."
-          headerIcon={
-            HighlightOffIcon as React.FC<React.SVGProps<SVGSVGElement>>
-          }
+          headerIcon={HighlightOffIcon as ReactIconComponent}
           bodyActions={
             <Button variant="contained" color="primary">
               Delete

@@ -19,9 +19,6 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: 0,
       alignSelf: 'center',
     },
-    headerTitle: {
-      fontWeight: theme.typography.fontWeightBold,
-    },
     bodyActions: {
       padding: '16px',
       justifyContent: 'flex-end',
@@ -43,14 +40,14 @@ const PageSegment = ({
     <Card>
       <CardHeader
         classes={{ action: classes.headerActions }}
-        title={
+        title={<Typography children={headerTitle} variant="body1" />}
+        subheader={
           <Typography
-            className={classes.headerTitle}
-            children={headerTitle}
-            variant="subtitle1"
+            color="textSecondary"
+            children={headerSubtitle}
+            variant="body2"
           />
         }
-        subheader={headerSubtitle}
         avatar={<Icon />}
         action={<React.Fragment>{headerActions}</React.Fragment>}
       />

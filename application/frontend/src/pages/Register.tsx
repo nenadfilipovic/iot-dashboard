@@ -17,14 +17,18 @@ import PeopleIcon from '@material-ui/icons/People';
 import PublicIcon from '@material-ui/icons/Public';
 
 import { PageSegment } from '../components/PageSegment';
-import { UserAttributes, UserAttributesCasting } from '../types';
+import {
+  UserAttributes,
+  UserAttributesCasting,
+  ReactIconComponent,
+} from '../types';
 
 const {
   userFirstName,
   userLastName,
   userUniqueId,
   userEmail,
-  userCountry,
+  userLocation,
   userImage,
   userPassword,
 } = UserAttributesCasting;
@@ -36,7 +40,7 @@ const Register = () => {
       userLastName: '',
       userUniqueId: '',
       userEmail: '',
-      userCountry: '',
+      userLocation: '',
       userImage: '',
       userPassword: '',
     },
@@ -77,7 +81,7 @@ const Register = () => {
     },
     {
       label: 'Country',
-      name: userCountry,
+      name: userLocation,
       control,
       icon: PublicIcon,
       select: true,
@@ -89,7 +93,7 @@ const Register = () => {
       <PageSegment
         headerTitle="Register"
         headerSubtitle="Please enter your data to register new account."
-        headerIcon={VpnKeyIcon as React.FC<React.SVGProps<SVGSVGElement>>}
+        headerIcon={VpnKeyIcon as ReactIconComponent}
         bodyContent={
           <Grid container direction="column" spacing={2}>
             {inputFieldData.map((field) => (

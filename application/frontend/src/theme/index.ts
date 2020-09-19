@@ -8,11 +8,17 @@ const themeSettings = {
     divider: '#EBEBEB',
     text: {
       primary: '#3E3E3E',
-      secondary: '#A0A3A7',
+      secondary: '#AAAAAA',
     },
   },
   typography: {
-    fontFamily: 'Raleway',
+    fontFamily: '"Work Sans", sans-serif',
+    h5: {
+      fontWeight: 500,
+    },
+    body2: {
+      fontWeight: 300,
+    },
   },
   custom: {
     sidebarWidth: 300,

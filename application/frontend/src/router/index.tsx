@@ -9,6 +9,7 @@ import { Register } from '../pages/Register';
 import { Device } from '../pages/Device';
 import { Dashboard } from '../layouts/Dashboard';
 import { Basic } from '../layouts/Basic';
+import { NotFound } from '../pages/NotFound';
 
 const routes = [
   {
@@ -17,7 +18,7 @@ const routes = [
     children: [
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
-      { path: '404', element: 'not found' },
+      { path: '404', element: <NotFound /> },
       { path: '/', element: <Navigate to="/app/home" /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],
