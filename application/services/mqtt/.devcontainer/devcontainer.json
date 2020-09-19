@@ -8,7 +8,8 @@
   "settings": {
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
-    "extensions.ignoreRecommendations": true
+    "extensions.ignoreRecommendations": true,
+    "editor.formatOnSaveMode": "modifications"
   },
   "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
   "forwardPorts": [],

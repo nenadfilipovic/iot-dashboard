@@ -1,11 +1,15 @@
 {
   "name": "Device-Service",
   "service": "device-service",
-  "dockerComposeFile": ["../../../../docker-compose.yml", "../../../../docker-compose.dev.yml"],
+  "dockerComposeFile": [
+    "../../../../docker-compose.yml",
+    "../../../../docker-compose.dev.yml"
+  ],
   "settings": {
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
-    "extensions.ignoreRecommendations": true
+    "extensions.ignoreRecommendations": true,
+    "editor.formatOnSaveMode": "modifications"
   },
   "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
   "forwardPorts": [3002],
