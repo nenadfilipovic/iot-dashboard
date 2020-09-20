@@ -3,12 +3,14 @@ declare module '@material-ui/core/styles/createMuiTheme' {
     custom: {
       sidebarWidth: React.CSSProperties['width'];
       sidebarBackgroundColor: React.CSSProperties['backgroundColor'];
+      shadow: React.CSSProperties['boxShadow'];
     };
   }
   interface ThemeOptions {
     custom?: {
       sidebarWidth?: React.CSSProperties['width'];
       sidebarBackgroundColor?: React.CSSProperties['backgroundColor'];
+      shadow?: React.CSSProperties['boxShadow'];
     };
   }
 }

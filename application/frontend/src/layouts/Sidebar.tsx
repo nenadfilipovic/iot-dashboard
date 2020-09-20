@@ -99,7 +99,7 @@ const Sidebar = ({
             />
           </Link>
         </Box>
-        <Box textAlign="center" display="flex" justifyContent="space-around">
+        <Box textAlign="center" display="flex" justifyContent="space-evenly">
           <Box>
             <Typography children={'Location'} variant="body1" />
             <Typography
@@ -110,9 +110,9 @@ const Sidebar = ({
           </Box>
           <Divider orientation="vertical" />
           <Box>
-            <Typography children={'Last login'} variant="body1" />
+            <Typography children={'Role'} variant="body1" />
             <Typography
-              children={userData.userLastLogin}
+              children={'Admin'}
               color="textSecondary"
               variant="body2"
             />

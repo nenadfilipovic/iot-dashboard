@@ -7,8 +7,8 @@ const themeSettings = {
     background: '#ffffff',
     divider: '#EBEBEB',
     text: {
-      primary: '#3E3E3E',
-      secondary: '#AAAAAA',
+      primary: '#24292e',
+      secondary: '#6a737d',
     },
   },
   typography: {
@@ -23,6 +23,7 @@ const themeSettings = {
   custom: {
     sidebarWidth: 300,
     sidebarBackgroundColor: '#fbfbfb',
+    shadow: '0 1px 15px rgba(27,31,35,.15), 0 0 1px rgba(106,115,125,.35)',
   },
 };
 
@@ -52,6 +53,11 @@ const theme = createMuiTheme({
       color: 'primary',
     },
     MuiPaper: { variant: 'outlined' },
+  },
+  overrides: {
+    MuiButton: {
+      text: { textTransform: 'none' },
+    },
   },
 });
 
