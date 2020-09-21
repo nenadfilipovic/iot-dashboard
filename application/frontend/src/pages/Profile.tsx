@@ -13,33 +13,28 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import { PageSegment } from '../components/PageSegment';
-import {
-  UserAttributes,
-  UserAttributesCasting,
-  ReactIconComponent,
-} from '../types';
+import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
 
 const {
   userFirstName,
   userLastName,
   userPassword,
-  userEmail,
-  userImage,
+  userEmailAddress,
 } = UserAttributesCasting;
 
 const Profile = () => {
-  const { control, handleSubmit } = useForm<UserAttributes>({
+  const { control, handleSubmit } = useForm<User>({
     defaultValues: {
       userFirstName: 'Nenad',
       userLastName: 'Filipovic',
       userPassword: 'nenad123',
-      userEmail: 'nenad@nenad.com',
+      userEmailAddress: 'nenad@nenad.com',
     },
   });
 
   const [visiblePassword, setVisiblePassword] = useState<boolean>(false);
 
-  const onSubmit = (data: UserAttributes) => console.log(data);
+  const onSubmit = (data: User) => console.log(data);
 
   const profileFormFields = [
     {
@@ -69,7 +64,7 @@ const Profile = () => {
     },
     {
       label: 'Email',
-      name: userEmail,
+      name: userEmailAddress,
       control,
     },
   ];
@@ -79,7 +74,7 @@ const Profile = () => {
       <PageSegment
         headerTitle="Profile details"
         headerSubtitle="Review or edit you profile details."
-        headerIcon={FaceIcon as ReactIconComponent}
+        headerIcon={FaceIcon as ReactSVGComponent}
         bodyContent={
           <Grid container spacing={2}>
             {profileFormFields.map((field) => (
@@ -109,7 +104,7 @@ const Profile = () => {
         <PageSegment
           headerTitle="Remove account"
           headerSubtitle="With this option you can disable your account."
-          headerIcon={HighlightOffIcon as ReactIconComponent}
+          headerIcon={HighlightOffIcon as ReactSVGComponent}
           bodyActions={
             <Button variant="contained" color="primary">
               Delete

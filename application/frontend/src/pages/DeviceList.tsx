@@ -25,7 +25,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 
 import { PageSegment } from '../components/PageSegment';
 import { CreateDevice } from './CreateDevice';
-import { DeviceAttributes, ReactIconComponent } from '../types';
+import { Device, ReactSVGComponent } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,14 +37,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const deviceData: DeviceAttributes[] = [
+const deviceData: Device[] = [
   {
-    deviceId: '123',
+    deviceUniqueIndentifier: '123',
     deviceName: 'Device-1',
-    deviceTopic: 'home',
+    deviceChannel: 'home',
     deviceType: 'esp32',
     deviceDescription: 'Living room sensor.',
-    deviceCreatedDate: '18:05:03:19-02-2020',
+    deviceCreateDate: '18:05:03:19-02-2020',
   },
 ];
 
@@ -63,8 +63,8 @@ const DeviceList = () => {
     <Grid item xs={12} sm={6} md={4}>
       <PageSegment
         headerTitle={device.deviceName}
-        headerSubtitle={device.deviceCreatedDate}
-        headerIcon={MemoryIcon as ReactIconComponent}
+        headerSubtitle={device.deviceCreateDate}
+        headerIcon={MemoryIcon as ReactSVGComponent}
         headerActions={
           <React.Fragment>
             <IconButton
@@ -92,7 +92,7 @@ const DeviceList = () => {
               </ListItemIcon>
               <ListItemText
                 primary="This is device topic or channel."
-                secondary={device.deviceTopic}
+                secondary={device.deviceChannel}
               />
             </ListItem>
             <ListItem divider>
@@ -121,7 +121,7 @@ const DeviceList = () => {
             variant="contained"
             color="primary"
             component={NavLink}
-            to={`/app/devices/${device.deviceId}`}
+            to={`/app/devices/${device.deviceUniqueIndentifier}`}
           >
             Details
           </Button>

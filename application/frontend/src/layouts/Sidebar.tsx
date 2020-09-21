@@ -1,6 +1,5 @@
 import React from 'react';
 import InsertChartIcon from '@material-ui/icons/InsertChart';
-import MemoryIcon from '@material-ui/icons/Memory';
 import FaceIcon from '@material-ui/icons/Face';
 import { NavLink } from 'react-router-dom';
 import {
@@ -20,18 +19,13 @@ import avatar from '../assets/images/avatar.svg';
 import { MenuItem } from '../components/MenuItem';
 import { Logo } from '../components/Logo';
 import { UserAvatar } from '../components/UserAvatar';
-import { UserAttributes, ReactIconComponent } from '../types';
+import { User, ReactSVGComponent } from '../types';
 
 const navigationItems = [
   {
-    itemPath: '/app/home',
+    itemPath: '/app/devices',
     itemTitle: 'Home',
     itemIcon: InsertChartIcon,
-  },
-  {
-    itemPath: '/app/devices',
-    itemTitle: 'Devices',
-    itemIcon: MemoryIcon,
   },
   {
     itemPath: '/app/profile',
@@ -43,22 +37,17 @@ const navigationItems = [
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     sidebarContent: {
-      backgroundColor: theme.custom.sidebarBackgroundColor,
-      width: theme.custom.sidebarWidth,
+      width: 300,
     },
   }),
 );
 
 // TODO replace with global state
-const userData: UserAttributes = {
-  userImage: avatar,
+const userData: User = {
   userFirstName: 'Nenad',
   userLastName: 'Filipovic',
-  userUniqueId: 'nenadfilipovic',
-  userEmail: 'nenad@nenad.com',
-  userLocation: 'Serbia',
-  userLastLogin: '2 days ago',
-  userCreatedAccount: '18/09/2020',
+  userHandle: 'nenadfilipovic',
+  userEmailAddress: 'nenad@nenad.com',
 };
 //
 
@@ -86,37 +75,18 @@ const Sidebar = ({
           alignItems="center"
           margin={'50px 0 50px 0'}
         >
-          <UserAvatar image={userData.userImage} />
+          <UserAvatar image={avatar} />
           <Typography
             children={`${userData.userFirstName} ${userData.userLastName}`}
             variant="h5"
           />
           <Link underline="none" component={NavLink} to="/app/profile">
             <Typography
-              children={userData.userUniqueId}
+              children={userData.userHandle}
               color="secondary"
               variant="body2"
             />
           </Link>
-        </Box>
-        <Box textAlign="center" display="flex" justifyContent="space-evenly">
-          <Box>
-            <Typography children={'Location'} variant="body1" />
-            <Typography
-              children={userData.userLocation}
-              color="textSecondary"
-              variant="body2"
-            />
-          </Box>
-          <Divider orientation="vertical" />
-          <Box>
-            <Typography children={'Role'} variant="body1" />
-            <Typography
-              children={'Admin'}
-              color="textSecondary"
-              variant="body2"
-            />
-          </Box>
         </Box>
       </Box>
       <Divider />
@@ -124,7 +94,7 @@ const Sidebar = ({
         <List disablePadding>
           {navigationItems.map((item) => (
             <MenuItem
-              itemIcon={item.itemIcon as ReactIconComponent}
+              itemIcon={item.itemIcon as ReactSVGComponent}
               itemPath={item.itemPath}
               itemTitle={item.itemTitle}
             />

@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
     logoTitle: {
       fontWeight: theme.typography.fontWeightMedium,
       marginLeft: theme.spacing(1),
+      fontSize: '22px',
     },
   }),
 );

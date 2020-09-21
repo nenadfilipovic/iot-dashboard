@@ -6,34 +6,30 @@ import InfoIcon from '@material-ui/icons/Info';
 
 import { Chart } from '../components/Chart';
 import { PageSegment } from '../components/PageSegment';
-import {
-  DeviceAttributes,
-  DeviceAttributesCasting,
-  ReactIconComponent,
-} from '../types';
+import { Device, DeviceAttributesCasting, ReactSVGComponent } from '../types';
 
 const {
   deviceName,
-  deviceTopic,
+  deviceChannel,
   deviceDescription,
   deviceType,
-  deviceCreatedDate,
+  deviceCreateDate,
 } = DeviceAttributesCasting;
 
-const Device = () => {
+const SingleDevice = () => {
   const [editable, setEditable] = useState<boolean>(false);
 
-  const { control, handleSubmit } = useForm<DeviceAttributes>({
+  const { control, handleSubmit } = useForm<Device>({
     defaultValues: {
       deviceName: 'Device',
-      deviceTopic: 'home',
+      deviceChannel: 'home',
       deviceType: 'esp32',
       deviceDescription: 'Sensor from living room',
-      deviceCreatedDate: new Date().toLocaleString(),
+      deviceCreateDate: new Date().toLocaleString(),
     },
   });
 
-  const onSubmit = (data: DeviceAttributes) => console.log(data);
+  const onSubmit = (data: Device) => console.log(data);
 
   const deviceFormFields = [
     {
@@ -49,7 +45,7 @@ const Device = () => {
     },
     {
       label: 'Topic',
-      name: deviceTopic,
+      name: deviceChannel,
       control,
     },
     {
@@ -59,7 +55,7 @@ const Device = () => {
     },
     {
       label: 'Created',
-      name: deviceCreatedDate,
+      name: deviceCreateDate,
       control,
       disabled: true,
     },
@@ -89,7 +85,7 @@ const Device = () => {
       <PageSegment
         headerTitle="Information"
         headerSubtitle="You can review or edit your device properties here."
-        headerIcon={InfoIcon as ReactIconComponent}
+        headerIcon={InfoIcon as ReactSVGComponent}
         bodyContent={
           <Grid container spacing={2}>
             {deviceFormFields.map((field) => (
@@ -122,7 +118,7 @@ const Device = () => {
         <PageSegment
           headerTitle="Readings"
           headerSubtitle="Check data readings from your device."
-          headerIcon={TimelineIcon as ReactIconComponent}
+          headerIcon={TimelineIcon as ReactSVGComponent}
           bodyContent={<Chart />}
         />
       </Grid>
@@ -130,4 +126,4 @@ const Device = () => {
   );
 };
 
-export { Device };
+export { SingleDevice };

@@ -7,11 +7,9 @@ import {
   makeStyles,
   Theme,
   createStyles,
-  Typography,
 } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import SettingsIcon from '@material-ui/icons/Settings';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,10 +29,7 @@ const Header = ({ onNavOpen }: { onNavOpen: () => void }) => {
             <ViewListIcon />
           </IconButton>
         </Hidden>
-        <IconButton className={classes.menuButton}>
-          <SettingsIcon />
-        </IconButton>
-        <IconButton onClick={() => {}}>
+        <IconButton className={classes.menuButton} onClick={() => {}}>
           <ExitToAppIcon />
         </IconButton>
       </Toolbar>

@@ -14,10 +14,10 @@ import MemoryIcon from '@material-ui/icons/Memory';
 
 import { PageSegment } from '../components/PageSegment';
 import {
-  DeviceAttributes,
+  Device,
   DeviceAttributesCasting,
-  DeviceTypesCasting,
-  ReactIconComponent,
+  DeviceType,
+  ReactSVGComponent,
 } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,34 +28,34 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const { esp32, esp8266 } = DeviceTypesCasting;
-
 const {
   deviceName,
-  deviceTopic,
+  deviceChannel,
   deviceDescription,
   deviceType,
 } = DeviceAttributesCasting;
 
-const deviceTypeOptions = [esp32, esp8266].map((option) => (
-  <MenuItem key={option} value={option}>
-    {option}
-  </MenuItem>
-));
+const deviceTypeOptions = (['esp32', 'esp8266'] as DeviceType[]).map(
+  (option) => (
+    <MenuItem key={option} value={option}>
+      {option}
+    </MenuItem>
+  ),
+);
 
 const CreateDevice = () => {
   const classes = useStyles();
 
-  const { control, handleSubmit } = useForm<DeviceAttributes>({
+  const { control, handleSubmit } = useForm<Device>({
     defaultValues: {
       deviceName: '',
-      deviceTopic: '',
+      deviceChannel: '',
       deviceDescription: '',
       deviceType: 'esp32',
     },
   });
 
-  const onSubmit = (data: DeviceAttributes) => console.log(data);
+  const onSubmit = (data: Device) => console.log(data);
 
   const createDeviceFormFields = [
     {
@@ -65,7 +65,7 @@ const CreateDevice = () => {
     },
     {
       label: 'Topic',
-      name: deviceTopic,
+      name: deviceChannel,
       control,
     },
     {
@@ -87,7 +87,7 @@ const CreateDevice = () => {
       <PageSegment
         headerTitle="Add new device"
         headerSubtitle="Please enter data for device you want to create."
-        headerIcon={MemoryIcon as ReactIconComponent}
+        headerIcon={MemoryIcon as ReactSVGComponent}
         bodyContent={
           <Grid container direction="column" spacing={2}>
             {createDeviceFormFields.map((field) => (

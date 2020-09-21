@@ -1,12 +1,11 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { Home } from '../pages/Home';
 import { DeviceList } from '../pages/DeviceList';
 import { Login } from '../pages/Login';
 import { Profile } from '../pages/Profile';
 import { Register } from '../pages/Register';
-import { Device } from '../pages/Device';
+import { SingleDevice } from '../pages/SingleDevice';
 import { Dashboard } from '../layouts/Dashboard';
 import { Basic } from '../layouts/Basic';
 import { NotFound } from '../pages/NotFound';
@@ -19,7 +18,7 @@ const routes = [
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
       { path: '404', element: <NotFound /> },
-      { path: '/', element: <Navigate to="/app/home" /> },
+      { path: '/', element: <Navigate to="/app/devices" /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],
   },
@@ -27,7 +26,6 @@ const routes = [
     path: 'app',
     element: <Dashboard />,
     children: [
-      { path: '/home', element: <Home /> },
       { path: '/devices', element: <DeviceList /> },
       { path: '/profile', element: <Profile /> },
       { path: '*', element: <Navigate to="/404" /> },
@@ -37,7 +35,7 @@ const routes = [
     path: 'app/devices',
     element: <Dashboard />,
     children: [
-      { path: '/:id', element: <Device /> },
+      { path: '/:id', element: <SingleDevice /> },
       { path: '*', element: <Navigate to="/404" /> },
     ],
   },

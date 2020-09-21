@@ -15,13 +15,14 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     menuItemButton: {
       padding: '10px',
+      color: theme.palette.secondary.main,
     },
     menuItemButtonActive: {
       '& $p': {
-        color: theme.palette.secondary.main,
+        color: theme.palette.primary.main,
       },
       '& $svg': {
-        color: theme.palette.secondary.main,
+        color: theme.palette.primary.main,
       },
       backgroundColor: theme.palette.grey[100],
     },

@@ -13,25 +13,21 @@ import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import LockIcon from '@material-ui/icons/Lock';
 
 import { PageSegment } from '../components/PageSegment';
-import {
-  UserAttributes,
-  UserAttributesCasting,
-  ReactIconComponent,
-} from '../types';
+import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
 
-const { userUniqueId, userPassword } = UserAttributesCasting;
+const { userHandle, userPassword } = UserAttributesCasting;
 
 const Login = () => {
-  const { control, handleSubmit } = useForm<UserAttributes>({
-    defaultValues: { userUniqueId: '', userPassword: '' },
+  const { control, handleSubmit } = useForm<User>({
+    defaultValues: { userHandle: '', userPassword: '' },
   });
 
-  const onSubmit = (data: UserAttributes) => console.log(data);
+  const onSubmit = (data: User) => console.log(data);
 
   const loginFormFields = [
     {
       label: 'Username',
-      name: userUniqueId,
+      name: userHandle,
       control,
       icon: PermIdentityIcon,
     },
@@ -48,7 +44,7 @@ const Login = () => {
       <PageSegment
         headerTitle="Login"
         headerSubtitle="Please enter your login details."
-        headerIcon={LockOpenIcon as ReactIconComponent}
+        headerIcon={LockOpenIcon as ReactSVGComponent}
         bodyContent={
           <Grid container direction="column" spacing={2}>
             {loginFormFields.map((field) => (

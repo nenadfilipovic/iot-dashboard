@@ -14,39 +14,35 @@ import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import AlternateEmailIcon from '@material-ui/icons/AlternateEmail';
 import LockIcon from '@material-ui/icons/Lock';
 import PeopleIcon from '@material-ui/icons/People';
-import PublicIcon from '@material-ui/icons/Public';
+import { useDispatch } from 'react-redux';
 
 import { PageSegment } from '../components/PageSegment';
-import {
-  UserAttributes,
-  UserAttributesCasting,
-  ReactIconComponent,
-} from '../types';
+import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
 
 const {
   userFirstName,
   userLastName,
-  userUniqueId,
-  userEmail,
-  userLocation,
-  userImage,
+  userHandle,
+  userEmailAddress,
   userPassword,
 } = UserAttributesCasting;
 
 const Register = () => {
-  const { control, handleSubmit } = useForm<UserAttributes>({
+  const { control, handleSubmit } = useForm<User>({
     defaultValues: {
       userFirstName: '',
       userLastName: '',
-      userUniqueId: '',
-      userEmail: '',
-      userLocation: '',
-      userImage: '',
+      userHandle: '',
+      userEmailAddress: '',
       userPassword: '',
     },
   });
 
-  const onSubmit = (data: UserAttributes) => console.log(data);
+  const dispatch = useDispatch();
+
+  const onSubmit = (data: User) => {
+    dispatch(data);
+  };
 
   const inputFieldData = [
     {
@@ -63,7 +59,7 @@ const Register = () => {
     },
     {
       label: 'Username',
-      name: userUniqueId,
+      name: userHandle,
       control,
       icon: PermIdentityIcon,
     },
@@ -75,16 +71,9 @@ const Register = () => {
     },
     {
       label: 'Email',
-      name: userEmail,
+      name: userEmailAddress,
       control,
       icon: AlternateEmailIcon,
-    },
-    {
-      label: 'Country',
-      name: userLocation,
-      control,
-      icon: PublicIcon,
-      select: true,
     },
   ];
 
@@ -93,7 +82,7 @@ const Register = () => {
       <PageSegment
         headerTitle="Register"
         headerSubtitle="Please enter your data to register new account."
-        headerIcon={VpnKeyIcon as ReactIconComponent}
+        headerIcon={VpnKeyIcon as ReactSVGComponent}
         bodyContent={
           <Grid container direction="column" spacing={2}>
             {inputFieldData.map((field) => (
