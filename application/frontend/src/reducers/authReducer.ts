@@ -1,38 +1,40 @@
 import {
-  AuthActionTypes,
-  AuthState,
-  USER_REGISTER_FAILURE,
-  USER_REGISTER_SUCCESS,
-  USER_REGISTER_REQUEST,
-} from '../store/reduxTypes';
+  UserAuthActionTypes,
+  USER_LOGIN_REQUEST,
+  USER_LOGIN_SUCCESS,
+  USER_LOGIN_FAILURE,
+  USER_LOGOUT_REQUEST,
+} from '../types/ActionTypes';
+import { AuthState } from '../types/StateTypes';
 
 const initialState: AuthState = {
   isLoggedIn: false,
-  loggedInUser: null,
+  isLoggingIn: false,
 };
-
 const authReducer = (
   state: AuthState = initialState,
-  action: AuthActionTypes,
-): AuthState => {
+  action: UserAuthActionTypes,
+) => {
   switch (action.type) {
-    case USER_REGISTER_REQUEST:
+    case USER_LOGIN_REQUEST:
       return {
         ...state,
-        isLoggedIn: false,
-        loggedInUser: null,
+        isLoggingIn: true,
       };
-    case USER_REGISTER_SUCCESS:
+    case USER_LOGIN_SUCCESS:
       return {
         ...state,
         isLoggedIn: true,
-        loggedInUser: action.payload,
       };
-    case USER_REGISTER_FAILURE:
+    case USER_LOGIN_FAILURE:
+      return {
+        ...state,
+        isLoggingIn: false,
+      };
+    case USER_LOGOUT_REQUEST:
       return {
         ...state,
         isLoggedIn: false,
-        loggedInUser: null,
       };
     default:
       return state;

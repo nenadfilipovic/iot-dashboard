@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const iotDashboard = axios.create({
-  baseURL: 'localhost:80/api',
+  baseURL: 'http://localhost:8080/api',
 });
 
 export { iotDashboard };

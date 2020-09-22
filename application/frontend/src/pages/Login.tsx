@@ -11,9 +11,11 @@ import { NavLink } from 'react-router-dom';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import LockIcon from '@material-ui/icons/Lock';
+import { useDispatch } from 'react-redux';
 
 import { PageSegment } from '../components/PageSegment';
 import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
+import { userLogin } from '../actions/authActions';
 
 const { userHandle, userPassword } = UserAttributesCasting;
 
@@ -22,7 +24,11 @@ const Login = () => {
     defaultValues: { userHandle: '', userPassword: '' },
   });
 
-  const onSubmit = (data: User) => console.log(data);
+  const dispatch = useDispatch();
+
+  const onSubmit = (data: User) => {
+    dispatch(userLogin(data));
+  };
 
   const loginFormFields = [
     {

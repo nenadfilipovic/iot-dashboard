@@ -23,7 +23,7 @@ router
 
   .post('/login', login)
 
-  .post('/logout', validateToken, logout)
+  .post('/logout', logout)
 
   .post('/mqtt/auth', auth)
 

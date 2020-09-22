@@ -4,6 +4,7 @@ import koaBodyparser from 'koa-bodyparser';
 import koaCompress from 'koa-compress';
 import koaLogger from 'koa-logger';
 import koaSession from 'koa-session';
+import koaCors from '@koa/cors';
 import zlib from 'zlib';
 import config from 'config';
 
@@ -31,6 +32,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app
+  .use(koaCors())
   .use(errorMiddleware)
   .use(async function (ctx, next) {
     return next().catch((error) => {

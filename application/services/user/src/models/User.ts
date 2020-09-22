@@ -1,20 +1,11 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
 import { db } from '../db/sequelize';
 import { logger } from '../utils/logger';
+import { User } from '../types';
 
-export interface UserAttributes extends Model {
-  id: string;
-  name: string;
-  surname: string;
-  username: string;
-  email: string;
-  password: string;
-  validPassword: (password: string) => Promise<boolean>;
-}
-
-const User = db.define<UserAttributes>(
+const User = db.define<User>(
   'User',
   {
     id: {
@@ -27,7 +18,7 @@ const User = db.define<UserAttributes>(
         msg: 'User ID already in use!',
       },
     },
-    name: {
+    userFirstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -40,7 +31,7 @@ const User = db.define<UserAttributes>(
         },
       },
     },
-    surname: {
+    userLastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -53,7 +44,7 @@ const User = db.define<UserAttributes>(
         },
       },
     },
-    email: {
+    userEmailAddress: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: {
@@ -67,7 +58,7 @@ const User = db.define<UserAttributes>(
         isLowercase: true,
       },
     },
-    username: {
+    userHandle: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: {
@@ -84,7 +75,7 @@ const User = db.define<UserAttributes>(
         },
       },
     },
-    password: {
+    userPassword: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -99,24 +90,24 @@ const User = db.define<UserAttributes>(
 );
 
 User.beforeSave(async (user) => {
-  if (user.changed('password')) {
-    user.password = await bcrypt.hash(user.password, 12);
+  if (user.userPassword && user.changed('userPassword')) {
+    user.userPassword = await bcrypt.hash(user.userPassword, 12);
   }
 });
 
-User.prototype.validPassword = async function (password: string) {
-  return await bcrypt.compare(password, this.password);
+User.prototype.passwordValidator = async function (userPassword: string) {
+  return await bcrypt.compare(userPassword, this.userPassword);
 };
 
 User.sync({ force: true })
   .then(async () => {
     logger.info('Data model is in sync.');
     await User.create({
-      name: 'dashboard',
-      surname: 'user',
-      username: 'admin',
-      email: 'admin@home.com',
-      password: 'adminpassword',
+      userHandle: 'admin',
+      userFirstName: 'dashboard',
+      userLastName: 'user',
+      userEmailAddress: 'admin@home.com',
+      userPassword: 'adminpassword',
     });
     logger.info('Admin user created.');
   })

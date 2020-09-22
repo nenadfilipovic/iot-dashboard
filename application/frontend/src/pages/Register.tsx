@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 
 import { PageSegment } from '../components/PageSegment';
 import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
+import { userRegister } from '../actions/registerActions';
 
 const {
   userFirstName,
@@ -41,7 +42,7 @@ const Register = () => {
   const dispatch = useDispatch();
 
   const onSubmit = (data: User) => {
-    dispatch(data);
+    dispatch(userRegister(data));
   };
 
   const inputFieldData = [

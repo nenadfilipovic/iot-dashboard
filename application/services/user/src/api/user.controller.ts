@@ -11,14 +11,20 @@ import { BadRequestError } from '../errors/BadRequestError';
 
 const register = async (ctx: DefaultContext): Promise<void> => {
   try {
-    const { name, surname, username, email, password } = ctx.request.body;
+    const {
+      userFirstName,
+      userLastName,
+      userHandle,
+      userEmailAddress,
+      userPassword,
+    } = ctx.request.body;
 
     const newUser = User.build({
-      name,
-      surname,
-      username,
-      email,
-      password,
+      userFirstName,
+      userLastName,
+      userHandle,
+      userEmailAddress,
+      userPassword,
     });
 
     const user = await newUser.save().then((user) => user);
@@ -27,7 +33,7 @@ const register = async (ctx: DefaultContext): Promise<void> => {
 
     ctx.session = { token };
 
-    Object.assign(user, { password: undefined });
+    Object.assign(user, { userPassword: undefined });
 
     ctx.body = {
       status: 'success',
@@ -54,13 +60,23 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
 
     if (!existingUser) throw new Error('User does not exist!');
 
-    const { name, surname, email, password } = ctx.request.body;
+    const {
+      userFirstName,
+      userLastName,
+      userEmailAddress,
+      userPassword,
+    } = ctx.request.body;
 
-    existingUser.update({ name, surname, email, password });
+    existingUser.update({
+      userFirstName,
+      userLastName,
+      userEmailAddress,
+      userPassword,
+    });
 
     const user = await existingUser.save().then((user) => user);
 
-    Object.assign(user, { password: undefined });
+    Object.assign(user, { userPassword: undefined });
 
     ctx.body = {
       status: 'success',
@@ -118,7 +134,7 @@ const me = async (ctx: DefaultContext): Promise<void> => {
 
     if (!existingUser) throw new Error('User does not exist!');
 
-    Object.assign(existingUser, { password: undefined });
+    Object.assign(existingUser, { userPassword: undefined });
 
     ctx.body = {
       status: 'success',
@@ -135,22 +151,24 @@ const me = async (ctx: DefaultContext): Promise<void> => {
 
 const login = async (ctx: DefaultContext): Promise<void> => {
   try {
-    const { username, email, password } = ctx.request.body;
+    const { userHandle, userEmailAddress, userPassword } = ctx.request.body;
 
     /**
      * Support for logging in via email and username.
      */
 
-    const loginOptions = username ? { username: username } : { email: email };
+    const loginOptions = userHandle
+      ? { userHandle: userHandle }
+      : { userEmailAddress: userEmailAddress };
 
     const existingUser = await User.findOne({
       where: { ...loginOptions },
-      attributes: { include: ['password'] },
+      attributes: { include: ['userPassword'] },
     });
 
     if (!existingUser) throw new Error('User does not exist!');
 
-    const correctPassword = await existingUser.validPassword(password);
+    const correctPassword = await existingUser.passwordValidator(userPassword);
 
     if (!correctPassword) throw new Error('Bad credentials, please try again!');
 
@@ -158,7 +176,7 @@ const login = async (ctx: DefaultContext): Promise<void> => {
 
     ctx.session = { token };
 
-    Object.assign(existingUser, { password: undefined });
+    Object.assign(existingUser, { userPassword: undefined });
 
     ctx.body = {
       status: 'success',
@@ -207,7 +225,7 @@ const auth = async (ctx: DefaultContext): Promise<void> => {
     return;
   }
 
-  const correctPassword = await existingUser.validPassword(password);
+  const correctPassword = await existingUser.passwordValidator(password);
 
   if (!correctPassword) {
     ctx.response.status = 400;
