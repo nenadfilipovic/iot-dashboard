@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Box, makeStyles, Theme, createStyles } from '@material-ui/core';
 import { Outlet } from 'react-router-dom';
+
+import { Box, makeStyles, Theme, createStyles } from '@material-ui/core';
 
 import { Header } from '../components/Header';
 import { Sidebar } from './Sidebar';

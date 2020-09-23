@@ -6,13 +6,13 @@ import {
 } from '../types/ActionTypes';
 import { AppThunk } from '../types/StateTypes';
 import { User } from '../types';
-import { login, logout } from '../services/authService';
+import { _logUserIn, _logUserOut } from '../services/authService';
 
-const userLogin = (formData: User): AppThunk => async (dispatch) => {
+const logUserIn = (formData: User): AppThunk => async (dispatch) => {
   dispatch({
     type: USER_LOGIN_REQUEST,
   });
-  await login(formData)
+  await _logUserIn(formData)
     .then((response) => {
       dispatch({
         type: USER_LOGIN_SUCCESS,
@@ -27,11 +27,11 @@ const userLogin = (formData: User): AppThunk => async (dispatch) => {
     });
 };
 
-const userLogout = (): AppThunk => async (dispatch) => {
+const logUserOut = (): AppThunk => async (dispatch) => {
   dispatch({
     type: USER_LOGOUT_REQUEST,
   });
-  await logout();
+  await _logUserOut();
 };
 
-export { userLogin, userLogout };
+export { logUserIn, logUserOut };

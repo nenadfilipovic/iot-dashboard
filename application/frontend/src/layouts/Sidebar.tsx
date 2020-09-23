@@ -23,12 +23,17 @@ import { User, ReactSVGComponent } from '../types';
 
 const navigationItems = [
   {
-    itemPath: '/app/devices',
+    itemPath: '/home',
     itemTitle: 'Home',
     itemIcon: InsertChartIcon,
   },
   {
-    itemPath: '/app/profile',
+    itemPath: '/devices',
+    itemTitle: 'Devices',
+    itemIcon: InsertChartIcon,
+  },
+  {
+    itemPath: '/profile',
     itemTitle: 'Profile',
     itemIcon: FaceIcon,
   },

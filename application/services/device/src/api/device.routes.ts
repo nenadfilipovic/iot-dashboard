@@ -1,7 +1,14 @@
 import KoaRouter from 'koa-router';
 import config from 'config';
 
-import { all, one, create, acl, modify, remove } from './device.controller';
+import {
+  registerDevice,
+  modifyDevice,
+  removeDevice,
+  getSingleDevice,
+  getAllDevices,
+  mqttAcl,
+} from './device.controller';
 import { validateToken } from '../services/jwt';
 
 const prefix: string = config.get('service.prefix');
@@ -9,16 +16,16 @@ const prefix: string = config.get('service.prefix');
 const router = new KoaRouter({ prefix });
 
 router
-  .get('/', validateToken, all)
+  .get('/', validateToken, getAllDevices)
 
-  .get('/:id', validateToken, one)
+  .get('/:id', validateToken, getSingleDevice)
 
-  .post('/', validateToken, create)
+  .post('/', validateToken, registerDevice)
 
-  .post('/mqtt/acl', acl)
+  .post('/mqtt/acl', mqttAcl)
 
-  .patch('/:id', validateToken, modify)
+  .patch('/:id', validateToken, modifyDevice)
 
-  .delete('/:id', validateToken, remove);
+  .delete('/:id', validateToken, removeDevice);
 
 export { router };

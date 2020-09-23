@@ -1,20 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import { App } from './App';
-import * as serviceWorker from './serviceWorker';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 
-import { theme } from './theme';
+import * as serviceWorker from './serviceWorker';
+import './index.css';
+
+import { App } from './App';
+import { store } from './store';
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </BrowserRouter>
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

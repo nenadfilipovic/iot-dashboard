@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 
 import { PageSegment } from '../components/PageSegment';
 import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
-import { userLogin } from '../actions/authActions';
+import { logUserIn } from '../actions';
 
 const { userHandle, userPassword } = UserAttributesCasting;
 
@@ -27,7 +27,7 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const onSubmit = (data: User) => {
-    dispatch(userLogin(data));
+    dispatch(logUserIn(data));
   };
 
   const loginFormFields = [

@@ -1,20 +1,13 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
 import { db } from '../db/sequelize';
 import { logger } from '../utils/logger';
+import { Device } from '../types';
 
-export interface DeviceAttributes extends Model {
-  id: string;
-  user: string;
-  name: string;
-  description: string;
-  topic: string;
-}
-
-const Device = db.define<DeviceAttributes>(
+const Device = db.define<Device>(
   'Device',
   {
-    id: {
+    deviceUniqueIndentifier: {
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
@@ -24,7 +17,7 @@ const Device = db.define<DeviceAttributes>(
         msg: 'Device ID already in use!',
       },
     },
-    user: {
+    deviceOwner: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
@@ -34,7 +27,7 @@ const Device = db.define<DeviceAttributes>(
         },
       },
     },
-    name: {
+    deviceName: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: {
@@ -51,7 +44,7 @@ const Device = db.define<DeviceAttributes>(
         },
       },
     },
-    description: {
+    deviceDescription: {
       type: DataTypes.STRING,
       validate: {
         len: {
@@ -60,7 +53,7 @@ const Device = db.define<DeviceAttributes>(
         },
       },
     },
-    topic: {
+    deviceChannel: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: {

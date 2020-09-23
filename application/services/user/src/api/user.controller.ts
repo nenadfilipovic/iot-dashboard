@@ -9,7 +9,7 @@ import { BadRequestError } from '../errors/BadRequestError';
  * Register user...
  */
 
-const register = async (ctx: DefaultContext): Promise<void> => {
+const registerUser = async (ctx: DefaultContext): Promise<void> => {
   try {
     const {
       userFirstName,
@@ -50,7 +50,7 @@ const register = async (ctx: DefaultContext): Promise<void> => {
  * Modify user...
  */
 
-const modify = async (ctx: DefaultContext): Promise<void> => {
+const modifyUser = async (ctx: DefaultContext): Promise<void> => {
   try {
     const loggedInUser = ctx.state.user;
 
@@ -93,7 +93,7 @@ const modify = async (ctx: DefaultContext): Promise<void> => {
  * Delete user...
  */
 
-const remove = async (ctx: DefaultContext): Promise<void> => {
+const removeUser = async (ctx: DefaultContext): Promise<void> => {
   try {
     const loggedInUser = ctx.state.user;
 
@@ -124,7 +124,7 @@ const remove = async (ctx: DefaultContext): Promise<void> => {
  * Get current user...
  */
 
-const me = async (ctx: DefaultContext): Promise<void> => {
+const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
   try {
     const loggedInUser = ctx.state.user;
 
@@ -149,7 +149,7 @@ const me = async (ctx: DefaultContext): Promise<void> => {
  * Login user...
  */
 
-const login = async (ctx: DefaultContext): Promise<void> => {
+const logUserIn = async (ctx: DefaultContext): Promise<void> => {
   try {
     const { userHandle, userEmailAddress, userPassword } = ctx.request.body;
 
@@ -193,7 +193,7 @@ const login = async (ctx: DefaultContext): Promise<void> => {
  * Logout user...
  */
 
-const logout = async (ctx: DefaultContext): Promise<void> => {
+const logUserOut = async (ctx: DefaultContext): Promise<void> => {
   try {
     const loggedInUser = ctx.state.user;
 
@@ -210,7 +210,7 @@ const logout = async (ctx: DefaultContext): Promise<void> => {
  * MQTT auth route...
  */
 
-const auth = async (ctx: DefaultContext): Promise<void> => {
+const mqttAuth = async (ctx: DefaultContext): Promise<void> => {
   const { username, password } = ctx.request.body;
 
   const existingUser = await User.findOne({
@@ -235,4 +235,12 @@ const auth = async (ctx: DefaultContext): Promise<void> => {
   ctx.response.status = 200;
 };
 
-export { register, modify, remove, me, login, logout, auth };
+export {
+  registerUser,
+  modifyUser,
+  removeUser,
+  getCurrentUser,
+  logUserIn,
+  logUserOut,
+  mqttAuth,
+};

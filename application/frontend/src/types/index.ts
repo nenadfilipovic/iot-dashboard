@@ -62,3 +62,12 @@ export interface PageSegmentAttributes {
   bodyContent?: JSX.Element;
   bodyActions?: JSX.Element;
 }
+
+declare module '@material-ui/core/styles/createMuiTheme' {
+  interface Theme {
+    customProperties: {};
+  }
+  interface ThemeOptions {
+    customProperties?: {};
+  }
+}

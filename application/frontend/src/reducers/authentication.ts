@@ -1,5 +1,5 @@
 import {
-  UserAuthActionTypes,
+  AuthActionTypes,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGIN_FAILURE,
@@ -9,17 +9,16 @@ import { AuthState } from '../types/StateTypes';
 
 const initialState: AuthState = {
   isLoggedIn: false,
-  isLoggingIn: false,
 };
 const authReducer = (
   state: AuthState = initialState,
-  action: UserAuthActionTypes,
+  action: AuthActionTypes,
 ) => {
   switch (action.type) {
     case USER_LOGIN_REQUEST:
       return {
         ...state,
-        isLoggingIn: true,
+        isLoggedIn: false,
       };
     case USER_LOGIN_SUCCESS:
       return {
@@ -29,7 +28,7 @@ const authReducer = (
     case USER_LOGIN_FAILURE:
       return {
         ...state,
-        isLoggingIn: false,
+        isLoggedIn: false,
       };
     case USER_LOGOUT_REQUEST:
       return {

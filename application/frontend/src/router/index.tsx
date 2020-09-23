@@ -1,44 +1,39 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes, BrowserRouter } from 'react-router-dom';
 
-import { DeviceList } from '../pages/DeviceList';
+import { Home } from '../pages/Home';
 import { Login } from '../pages/Login';
-import { Profile } from '../pages/Profile';
 import { Register } from '../pages/Register';
+import { NotFound } from '../pages/NotFound';
+import { DeviceList } from '../pages/DeviceList';
 import { SingleDevice } from '../pages/SingleDevice';
+import { Profile } from '../pages/Profile';
 import { Dashboard } from '../layouts/Dashboard';
 import { Basic } from '../layouts/Basic';
-import { NotFound } from '../pages/NotFound';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 
-const routes = [
-  {
-    path: '/',
-    element: <Basic />,
-    children: [
-      { path: 'login', element: <Login /> },
-      { path: 'register', element: <Register /> },
-      { path: '404', element: <NotFound /> },
-      { path: '/', element: <Navigate to="/app/devices" /> },
-      { path: '*', element: <Navigate to="/404" /> },
-    ],
-  },
-  {
-    path: 'app',
-    element: <Dashboard />,
-    children: [
-      { path: '/devices', element: <DeviceList /> },
-      { path: '/profile', element: <Profile /> },
-      { path: '*', element: <Navigate to="/404" /> },
-    ],
-  },
-  {
-    path: 'app/devices',
-    element: <Dashboard />,
-    children: [
-      { path: '/:id', element: <SingleDevice /> },
-      { path: '*', element: <Navigate to="/404" /> },
-    ],
-  },
-];
+const Router = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Basic />}>
+          <Route path="/" element={<Navigate to="home" />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="404" element={<NotFound />} />
+          <Route path="*" element={<Navigate to="404" />} />
+        </Route>
+        <ProtectedRoute path="/" element={<Dashboard />}>
+          <Route path="home" element={<Home />} />
+          <Route path="devices">
+            <Route path="/" element={<DeviceList />} />
+            <Route path=":id" element={<SingleDevice />} />
+          </Route>
+          <Route path="profile" element={<Profile />} />
+        </ProtectedRoute>
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
-export { routes };
+export { Router };

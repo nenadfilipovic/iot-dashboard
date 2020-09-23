@@ -121,7 +121,7 @@ const DeviceList = () => {
             variant="contained"
             color="primary"
             component={NavLink}
-            to={`/app/devices/${device.deviceUniqueIndentifier}`}
+            to={`/devices/${device.deviceUniqueIndentifier}`}
           >
             Details
           </Button>

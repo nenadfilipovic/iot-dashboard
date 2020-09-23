@@ -2,13 +2,13 @@ import KoaRouter from 'koa-router';
 import config from 'config';
 
 import {
-  me,
-  register,
-  login,
-  logout,
-  auth,
-  modify,
-  remove,
+  registerUser,
+  modifyUser,
+  removeUser,
+  getCurrentUser,
+  logUserIn,
+  logUserOut,
+  mqttAuth,
 } from './user.controller';
 import { validateToken } from '../services/jwt';
 
@@ -17,18 +17,18 @@ const prefix: string = config.get('service.prefix');
 const router = new KoaRouter({ prefix });
 
 router
-  .get('/me', validateToken, me)
+  .get('/', validateToken, getCurrentUser)
 
-  .post('/', register)
+  .post('/', registerUser)
 
-  .post('/login', login)
+  .post('/login', logUserIn)
 
-  .post('/logout', logout)
+  .post('/logout', validateToken, logUserOut)
 
-  .post('/mqtt/auth', auth)
+  .post('/mqtt/auth', mqttAuth)
 
-  .patch('/', validateToken, modify)
+  .patch('/', validateToken, modifyUser)
 
-  .delete('/', validateToken, remove);
+  .delete('/', validateToken, removeUser);
 
 export { router };

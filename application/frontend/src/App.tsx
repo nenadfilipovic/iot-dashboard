@@ -1,18 +1,17 @@
 import React from 'react';
-import { useRoutes } from 'react-router-dom';
-import { CssBaseline } from '@material-ui/core';
-import { Provider } from 'react-redux';
 
-import { routes } from './router';
-import { store } from './store';
+import { CssBaseline } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core/styles';
+
+import { theme } from './theme';
+import { Router } from './router';
 
 const App = () => {
-  const router = useRoutes(routes);
   return (
-    <Provider store={store}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      {router}
-    </Provider>
+      <Router />
+    </ThemeProvider>
   );
 };
 

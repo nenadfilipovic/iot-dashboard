@@ -50,6 +50,7 @@ git clone https://github.com/nenadfilipovic/iot-dashboard
 - [Nginx](https://www.nginx.com/)
 - [React](https://reactjs.org/)
 - [Material-UI](https://material-ui.com/)
+- [Redux](https://redux.js.org/)
 
 ## Authors
 

@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app
-  .use(koaCors())
+  .use(koaCors({ credentials: true }))
   .use(errorMiddleware)
   .use(async function (ctx, next) {
     return next().catch((error) => {

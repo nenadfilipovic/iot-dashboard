@@ -28,12 +28,3 @@ const theme = createMuiTheme({
 });
 
 export { theme };
-
-declare module '@material-ui/core/styles/createMuiTheme' {
-  interface Theme {
-    customProperties: {};
-  }
-  interface ThemeOptions {
-    customProperties?: {};
-  }
-}

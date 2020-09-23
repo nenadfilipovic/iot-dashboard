@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import {
   Grid,
   Button,
@@ -6,19 +10,17 @@ import {
   TextField,
   InputAdornment,
 } from '@material-ui/core';
-import { useForm, Controller } from 'react-hook-form';
-import { NavLink } from 'react-router-dom';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import PersonIcon from '@material-ui/icons/Person';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import AlternateEmailIcon from '@material-ui/icons/AlternateEmail';
 import LockIcon from '@material-ui/icons/Lock';
 import PeopleIcon from '@material-ui/icons/People';
-import { useDispatch } from 'react-redux';
 
 import { PageSegment } from '../components/PageSegment';
 import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
-import { userRegister } from '../actions/registerActions';
+import { registerUser } from '../actions';
+import { RootState } from '../types/StateTypes';
 
 const {
   userFirstName,
@@ -29,6 +31,18 @@ const {
 } = UserAttributesCasting;
 
 const Register = () => {
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const authState = (state: RootState) => state.authReducer.isLoggedIn;
+
+  const isLoggedIn = useSelector(authState);
+
+  if (isLoggedIn) {
+    navigate('/');
+  }
+
   const { control, handleSubmit } = useForm<User>({
     defaultValues: {
       userFirstName: '',
@@ -39,10 +53,8 @@ const Register = () => {
     },
   });
 
-  const dispatch = useDispatch();
-
   const onSubmit = (data: User) => {
-    dispatch(userRegister(data));
+    dispatch(registerUser(data));
   };
 
   const inputFieldData = [

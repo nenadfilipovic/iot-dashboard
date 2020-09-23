@@ -1,18 +1,12 @@
-import { iotDashboard } from '../api/iotDashboard';
+import { client } from '../api/client';
 import { User } from '../types';
 
-const servicePrefix = '/users';
-
-const login = (formData: User) => {
-  return iotDashboard.post(servicePrefix + '/login', formData);
+const _logUserIn = (formData: User) => {
+  return client.post('/users/login', formData);
 };
 
-const register = async (formData: User) => {
-  return iotDashboard.post(servicePrefix + '/', formData);
+const _logUserOut = () => {
+  return client.post('/users/logout');
 };
 
-const logout = () => {
-  return iotDashboard.post(servicePrefix + '/logout');
-};
-
-export { login, logout, register };
+export { _logUserIn, _logUserOut };
