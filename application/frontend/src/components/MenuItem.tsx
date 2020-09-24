@@ -9,7 +9,13 @@ import {
 } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 
-import { MenuItemAttributes } from '../types';
+import { ReactSVGComponent } from '../types';
+
+export interface MenuItemAttributes {
+  itemPath: string;
+  itemTitle: string;
+  itemIcon: ReactSVGComponent;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

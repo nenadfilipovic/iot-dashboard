@@ -11,7 +11,16 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { PageSegmentAttributes } from '../types';
+import { ReactSVGComponent } from '../types';
+
+export interface PageSegmentAttributes {
+  headerTitle: string;
+  headerSubtitle: string;
+  headerIcon: ReactSVGComponent;
+  headerActions?: JSX.Element;
+  bodyContent?: JSX.Element;
+  bodyActions?: JSX.Element;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

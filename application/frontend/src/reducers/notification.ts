@@ -1,34 +1,40 @@
 import {
+  NotificationState,
   NotificationActionTypes,
   NOTIFICATION_SUCCESS,
   NOTIFICATION_FAILURE,
   CLEAR_NOTIFICATIONS,
-} from '../types/ActionTypes';
-import { NotificationState } from '../types/StateTypes';
+} from '../types';
 
 const initialState: NotificationState = {
-  notificationMessage: '',
+  type: '',
+  message: '',
 };
 const notificationReducer = (
-  state: NotificationState = initialState,
+  state = initialState,
   action: NotificationActionTypes,
-) => {
+): NotificationState => {
   switch (action.type) {
     case NOTIFICATION_SUCCESS:
       return {
         ...state,
-        notificationMessage: action.payload,
+        type: action.payload,
+        message: action.payload,
       };
+
     case NOTIFICATION_FAILURE:
       return {
         ...state,
-        notificationMessage: action.payload,
+        type: action.payload,
+        message: action.payload,
       };
     case CLEAR_NOTIFICATIONS:
       return {
         ...state,
-        notificationMessage: '',
+        type: '',
+        message: '',
       };
+
     default:
       return state;
   }

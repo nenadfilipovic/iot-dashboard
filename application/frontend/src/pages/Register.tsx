@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import {
   Grid,
@@ -20,7 +20,6 @@ import PeopleIcon from '@material-ui/icons/People';
 import { PageSegment } from '../components/PageSegment';
 import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
 import { registerUser } from '../actions';
-import { RootState } from '../types/StateTypes';
 
 const {
   userFirstName,
@@ -31,17 +30,7 @@ const {
 } = UserAttributesCasting;
 
 const Register = () => {
-  const navigate = useNavigate();
-
   const dispatch = useDispatch();
-
-  const authState = (state: RootState) => state.authReducer.isLoggedIn;
-
-  const isLoggedIn = useSelector(authState);
-
-  if (isLoggedIn) {
-    navigate('/');
-  }
 
   const { control, handleSubmit } = useForm<User>({
     defaultValues: {

@@ -3,21 +3,16 @@ import {
   NOTIFICATION_SUCCESS,
   NOTIFICATION_FAILURE,
   CLEAR_NOTIFICATIONS,
-} from '../types/ActionTypes';
-import { NotificationState } from '../types/StateTypes';
+} from '../types';
 
-const notificationSuccess = (
-  message: NotificationState,
-): NotificationActionTypes => {
+const notificationSuccess = (message: string): NotificationActionTypes => {
   return {
     type: NOTIFICATION_SUCCESS,
     payload: message,
   };
 };
 
-const notificationFailure = (
-  message: NotificationState,
-): NotificationActionTypes => {
+const notificationFailure = (message: string): NotificationActionTypes => {
   return {
     type: NOTIFICATION_FAILURE,
     payload: message,

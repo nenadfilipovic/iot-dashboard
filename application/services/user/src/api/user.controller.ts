@@ -37,7 +37,7 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
 
     ctx.body = {
       status: 'success',
-      data: { user },
+      user,
     };
 
     logger.info(`User: ${user.id} successfully registered.`);
@@ -180,7 +180,7 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
 
     ctx.body = {
       status: 'success',
-      data: { user: existingUser },
+      user: existingUser,
     };
 
     logger.info(`User: ${existingUser.id} successfully logged in.`);

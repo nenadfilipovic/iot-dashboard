@@ -1,46 +1,47 @@
-import { Device } from '../types';
 import {
-  REGISTER_DEVICE_REQUEST,
+  Device,
+  AppThunk,
   REGISTER_DEVICE_SUCCESS,
-  REGISTER_DEVICE_FAILURE,
-  MODIFY_DEVICE_REQUEST,
   MODIFY_DEVICE_SUCCESS,
-  MODIFY_DEVICE_FAILURE,
-  REMOVE_DEVICE_REQUEST,
   REMOVE_DEVICE_SUCCESS,
-  REMOVE_DEVICE_FAILURE,
-  GET_SINGLE_DEVICE_REQUEST,
   GET_SINGLE_DEVICE_SUCCESS,
-  GET_SINGLE_DEVICE_FAILURE,
-  GET_ALL_DEVICES_REQUEST,
   GET_ALL_DEVICES_SUCCESS,
-  GET_ALL_DEVICES_FAILURE,
-} from '../types/ActionTypes';
-import { AppThunk } from '../types/StateTypes';
+  ACTION_STARTED,
+  ACTION_STOPPED,
+  NOTIFICATION_SUCCESS,
+  NOTIFICATION_FAILURE,
+} from '../types';
 import {
   _getAllDevices,
   _getSingleDevice,
   _modifyDevice,
   _registerDevice,
   _removeDevice,
-} from '../services/deviceService';
+} from '../services/device';
 
 const registerDevice = (formData: Device): AppThunk => async (dispatch) => {
   dispatch({
-    type: REGISTER_DEVICE_REQUEST,
+    type: ACTION_STARTED,
   });
   await _registerDevice(formData)
-    .then(() => {
+    .then((response) => {
       dispatch({
         type: REGISTER_DEVICE_SUCCESS,
+      });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
-        type: REGISTER_DEVICE_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 const modifyDevice = (
@@ -48,78 +49,109 @@ const modifyDevice = (
   formData: Device,
 ): AppThunk => async (dispatch) => {
   dispatch({
-    type: MODIFY_DEVICE_REQUEST,
+    type: ACTION_STARTED,
   });
   await _modifyDevice(deviceUniqueIndentifier, formData)
-    .then(() => {
+    .then((response) => {
       dispatch({
         type: MODIFY_DEVICE_SUCCESS,
+        payload: response.data,
+      });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
-        type: MODIFY_DEVICE_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 const removeDevice = (
   deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
 ): AppThunk => async (dispatch) => {
   dispatch({
-    type: REMOVE_DEVICE_REQUEST,
+    type: ACTION_STARTED,
   });
   await _removeDevice(deviceUniqueIndentifier)
-    .then(() => {
+    .then((response) => {
       dispatch({
         type: REMOVE_DEVICE_SUCCESS,
+      });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
-        type: REMOVE_DEVICE_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 const getSingleDevice = (
   deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
 ): AppThunk => async (dispatch) => {
   dispatch({
-    type: GET_SINGLE_DEVICE_REQUEST,
+    type: ACTION_STARTED,
   });
   await _getSingleDevice(deviceUniqueIndentifier)
-    .then(() => {
+    .then((response) => {
       dispatch({
         type: GET_SINGLE_DEVICE_SUCCESS,
+        payload: response.data,
+      });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
-        type: GET_SINGLE_DEVICE_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 const getAllDevices = (): AppThunk => async (dispatch) => {
   dispatch({
-    type: GET_ALL_DEVICES_REQUEST,
+    type: ACTION_STARTED,
   });
   await _getAllDevices()
-    .then(() => {
+    .then((response) => {
       dispatch({
         type: GET_ALL_DEVICES_SUCCESS,
+        payload: response.data,
+      });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
-        type: GET_ALL_DEVICES_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 export {

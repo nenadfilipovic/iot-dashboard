@@ -1,4 +1,6 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+
 import {
   AppBar,
   Hidden,
@@ -11,6 +13,8 @@ import {
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
+import { logUserOut } from '../actions';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     menuButton: {
@@ -20,6 +24,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const Header = ({ onNavOpen }: { onNavOpen: () => void }) => {
+  const dispatch = useDispatch();
+
   const classes = useStyles();
   return (
     <AppBar color="transparent" elevation={0} position="relative">
@@ -29,7 +35,12 @@ const Header = ({ onNavOpen }: { onNavOpen: () => void }) => {
             <ViewListIcon />
           </IconButton>
         </Hidden>
-        <IconButton className={classes.menuButton} onClick={() => {}}>
+        <IconButton
+          className={classes.menuButton}
+          onClick={() => {
+            dispatch(logUserOut());
+          }}
+        >
           <ExitToAppIcon />
         </IconButton>
       </Toolbar>

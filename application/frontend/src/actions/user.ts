@@ -1,52 +1,61 @@
 import {
-  REGISTER_USER_REQUEST,
+  AppThunk,
+  User,
   REGISTER_USER_SUCCESS,
-  REGISTER_USER_FAILURE,
-  GET_USER_REQUEST,
   GET_USER_SUCCESS,
-  GET_USER_FAILURE,
-  MODIFY_USER_REQUEST,
   MODIFY_USER_SUCCESS,
-  MODIFY_USER_FAILURE,
-  REMOVE_USER_REQUEST,
-  REMOVE_USER_SUCCESS,
-  REMOVE_USER_FAILURE,
-  USER_LOGIN_SUCCESS,
-} from '../types/ActionTypes';
-import { AppThunk } from '../types/StateTypes';
-import { User } from '../types';
+  LOGIN_USER_SUCCESS,
+  ACTION_STARTED,
+  ACTION_STOPPED,
+  NOTIFICATION_SUCCESS,
+  NOTIFICATION_FAILURE,
+  LOGOUT_USER_SUCCESS,
+} from '../types';
 import {
   _registerUser,
   _modifyUser,
   _removeUser,
   _getCurrentUser,
-} from '../services/userService';
+  _logUserIn,
+  _logUserOut,
+} from '../services/user';
 
 const registerUser = (formData: User): AppThunk => async (dispatch) => {
   dispatch({
-    type: REGISTER_USER_REQUEST,
+    type: ACTION_STARTED,
   });
   await _registerUser(formData)
     .then((response) => {
+      /**
+       * After user is created,
+       * log him in immediately
+       */
       dispatch({
         type: REGISTER_USER_SUCCESS,
+      });
+      dispatch({
+        type: LOGIN_USER_SUCCESS,
         payload: response.data,
       });
       dispatch({
-        type: USER_LOGIN_SUCCESS,
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
-        type: REGISTER_USER_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 const modifyUser = (formData: User): AppThunk => async (dispatch) => {
   dispatch({
-    type: MODIFY_USER_REQUEST,
+    type: ACTION_STARTED,
   });
   await _modifyUser(formData)
     .then((response) => {
@@ -54,36 +63,46 @@ const modifyUser = (formData: User): AppThunk => async (dispatch) => {
         type: MODIFY_USER_SUCCESS,
         payload: response.data,
       });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
+      });
     })
     .catch((error) => {
       dispatch({
-        type: MODIFY_USER_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 const removeUser = (): AppThunk => async (dispatch) => {
   dispatch({
-    type: REMOVE_USER_REQUEST,
+    type: ACTION_STARTED,
   });
   await _removeUser()
     .then(() => {
       dispatch({
-        type: REMOVE_USER_SUCCESS,
+        type: LOGOUT_USER_SUCCESS,
       });
     })
     .catch((error) => {
       dispatch({
-        type: REMOVE_USER_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
 const getCurrentUser = (): AppThunk => async (dispatch) => {
   dispatch({
-    type: GET_USER_REQUEST,
+    type: ACTION_STARTED,
   });
   await _getCurrentUser()
     .then((response) => {
@@ -91,13 +110,74 @@ const getCurrentUser = (): AppThunk => async (dispatch) => {
         type: GET_USER_SUCCESS,
         payload: response.data,
       });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
+      });
     })
     .catch((error) => {
       dispatch({
-        type: GET_USER_FAILURE,
-        error,
+        type: NOTIFICATION_FAILURE,
+        payload: error,
       });
     });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
 };
 
-export { registerUser, modifyUser, removeUser, getCurrentUser };
+const logUserIn = (formData: User): AppThunk => async (dispatch) => {
+  dispatch({
+    type: ACTION_STARTED,
+  });
+  await _logUserIn(formData)
+    .then((response) => {
+      dispatch({
+        type: LOGIN_USER_SUCCESS,
+        payload: response.data,
+      });
+      dispatch({
+        type: NOTIFICATION_SUCCESS,
+        payload: response.data,
+      });
+    })
+    .catch((error) => {
+      dispatch({
+        type: NOTIFICATION_FAILURE,
+        payload: error,
+      });
+    });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
+};
+
+const logUserOut = (): AppThunk => async (dispatch) => {
+  dispatch({
+    type: ACTION_STARTED,
+  });
+  await _logUserOut()
+    .then(() => {
+      dispatch({
+        type: LOGOUT_USER_SUCCESS,
+      });
+    })
+    .catch((error) => {
+      dispatch({
+        type: NOTIFICATION_FAILURE,
+        payload: error,
+      });
+    });
+  dispatch({
+    type: ACTION_STOPPED,
+  });
+};
+
+export {
+  registerUser,
+  modifyUser,
+  removeUser,
+  getCurrentUser,
+  logUserIn,
+  logUserOut,
+};

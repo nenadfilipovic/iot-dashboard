@@ -1,15 +1,15 @@
 import { combineReducers } from 'redux';
 
-import { authReducer } from './authentication';
-import { userReducer } from './user';
 import { notificationReducer } from './notification';
 import { systemReducer } from './system';
+import { deviceReducer } from './device';
+import { userReducer } from './user';
 
 const rootReducer = combineReducers({
-  authReducer,
-  userReducer,
   notificationReducer,
   systemReducer,
+  deviceReducer,
+  userReducer,
 });
 
 export { rootReducer };

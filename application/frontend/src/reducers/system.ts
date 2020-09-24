@@ -1,28 +1,30 @@
 import {
+  SystemState,
   SystemActionTypes,
-  ACTION_START,
-  ACTION_STOP,
-} from '../types/ActionTypes';
-import { SystemState } from '../types/StateTypes';
+  ACTION_STARTED,
+  ACTION_STOPPED,
+} from '../types';
 
 const initialState: SystemState = {
   isLoading: false,
 };
 const systemReducer = (
-  state: SystemState = initialState,
+  state = initialState,
   action: SystemActionTypes,
-) => {
+): SystemState => {
   switch (action.type) {
-    case ACTION_START:
+    case ACTION_STARTED:
       return {
         ...state,
         isLoading: true,
       };
-    case ACTION_STOP:
+
+    case ACTION_STOPPED:
       return {
         ...state,
         isLoading: false,
       };
+
     default:
       return state;
   }

@@ -1,5 +1,8 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { NavLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
 import {
   Button,
   Container,
@@ -7,11 +10,9 @@ import {
   TextField,
   InputAdornment,
 } from '@material-ui/core';
-import { NavLink } from 'react-router-dom';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import LockIcon from '@material-ui/icons/Lock';
-import { useDispatch } from 'react-redux';
 
 import { PageSegment } from '../components/PageSegment';
 import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
@@ -20,11 +21,11 @@ import { logUserIn } from '../actions';
 const { userHandle, userPassword } = UserAttributesCasting;
 
 const Login = () => {
+  const dispatch = useDispatch();
+
   const { control, handleSubmit } = useForm<User>({
     defaultValues: { userHandle: '', userPassword: '' },
   });
-
-  const dispatch = useDispatch();
 
   const onSubmit = (data: User) => {
     dispatch(logUserIn(data));

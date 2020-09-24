@@ -1,5 +1,11 @@
-import { logUserIn, logUserOut } from './authentication';
-import { registerUser, modifyUser, removeUser, getCurrentUser } from './user';
+import {
+  registerUser,
+  modifyUser,
+  removeUser,
+  getCurrentUser,
+  logUserOut,
+  logUserIn,
+} from './user';
 import {
   notificationSuccess,
   notificationFailure,
