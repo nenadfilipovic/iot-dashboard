@@ -1,0 +1,1 @@
+(rm -rf dist) && tsc && npx pm2 start ecosystem.config.yml

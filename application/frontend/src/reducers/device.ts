@@ -19,7 +19,6 @@ const deviceReducer = (
     case REGISTER_DEVICE_SUCCESS:
       return {
         ...state,
-        devices: [...state.devices, action.payload],
       };
 
     case MODIFY_DEVICE_SUCCESS:

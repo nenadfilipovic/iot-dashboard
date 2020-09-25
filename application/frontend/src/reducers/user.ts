@@ -19,6 +19,7 @@ const userReducer = (
     case REGISTER_USER_SUCCESS:
       return {
         ...state,
+        user: action.payload,
       };
 
     case GET_USER_SUCCESS:

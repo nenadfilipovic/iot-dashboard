@@ -1,7 +1,7 @@
-import { CustomError } from './BaseError';
+import { BaseError } from './base';
 
-class AuthenticationError extends CustomError {
-  constructor(public description: string) {
+class AuthenticationError extends BaseError {
+  constructor() {
     super('Action requires authentication!', 401);
     Object.setPrototypeOf(this, AuthenticationError.prototype);
   }

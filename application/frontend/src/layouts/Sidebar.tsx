@@ -1,7 +1,9 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 import InsertChartIcon from '@material-ui/icons/InsertChart';
 import FaceIcon from '@material-ui/icons/Face';
-import { NavLink } from 'react-router-dom';
 import {
   Hidden,
   Drawer,
@@ -19,7 +21,7 @@ import avatar from '../assets/images/avatar.svg';
 import { MenuItem } from '../components/MenuItem';
 import { Logo } from '../components/Logo';
 import { UserAvatar } from '../components/UserAvatar';
-import { User, ReactSVGComponent } from '../types';
+import { User, ReactSVGComponent, RootState } from '../types';
 
 const navigationItems = [
   {
@@ -47,15 +49,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-// TODO replace with global state
-const userData: User = {
-  userFirstName: 'Nenad',
-  userLastName: 'Filipovic',
-  userHandle: 'nenadfilipovic',
-  userEmailAddress: 'nenad@nenad.com',
-};
-//
-
 const Sidebar = ({
   isNavOpen,
   onNavClose,
@@ -64,6 +57,19 @@ const Sidebar = ({
   onNavClose: () => void;
 }) => {
   const classes = useStyles();
+
+  const currentUser = useSelector(
+    (state: RootState) => state.notificationReducer.message,
+  );
+
+  console.log(currentUser);
+
+  const userData: User = {
+    userFirstName: 'nenad',
+    userLastName: 'filipovic',
+    userHandle: 'nenad88',
+    userEmailAddress: 'nenad@nenad.com',
+  };
 
   const sidebarContent = (
     <Box

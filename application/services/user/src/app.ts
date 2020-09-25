@@ -8,9 +8,10 @@ import koaCors from '@koa/cors';
 import zlib from 'zlib';
 import config from 'config';
 
-import { router } from './api/user.routes';
+import { router } from './api/userRoutes';
 import { errorMiddleware } from './services/error';
-import { AuthenticationError } from './errors/AuthenticationError';
+import { AuthenticationError } from './errors/authentication';
+import { errorHandler } from './errors/handler';
 
 const cookieKey: string = config.get('service.cookieKey');
 const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');
@@ -28,17 +29,19 @@ const sessionConfig = {
 };
 
 if (process.env.NODE_ENV === 'development') {
-  app.use(koaLogger());
+  app.use(koaLogger()).use(koaCors({ credentials: true }));
 }
 
 app
-  .use(koaCors({ credentials: true }))
+  .on('error', (error) => {
+    errorHandler.handleError(error);
+  })
   .use(errorMiddleware)
   .use(async function (ctx, next) {
     return next().catch((error) => {
       if (401 == error.status) {
         ctx.status = 401;
-        throw new AuthenticationError(error.message);
+        throw new AuthenticationError();
       } else {
         throw error;
       }

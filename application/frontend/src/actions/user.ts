@@ -45,7 +45,7 @@ const registerUser = (formData: User): AppThunk => async (dispatch) => {
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
+        payload: error.response,
       });
     });
   dispatch({
@@ -131,20 +131,21 @@ const logUserIn = (formData: User): AppThunk => async (dispatch) => {
     type: ACTION_STARTED,
   });
   await _logUserIn(formData)
-    .then((response) => {
+    .then(({ data }) => {
       dispatch({
         type: LOGIN_USER_SUCCESS,
-        payload: response.data,
+        data: data.user,
       });
       dispatch({
         type: NOTIFICATION_SUCCESS,
-        payload: response.data,
+        status: data.status,
+        message: data.message,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
+        payload: error.response,
       });
     });
   dispatch({

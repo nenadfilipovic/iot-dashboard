@@ -28,6 +28,7 @@ const notificationReducer = (
         type: action.payload,
         message: action.payload,
       };
+
     case CLEAR_NOTIFICATIONS:
       return {
         ...state,
