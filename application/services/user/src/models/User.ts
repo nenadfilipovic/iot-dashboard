@@ -1,121 +1,90 @@
-import { DataTypes } from 'sequelize';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BeforeInsert,
+  BeforeUpdate,
+  BaseEntity,
+} from 'typeorm';
 import bcrypt from 'bcryptjs';
+import {
+  MinLength,
+  Length,
+  IsEmail,
+  IsAlpha,
+  IsAlphanumeric,
+  IsString,
+} from 'class-validator';
 
-import { db } from '../db/sequelize';
-import { logger } from '../utils/logger';
-import { User } from '../types';
+import { UserAttributes, UserType } from '../types';
 
-const User = db.define<User>(
-  'User',
-  {
-    userUniqueIndentifier: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      allowNull: false,
-      defaultValue: DataTypes.UUIDV4,
-      unique: {
-        name: 'id',
-        msg: 'User ID already in use!',
-      },
-    },
+@Entity()
+class User extends BaseEntity implements UserAttributes {
+  @PrimaryGeneratedColumn('uuid')
+  userUniqueIndentifier!: string;
 
-    userFirstName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      // validate: {
-      //   len: {
-      //     msg: 'Name length should be between 3 and 25 characters!',
-      //     args: [3, 25],
-      //   },
-      //   isAlpha: {
-      //     msg: 'Name should only consist of letters!',
-      //   },
-      // },
-    },
+  @Column({ unique: true })
+  @IsString({
+    message: 'User handle must be a string!',
+  })
+  @IsAlphanumeric('en-US', {
+    message: 'User handle can only contain letters and numbers!',
+  })
+  @MinLength(6, {
+    message: 'User handle should be at least 6 characters long!',
+  })
+  userHandle!: string;
 
-    userLastName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      // validate: {
-      //   len: {
-      //     msg: 'Surname length should be between 3 and 25 characters!',
-      //     args: [3, 25],
-      //   },
-      //   isAlpha: {
-      //     msg: 'Surname should only consist of letters!',
-      //   },
-      // },
-    },
+  @Column()
+  @IsString({ message: 'User first name must be a string!' })
+  @IsAlpha('en-US', { message: 'User first name can only contain letters!' })
+  @Length(3, 25, {
+    message: 'User first name should be between 3 and 25 characters long!',
+  })
+  userFirstName!: string;
 
-    userEmailAddress: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: {
-        name: 'email',
-        msg: 'Email address already in use!',
-      },
-      // validate: {
-      //   isEmail: {
-      //     msg: 'Email address is not in valid email format!',
-      //   },
-      //   isLowercase: true,
-      // },
-    },
+  @Column()
+  @IsString({ message: 'User last name must be a string!' })
+  @IsAlpha('en-US', { message: 'User last name can only contain letters!' })
+  @Length(3, 25, {
+    message: 'User last name should be between 3 and 25 characters long!',
+  })
+  userLastName!: string;
 
-    userHandle: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: {
-        name: 'handle',
-        msg: 'User handle already in use!',
-      },
-      // validate: {
-      //   len: {
-      //     msg: 'Username length should be between 3 and 25 characters!',
-      //     args: [3, 25],
-      //   },
-      //   isAlphanumeric: {
-      //     msg: 'Username should only consist of letters and numbers!',
-      //   },
-      // },
-    },
+  @Column({ unique: true })
+  @IsString({ message: 'User email address must be a string!' })
+  @IsEmail({}, { message: 'Valid user email address must be provided!' })
+  userEmailAddress!: string;
 
-    userPassword: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      // validate: {
-      //   len: {
-      //     msg: 'The password length should be between 7 and 100 characters!',
-      //     args: [7, 100],
-      //   },
-      // },
-    },
-  },
-  {},
-);
+  @Column()
+  @IsString({ message: 'User password must be a string!' })
+  @MinLength(6, {
+    message: 'User password should be at least 6 characters long!',
+  })
+  userPassword!: string;
 
-// TODO - fix
-User.beforeSave(async (user) => {
-  if (user.userPassword && user.changed('userPassword')) {
-    user.userPassword = await bcrypt.hash(user.userPassword, 12);
+  @Column({ type: 'enum', enum: UserType, default: UserType.standard })
+  userRole!: UserType;
+
+  @UpdateDateColumn({ nullable: true })
+  userModifyDate!: Date;
+
+  @CreateDateColumn()
+  userRegisterDate!: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword(): Promise<void> {
+    if (!!this.userPassword) {
+      this.userPassword = await bcrypt.hash(this.userPassword, 12);
+    }
   }
-});
 
-User.prototype.passwordValidator = async function (userPassword: string) {
-  return await bcrypt.compare(userPassword, this.userPassword);
-};
-
-// TODO - fix
-User.sync({ force: true })
-  .then(() => logger.info('Data model is in sync.'))
-  .then(async () => {
-    await User.create({
-      userHandle: 'admin',
-      userFirstName: 'dashboard',
-      userLastName: 'user',
-      userEmailAddress: 'admin@home.com',
-      userPassword: 'adminpassword',
-    }).then(() => logger.info('Admin user created.'));
-  });
+  async validatePassword(userPassword: string): Promise<boolean> {
+    return await bcrypt.compare(userPassword, this.userPassword);
+  }
+}
 
 export { User };

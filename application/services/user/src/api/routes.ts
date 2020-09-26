@@ -9,7 +9,7 @@ import {
   logUserIn,
   logUserOut,
   mqttAuth,
-} from './userController';
+} from './controller';
 import { validateToken } from '../services/jwt';
 
 const prefix: string = config.get('service.prefix');

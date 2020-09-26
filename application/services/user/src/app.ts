@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import Koa from 'koa';
 import koaHelmet from 'koa-helmet';
 import koaBodyparser from 'koa-bodyparser';
@@ -8,7 +9,7 @@ import koaCors from '@koa/cors';
 import zlib from 'zlib';
 import config from 'config';
 
-import { router } from './api/userRoutes';
+import { router } from './api/routes';
 import { errorMiddleware } from './services/error';
 import { AuthenticationError } from './errors/authentication';
 import { errorHandler } from './errors/handler';

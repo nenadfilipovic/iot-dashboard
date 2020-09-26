@@ -1,9 +1,11 @@
 import { DefaultContext } from 'koa';
+import { validate } from 'class-validator';
 
 import { User } from '../models/User';
 import { logger } from '../utils/logger';
 import { createToken } from '../services/jwt';
 import { BadRequestError } from '../errors/badRequest';
+import { UserAttributes } from '../types';
 
 /**
  * Register user...
@@ -11,50 +13,49 @@ import { BadRequestError } from '../errors/badRequest';
 
 const registerUser = async (ctx: DefaultContext): Promise<void> => {
   const {
+    userHandle,
     userFirstName,
     userLastName,
-    userHandle,
     userEmailAddress,
     userPassword,
-  } = ctx.request.body;
+  } = ctx.request.body as UserAttributes;
 
   const existingUser = await User.findOne({
-    where: { userEmailAddress },
+    where: [{ userHandle }, { userEmailAddress }],
   });
 
   if (existingUser)
-    throw new BadRequestError('Provided email is already in use!');
+    throw new BadRequestError(
+      'Provided email or user handle is already in use!',
+    );
 
-  const handleAlreadyUsed = await User.findOne({
-    where: { userHandle },
-  });
-
-  if (handleAlreadyUsed)
-    throw new BadRequestError('Provided handle is already in use!');
-
-  const newUser = User.build({
+  const newUser = User.create({
+    userHandle,
     userFirstName,
     userLastName,
-    userHandle,
     userEmailAddress,
     userPassword,
   });
 
-  const user = await newUser.save().then((user) => user);
+  const validateResult = await validate(newUser, {
+    forbidUnknownValues: true,
+    validationError: { target: false, value: false },
+  });
 
-  const token = createToken(user.userUniqueIndentifier);
+  if (validateResult.length > 0) {
+  }
 
-  ctx.session = { token };
-
-  Object.assign(user, { userPassword: undefined });
-
-  ctx.body = {
-    status: 'success',
-    message: 'You have successfully registered',
-    data: user,
-  };
-
-  logger.info(`User: ${user.userUniqueIndentifier} successfully registered`);
+  await User.save(newUser).then((user) => {
+    const token = createToken(user.userUniqueIndentifier);
+    ctx.session = { token };
+    Object.assign(user, { userPassword: undefined });
+    ctx.body = {
+      status: 'success',
+      message: 'You have successfully registered new account',
+      data: user,
+    };
+    logger.info(`User: ${user.userUniqueIndentifier} successfully registered`);
+  });
 };
 
 /**
@@ -62,39 +63,41 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyUser = async (ctx: DefaultContext): Promise<void> => {
-  const loggedInUser = ctx.state.user;
+  const userUniqueIndentifier = ctx.state.user.id;
 
   const existingUser = await User.findOne({
-    where: { userUniqueIndentifier: loggedInUser.id },
+    where: { userUniqueIndentifier },
   });
 
   if (!existingUser) throw new BadRequestError('User does not exist!');
 
   const {
+    userHandle,
     userFirstName,
     userLastName,
     userEmailAddress,
     userPassword,
-  } = ctx.request.body;
+  } = ctx.request.body as UserAttributes;
 
-  existingUser.update({
+  const modifiedUser = User.merge(existingUser, {
+    userHandle,
     userFirstName,
     userLastName,
     userEmailAddress,
     userPassword,
   });
 
-  const user = await existingUser.save().then((user) => user);
-
-  Object.assign(user, { userPassword: undefined });
-
-  ctx.body = {
-    status: 'success',
-    message: 'You have successfully updated your data',
-    data: user,
-  };
-
-  logger.info(`User: ${user.userUniqueIndentifier} data successfully modified`);
+  await User.save(modifiedUser).then((user) => {
+    Object.assign(user, { userPassword: undefined });
+    ctx.body = {
+      status: 'success',
+      message: 'You have successfully updated your data',
+      data: user,
+    };
+    logger.info(
+      `User: ${user.userUniqueIndentifier} data successfully modified`,
+    );
+  });
 };
 
 /**
@@ -102,17 +105,15 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const removeUser = async (ctx: DefaultContext): Promise<void> => {
-  const loggedInUser = ctx.state.user;
+  const userUniqueIndentifier = ctx.state.user.id;
 
   const existingUser = await User.findOne({
-    where: { userUniqueIndentifier: loggedInUser.id },
+    where: { userUniqueIndentifier },
   });
 
   if (!existingUser) throw new BadRequestError('User does not exist!');
 
-  existingUser.destroy();
-
-  await existingUser.save();
+  await User.delete(existingUser);
 
   ctx.session = null;
 
@@ -131,21 +132,22 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
-  const loggedInUser = ctx.state.user;
+  const userUniqueIndentifier = ctx.state.user.id;
 
-  const existingUser = await User.findOne({
-    where: { userUniqueIndentifier: loggedInUser.id },
-  });
-
-  if (!existingUser) throw new BadRequestError('User does not exist!');
-
-  Object.assign(existingUser, { userPassword: undefined });
-
-  ctx.body = {
-    status: 'success',
-    message: 'You have successfully retrieved your account data',
-    data: existingUser,
-  };
+  await User.findOne({
+    where: { userUniqueIndentifier },
+  })
+    .then((user) => {
+      Object.assign(user, { userPassword: undefined });
+      ctx.body = {
+        status: 'success',
+        message: 'You have successfully retrieved your account data',
+        data: user,
+      };
+    })
+    .catch(() => {
+      throw new BadRequestError('User does not exist!');
+    });
 };
 
 /**
@@ -153,7 +155,8 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logUserIn = async (ctx: DefaultContext): Promise<void> => {
-  const { userHandle, userEmailAddress, userPassword } = ctx.request.body;
+  const { userHandle, userEmailAddress, userPassword } = ctx.request
+    .body as UserAttributes;
 
   /**
    * Support for logging in via email and username.
@@ -165,12 +168,11 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
 
   const existingUser = await User.findOne({
     where: { ...loginOptions },
-    attributes: { include: ['userPassword'] },
   });
 
   if (!existingUser) throw new BadRequestError('User does not exist!');
 
-  const correctPassword = await existingUser.passwordValidator(userPassword);
+  const correctPassword = await existingUser.validatePassword(userPassword);
 
   if (!correctPassword)
     throw new BadRequestError('Bad credentials, please try again!');
@@ -197,7 +199,7 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logUserOut = async (ctx: DefaultContext): Promise<void> => {
-  const loggedInUser = ctx.state.user;
+  const userUniqueIndentifier = ctx.state.user.id;
 
   ctx.session = null;
 
@@ -206,21 +208,18 @@ const logUserOut = async (ctx: DefaultContext): Promise<void> => {
     message: 'You have successfully logged out',
   };
 
-  logger.info(`User: ${loggedInUser.id} successfully logged out`);
+  logger.info(`User: ${userUniqueIndentifier} successfully logged out`);
 };
 
 /**
- * MQTT auth route...  TODO - Fix mqtt auth route
+ * MQTT auth route...
  */
 
 const mqttAuth = async (ctx: DefaultContext): Promise<void> => {
-  const { username, password } = ctx.request.body;
+  const { userHandle, userPassword } = ctx.request.body as UserAttributes;
 
   const existingUser = await User.findOne({
-    where: {
-      username,
-    },
-    attributes: { include: ['password'] },
+    where: { userHandle },
   });
 
   if (!existingUser) {
@@ -228,7 +227,7 @@ const mqttAuth = async (ctx: DefaultContext): Promise<void> => {
     return;
   }
 
-  const correctPassword = await existingUser.passwordValidator(password);
+  const correctPassword = await existingUser.validatePassword(userPassword);
 
   if (!correctPassword) {
     ctx.response.status = 400;

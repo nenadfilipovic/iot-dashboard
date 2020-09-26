@@ -1,17 +1,16 @@
-import { Model } from 'sequelize';
-
-export interface User extends Model {
+export interface UserAttributes {
   userUniqueIndentifier: string;
   userHandle: string;
   userFirstName: string;
   userLastName: string;
   userEmailAddress: string;
-  userPassword?: string;
-  userLocation?: string;
-  userRole?: UserType;
-  userLastLoginDate?: string;
-  userRegisterDate?: string;
-  passwordValidator: (userPassword: string) => Promise<boolean>;
+  userPassword: string;
+  userRole: UserType;
+  userModifyDate: Date;
+  userRegisterDate: Date;
 }
 
-type UserType = 'admin' | 'standard';
+export enum UserType {
+  admin = 'admin',
+  standard = 'standard',
+}

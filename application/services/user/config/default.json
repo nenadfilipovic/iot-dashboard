@@ -11,9 +11,11 @@
     "expiresIn": "5m"
   },
   "db": {
+    "type": "mysql",
     "host": "db",
-    "user": "user",
+    "port": 3306,
+    "username": "user",
     "password": "password",
-    "name": "user"
+    "database": "user"
   }
 }

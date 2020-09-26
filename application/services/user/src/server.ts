@@ -1,13 +1,19 @@
 import http from 'http';
 import config from 'config';
+import { Connection } from 'typeorm';
 
-import { db } from './db/sequelize';
+import { initDatabase } from './db/typeorm';
 import { app } from './app';
 import { logger } from './utils/logger';
 import { errorHandler } from './errors/handler';
+import { User } from './models/User';
 
 const name: string = config.get('service.name');
 const port: string = config.get('service.port');
+
+const server = http.createServer(app.callback());
+
+const database = initDatabase;
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
@@ -16,29 +22,42 @@ process.on('unhandledRejection', (reason: string) => {
 process.on('uncaughtException', (error: Error) => {
   errorHandler.handleError(error);
   if (!errorHandler.isTrustedError(error)) {
-    process.exit(1);
+    shutDown(database, server);
   }
 });
 
-const server = http.createServer(app.callback());
-
-const database = db;
-
 const startServer = async () => {
-  logger.info(`${name} service is starting`);
+  logger.info(`${name} service is starting...`);
 
   /**
    * Load server, db, etc...
    */
 
-  database.authenticate().then(() => {
-    logger.info('Database connection established successfully');
+  database.then((connection) => {
+    if (connection.isConnected)
+      logger.info('Database connection established successfully.');
+
+    /**
+     * Create default admin user...
+     */
+
+    connection
+      .createQueryBuilder()
+      .insert()
+      .into(User)
+      .values({
+        userHandle: 'admin',
+        userFirstName: 'dashboard',
+        userLastName: 'user',
+        userEmailAddress: 'admin@home.com',
+        userPassword: 'adminpassword',
+      })
+      .orIgnore()
+      .execute();
 
     server.listen(port, () =>
-      logger.info(`Server successfully started at port ${port}`),
+      logger.info(`Server successfully started at port ${port}.`),
     );
-
-    return server;
   });
 };
 
@@ -49,17 +68,21 @@ startServer()
     throw new Error(error);
   });
 
-process.on('SIGINT', function () {
+process.on('SIGINT', () => {
+  shutDown(database, server);
+});
+
+const shutDown = (database: Promise<Connection>, server: http.Server) => {
   database
-    .close()
-    .then(() => {
-      logger.info('Closing down database connection');
+    .then((connection) => {
+      logger.info('Closing down database connection...');
+      connection.close();
       server.close(() => {
-        logger.info('Server shutting down');
+        logger.info('Server shutting down...');
         process.exit(0);
       });
     })
     .catch(() => {
       process.exit(1);
     });
-});
+};
