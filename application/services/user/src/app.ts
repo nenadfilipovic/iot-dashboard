@@ -9,10 +9,10 @@ import koaCors from '@koa/cors';
 import zlib from 'zlib';
 import config from 'config';
 
-import { router } from './api/routes';
-import { errorMiddleware } from './services/error';
-import { AuthenticationError } from './errors/authentication';
-import { errorHandler } from './errors/handler';
+import { userRouter } from './components/user';
+import { errorMiddleware } from './middlewares/errorMiddleware';
+import { ErrorHandler } from './errors/ErrorHandler';
+import { BaseError } from './errors/BaseError';
 
 const cookieKey: string = config.get('service.cookieKey');
 const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');
@@ -35,14 +35,14 @@ if (process.env.NODE_ENV === 'development') {
 
 app
   .on('error', (error) => {
-    errorHandler.handleError(error);
+    ErrorHandler.handleError(error);
   })
   .use(errorMiddleware)
   .use(async function (ctx, next) {
     return next().catch((error) => {
       if (401 == error.status) {
         ctx.status = 401;
-        throw new AuthenticationError();
+        throw new BaseError('Action requires authentication!', 401);
       } else {
         throw error;
       }
@@ -61,7 +61,7 @@ app
       },
     }),
   )
-  .use(router.routes())
-  .use(router.allowedMethods({ throw: true }));
+  .use(userRouter.routes())
+  .use(userRouter.allowedMethods({ throw: true }));
 
 export { app };

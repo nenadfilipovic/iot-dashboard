@@ -43,7 +43,7 @@ git clone https://github.com/nenadfilipovic/iot-dashboard
 - [TypeScript](https://www.typescriptlang.org/)
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [EMQX](https://www.emqx.io/)
-- [Sequelize](https://sequelize.org/)
+- [TypeORM](https://typeorm.io/)
 - [MySQL](https://www.mysql.com/)
 - [JWT](https://jwt.io/)
 - [InfluxDB](https://www.influxdata.com/)

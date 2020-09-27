@@ -1,6 +1,0 @@
-apps:
-  - script: ./dist/server.js
-    name: 'server'
-    watch: true
-    env:
-      NODE_ENV: production

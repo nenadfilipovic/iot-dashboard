@@ -1,88 +1,119 @@
 import http from 'http';
 import config from 'config';
-import { Connection } from 'typeorm';
 
-import { initDatabase } from './db/typeorm';
+import { initDatabase } from './database';
 import { app } from './app';
 import { logger } from './utils/logger';
-import { errorHandler } from './errors/handler';
-import { User } from './models/User';
+import { ErrorHandler } from './errors/ErrorHandler';
+import { User } from './components/user';
 
 const name: string = config.get('service.name');
 const port: string = config.get('service.port');
-
-const server = http.createServer(app.callback());
-
-const database = initDatabase;
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
 });
 
 process.on('uncaughtException', (error: Error) => {
-  errorHandler.handleError(error);
-  if (!errorHandler.isTrustedError(error)) {
-    shutDown(database, server);
+  ErrorHandler.handleError(error);
+  if (!ErrorHandler.isTrustedError(error)) {
+    process.exit(1);
   }
 });
 
-const startServer = async () => {
-  logger.info(`${name} service is starting...`);
-
-  /**
-   * Load server, db, etc...
-   */
-
-  database.then((connection) => {
-    if (connection.isConnected)
-      logger.info('Database connection established successfully.');
-
-    /**
-     * Create default admin user...
-     */
-
-    connection
-      .createQueryBuilder()
-      .insert()
-      .into(User)
-      .values({
-        userHandle: 'admin',
-        userFirstName: 'dashboard',
-        userLastName: 'user',
-        userEmailAddress: 'admin@home.com',
-        userPassword: 'adminpassword',
-      })
-      .orIgnore()
-      .execute();
-
-    server.listen(port, () =>
-      logger.info(`Server successfully started at port ${port}.`),
-    );
-  });
-};
-
-startServer()
-  .then()
-  .catch((error) => {
-    logger.error(`Unable to start ${name} service!`);
-    throw new Error(error);
-  });
-
 process.on('SIGINT', () => {
-  shutDown(database, server);
+  Server.shutDownServer();
 });
 
-const shutDown = (database: Promise<Connection>, server: http.Server) => {
-  database
-    .then((connection) => {
-      logger.info('Closing down database connection...');
-      connection.close();
-      server.close(() => {
-        logger.info('Server shutting down...');
-        process.exit(0);
-      });
-    })
-    .catch(() => {
+class Server {
+  private static httpServer = http.createServer(app.callback());
+  private static appDatabase = initDatabase;
+
+  public static async startServer(): Promise<void> {
+    try {
+      logger.info(`${name} service is starting...`);
+
+      /**
+       * Load server, db, etc...
+       */
+
+      const connection = await this.appDatabase.connect();
+
+      if (connection.isConnected) {
+        logger.info('Database connection established successfully.');
+
+        /**
+         * Create default admin user...
+         */
+
+        connection
+          .createQueryBuilder()
+          .insert()
+          .into(User)
+          .values({
+            userHandle: 'admin',
+            userFirstName: 'dashboard',
+            userLastName: 'user',
+            userEmailAddress: 'admin@home.com',
+            userPassword: 'password',
+          })
+          .orIgnore()
+          .execute();
+
+        /**
+         * Start server after everything is ready...
+         */
+
+        this.httpServer.listen(port, () =>
+          logger.info(`Server successfully started at port ${port}.`),
+        );
+      }
+    } catch (error) {
+      logger.error(`Unable to start ${name} service!`);
+
+      /**
+       * In case something is wrong log error
+       * and kill process...
+       */
+
+      logger.error(error);
+
       process.exit(1);
-    });
-};
+    }
+  }
+
+  public static async shutDownServer(): Promise<void> {
+    try {
+      logger.info(`${name} service is stopping...`);
+
+      await this.appDatabase.close();
+
+      if (!this.appDatabase.isConnected) {
+        logger.info('Database connection is closed.');
+
+        this.httpServer.close((error) => {
+          logger.info('Server shutting down...');
+
+          if (error) {
+            process.exit(1);
+          }
+
+          process.exit(0);
+        });
+      }
+    } catch (error) {
+      logger.info('Could not shut down service gracefully, exiting...');
+
+      /**
+       * In case something is wrong log error
+       * and kill process...
+       */
+
+      logger.error(error);
+
+      process.exit(1);
+    }
+  }
+}
+
+Server.startServer();

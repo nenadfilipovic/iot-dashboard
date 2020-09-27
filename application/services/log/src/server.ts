@@ -1,38 +1,94 @@
 import http from 'http';
 import config from 'config';
 
-import { db } from './db/influx';
+import { initDatabase } from './database';
 import { app } from './app';
 import { logger } from './utils/logger';
+import { ErrorHandler } from './errors/ErrorHandler';
 
 const name: string = config.get('service.name');
 const port: string = config.get('service.port');
 
-const startServer = async () => {
-  logger.info(`${name} service is starting.`);
+process.on('unhandledRejection', (reason: string) => {
+  throw reason;
+});
 
-  /**
-   * Load server, db, etc...
-   */
+process.on('uncaughtException', (error: Error) => {
+  ErrorHandler.handleError(error);
+  if (!ErrorHandler.isTrustedError(error)) {
+    process.exit(1);
+  }
+});
 
-  db.getDatabaseNames().then((names) => {
-    logger.info('Database connection established successfully.');
-    logger.info(names);
-    http
-      .createServer(app.callback())
-      .listen(port, () =>
+process.on('SIGINT', () => {
+  Server.shutDownServer();
+});
+
+class Server {
+  private static httpServer = http.createServer(app.callback());
+  private static appDatabase = initDatabase;
+
+  public static async startServer(): Promise<void> {
+    try {
+      logger.info(`${name} service is starting...`);
+
+      /**
+       * Load server, db, etc...
+       */
+
+      const connection = await this.appDatabase.ping(1000);
+
+      console.log(connection);
+
+      logger.info('Database connection established successfully.');
+
+      /**
+       * Start server after everything is ready...
+       */
+
+      this.httpServer.listen(port, () =>
         logger.info(`Server successfully started at port ${port}.`),
       );
-  });
-};
+    } catch (error) {
+      logger.error(`Unable to start ${name} service!`);
 
-startServer()
-  /**
-   * Need to hack around server.address().port if i want to show port because:
-   * https://github.com/microsoft/ConversationLearner-Samples/issues/269
-   */
-  .then()
-  .catch((error) => {
-    logger.error(`Unable to start ${name} service!`);
-    throw new Error(error);
-  });
+      /**
+       * In case something is wrong log error
+       * and kill process...
+       */
+
+      logger.error(error);
+
+      process.exit(1);
+    }
+  }
+
+  public static async shutDownServer(): Promise<void> {
+    try {
+      logger.info(`${name} service is stopping...`);
+
+      this.httpServer.close((error) => {
+        logger.info('Server shutting down...');
+
+        if (error) {
+          process.exit(1);
+        }
+
+        process.exit(0);
+      });
+    } catch (error) {
+      logger.info('Could not shut down service gracefully, exiting...');
+
+      /**
+       * In case something is wrong log error
+       * and kill process...
+       */
+
+      logger.error(error);
+
+      process.exit(1);
+    }
+  }
+}
+
+Server.startServer();

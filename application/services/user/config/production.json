@@ -12,8 +12,9 @@
   },
   "db": {
     "host": "db",
-    "user": "user",
+    "port": 3306,
+    "username": "user",
     "password": "password",
-    "name": "user"
+    "database": "user"
   }
 }

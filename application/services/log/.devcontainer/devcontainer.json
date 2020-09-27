@@ -9,7 +9,10 @@
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
     "extensions.ignoreRecommendations": true,
-    "editor.formatOnSaveMode": "modifications"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    }
   },
   "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
   "forwardPorts": [3003],

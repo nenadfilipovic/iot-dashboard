@@ -12,8 +12,9 @@
   },
   "db": {
     "host": "influx-db",
-    "user": "user",
+    "port": 8086,
+    "username": "user",
     "password": "password",
-    "name": "log"
+    "database": "log"
   }
 }
