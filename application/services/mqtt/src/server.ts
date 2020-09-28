@@ -1,47 +1,73 @@
-import MQTT from 'mqtt';
-import * as AMQP from 'amqp-ts';
 import config from 'config';
 
 import { logger } from './utils/logger';
+import { ErrorHandler } from './errors/error-handler';
+import { eventBus } from './event-bus';
+import { mqttClient } from './mqtt-client';
 
-const host: string = config.get('mqtt.host');
-const port: number = config.get('mqtt.port');
-const username: string = config.get('mqtt.username');
-const password: string = config.get('mqtt.password');
+const name: string = config.get('service.name');
 const topic: string = config.get('mqtt.topic');
 
-const connection = new AMQP.Connection('amqp://rabbitmq');
-const exchange = connection.declareExchange('log.added');
+process.on('unhandledRejection', (reason: string) => {
+  throw reason;
+});
 
-const mqttOptions = {
-  host,
-  port,
-  username,
-  password,
-};
+process.on('uncaughtException', (error: Error) => {
+  ErrorHandler.handleError(error);
+  if (!ErrorHandler.isTrustedError(error)) {
+    process.exit(1);
+  }
+});
 
-const client = MQTT.connect(mqttOptions);
+process.on('SIGINT', () => {
+  Server.shutDownServer();
+});
 
-client.on('connect', () => {
-  logger.info(`MQTT client is connected to ${host} at port ${port}`);
+class Server {
+  private static eventBus = eventBus;
+  private static mqttClient = mqttClient;
 
-  client.subscribe(topic);
+  public static async startServer(): Promise<void> {
+    try {
+      logger.info(`${name} service is starting`);
 
-  client.on('message', (topic, message) => {
-    if (!topic.startsWith('$')) {
-      const msg = new AMQP.Message(
-        JSON.stringify({
-          topic: topic,
-          message: JSON.parse(message.toString()),
-        }),
-      );
-      exchange.send(msg);
+      /**
+       * Load server, db, etc
+       */
+
+      mqttClient.on('connect', () => {
+        logger.info('Mqtt client have successfully connected to broker'),
+          mqttClient.subscribe(topic);
+      });
+    } catch (error) {
+      logger.error(`Unable to start ${name} service!`);
+
+      /**
+       * In case something is wrong log error
+       * and kill process
+       */
+
+      logger.error(error);
+      process.exit(1);
     }
-  });
-  client.end();
-});
+  }
 
-client.on('error', (error) => {
-  logger.error('Something is wrong!');
-  throw error;
-});
+  public static async shutDownServer(): Promise<void> {
+    try {
+      logger.info(`${name} service is stopping`);
+      this.mqttClient.end();
+    } catch (error) {
+      logger.error('Unable to shut down service gracefully, exiting');
+
+      /**
+       * In case something is wrong log error
+       * and kill process
+       */
+
+      logger.error(error);
+      process.exit(1);
+    }
+  }
+}
+
+Server.startServer();

@@ -1,17 +1,17 @@
 import { DefaultContext } from 'koa';
 
-import { Device } from './deviceModel';
+import { Device } from './device-model';
 import { logger } from '../../utils/logger';
-import { BaseError } from '../../errors/BaseError';
-import { DeviceAttributes } from './deviceTypes';
+import { BaseError } from '../../errors/base-error';
+import { DeviceAttributes } from './device-types';
 import {
-  DEVICE_CHANNEL_IN_USE,
+  DEVICE_CHANNEL_USED,
   DEVICE_DOES_NOT_EXIST,
   NO_PERMISION,
-} from './deviceErrors';
+} from './device-errors';
 
 /**
- * Register device...
+ * Register device
  */
 
 const registerDevice = async (ctx: DefaultContext): Promise<void> => {
@@ -19,13 +19,13 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
     .request.body as DeviceAttributes;
 
   /**
-   * Validation here...
+   * Validation here
    */
 
   const existingDevice = await Device.findOne({ where: { deviceChannel } });
 
   if (existingDevice) {
-    throw new BaseError(DEVICE_CHANNEL_IN_USE, 400);
+    throw new BaseError(DEVICE_CHANNEL_USED, 400);
   }
 
   const deviceOwner = ctx.state.user.id;
@@ -52,7 +52,7 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Modify device...
+ * Modify device
  */
 
 const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
@@ -77,7 +77,7 @@ const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
     where: { deviceChannel },
   });
 
-  if (alreadyUsedProperty) throw new BaseError(DEVICE_CHANNEL_IN_USE, 400);
+  if (alreadyUsedProperty) throw new BaseError(DEVICE_CHANNEL_USED, 400);
 
   const modifiedDevice = Device.merge(existingDevice, {
     deviceName,
@@ -100,7 +100,7 @@ const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Remove device...
+ * Remove device
  */
 
 const removeDevice = async (ctx: DefaultContext): Promise<void> => {
@@ -131,7 +131,7 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Get single device...
+ * Get single device
  */
 
 const getSingleDevice = async (ctx: DefaultContext): Promise<void> => {
@@ -157,7 +157,7 @@ const getSingleDevice = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Get all devices...
+ * Get all devices
  */
 
 const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
@@ -175,7 +175,7 @@ const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * MQTT acl route...
+ * MQTT acl route
  */
 
 const mqttAcl = async (ctx: DefaultContext): Promise<void> => {

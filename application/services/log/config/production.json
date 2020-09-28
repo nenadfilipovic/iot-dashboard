@@ -16,5 +16,8 @@
     "username": "user",
     "password": "password",
     "database": "log"
+  },
+  "amqp": {
+    "host": "rabbitmq"
   }
 }

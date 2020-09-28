@@ -1,6 +1,6 @@
 import { Context, Next } from 'koa';
 
-import { ErrorHandler } from '../errors/ErrorHandler';
+import { ErrorHandler } from '../errors/error-handler';
 
 const errorMiddleware = async (ctx: Context, next: Next): Promise<void> => {
   try {

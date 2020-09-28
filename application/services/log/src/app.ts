@@ -9,9 +9,9 @@ import zlib from 'zlib';
 import config from 'config';
 
 import { logRouter } from './components/log';
-import { errorMiddleware } from './middlewares/errorMiddleware';
-import { ErrorHandler } from './errors/ErrorHandler';
-import { BaseError } from './errors/BaseError';
+import { errorMiddleware } from './middlewares/error-middleware';
+import { ErrorHandler } from './errors/error-handler';
+import { BaseError } from './errors/base-error';
 
 const cookieKey: string = config.get('service.cookieKey');
 const cookieKeyExpiresIn: number = config.get('service.cookieKeyExpiresIn');

@@ -9,8 +9,8 @@ import {
   logUserIn,
   logUserOut,
   mqttAuth,
-} from './userController';
-import { validateToken } from '../../middlewares/jwtMiddleware';
+} from './user-controller';
+import { validateToken } from '../../middlewares/jwt-middleware';
 
 const prefix: string = config.get('service.prefix');
 

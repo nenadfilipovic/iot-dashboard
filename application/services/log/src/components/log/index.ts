@@ -1,1 +1,2 @@
-export { logRouter } from './logRoutes';
+export { logRouter } from './log-routes';
+export { registerLog } from './log-controller';

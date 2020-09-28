@@ -11,7 +11,7 @@ const database: string = config.get('db.database');
 
 const connectionManager = getConnectionManager();
 
-const initDatabase = connectionManager.create({
+const mysqlDatabaseConnection = connectionManager.create({
   type: 'mysql',
   host,
   port,
@@ -24,4 +24,4 @@ const initDatabase = connectionManager.create({
   logging: false,
 });
 
-export { initDatabase };
+export { mysqlDatabaseConnection };

@@ -1,19 +1,19 @@
 import { DefaultContext } from 'koa';
 import { validate } from 'class-validator';
 
-import { User } from './userModel';
+import { User } from './user-model';
 import { logger } from '../../utils/logger';
-import { createToken } from '../../middlewares/jwtMiddleware';
-import { UserAttributes } from './userTypes';
-import { BaseError } from '../../errors/BaseError';
+import { createToken } from '../../middlewares/jwt-middleware';
+import { UserAttributes } from './user-types';
+import { BaseError } from '../../errors/base-error';
 import {
   USER_ALREADY_EXIST,
   USER_DOES_NOT_EXIST,
   BAD_CREDENTIALS,
-} from './userErrors';
+} from './user-errors';
 
 /**
- * Register user...
+ * Register user
  */
 
 const registerUser = async (ctx: DefaultContext): Promise<void> => {
@@ -26,7 +26,7 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
   } = ctx.request.body as UserAttributes;
 
   /**
-   * Fail very fast in case of bad input...
+   * Fail very fast in case of bad input
    */
 
   const validateResult = await validate(
@@ -72,7 +72,7 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Modify user...
+ * Modify user
  */
 
 const modifyUser = async (ctx: DefaultContext): Promise<void> => {
@@ -122,7 +122,7 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Delete user...
+ * Delete user
  */
 
 const removeUser = async (ctx: DefaultContext): Promise<void> => {
@@ -149,7 +149,7 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Get current user...
+ * Get current user
  */
 
 const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
@@ -171,7 +171,7 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Login user...
+ * Login user
  */
 
 const logUserIn = async (ctx: DefaultContext): Promise<void> => {
@@ -216,7 +216,7 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * Logout user...
+ * Logout user
  */
 
 const logUserOut = async (ctx: DefaultContext): Promise<void> => {
@@ -233,7 +233,7 @@ const logUserOut = async (ctx: DefaultContext): Promise<void> => {
 };
 
 /**
- * MQTT auth route...
+ * MQTT auth route
  */
 
 const mqttAuth = async (ctx: DefaultContext): Promise<void> => {

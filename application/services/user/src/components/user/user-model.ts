@@ -18,7 +18,7 @@ import {
   IsString,
 } from 'class-validator';
 
-import { UserAttributes, UserType } from './userTypes';
+import { UserAttributes, UserType } from './user-types';
 
 @Entity()
 class User extends BaseEntity implements UserAttributes {

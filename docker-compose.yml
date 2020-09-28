@@ -1,30 +1,28 @@
 version: "3"
 services:
   frontend:
-    image: nenadfilipovic/frontend:0.0.1
+    image: nenadfilipovic/frontend:latest
 
   user-service:
-    image: nenadfilipovic/user-service:0.0.1
+    image: nenadfilipovic/user-service:latest
     depends_on:
       - db
 
   device-service:
-    image: nenadfilipovic/device-service:0.0.1
+    image: nenadfilipovic/device-service:latest
     depends_on:
       - db
 
   log-service:
-    image: nenadfilipovic/log-service:0.0.1
+    image: nenadfilipovic/log-service:latest
     depends_on:
       - influx-db
 
   mqtt-service:
-    image: nenadfilipovic/mqtt-service:0.0.1
+    image: nenadfilipovic/mqtt-service:latest
     restart: on-failure
     depends_on:
       - emqx
-      - user-service
-      - device-service
 
   db:
     image: mysql:5.7
@@ -57,7 +55,7 @@ services:
   nginx:
     image: nginx:1.19.2-alpine
     ports:
-      - "8080:8080"
+      - "8080"
     volumes:
       - ./application/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:

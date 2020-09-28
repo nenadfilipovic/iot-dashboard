@@ -8,9 +8,9 @@ import {
   getSingleDevice,
   getAllDevices,
   mqttAcl,
-} from './deviceController';
+} from './device-controller';
 
-import { validateToken } from '../../middlewares/jwtMiddleware';
+import { validateToken } from '../../middlewares/jwt-middleware';
 
 const prefix: string = config.get('service.prefix');
 

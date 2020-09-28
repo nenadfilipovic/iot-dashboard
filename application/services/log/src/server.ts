@@ -1,13 +1,15 @@
 import http from 'http';
 import config from 'config';
 
-import { initDatabase } from './database';
+import { influxDatabaseConnection } from './database';
 import { app } from './app';
 import { logger } from './utils/logger';
-import { ErrorHandler } from './errors/ErrorHandler';
+import { ErrorHandler } from './errors/error-handler';
+import { eventBusConnection } from './event-bus';
+import { logAddedListener } from './event-bus/receive';
 
 const name: string = config.get('service.name');
-const port: string = config.get('service.port');
+const port: number = config.get('service.port');
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
@@ -26,35 +28,46 @@ process.on('SIGINT', () => {
 
 class Server {
   private static httpServer = http.createServer(app.callback());
-  private static appDatabase = initDatabase;
+  private static influxDatabase = influxDatabaseConnection;
+  private static eventBus = eventBusConnection;
 
   public static async startServer(): Promise<void> {
     try {
-      logger.info(`${name} service is starting...`);
+      logger.info(`${name} service is starting`);
 
       /**
-       * Load server, db, etc...
+       * Load server, db, etc
        */
 
-      const connection = await this.appDatabase.ping(1000);
+      const connection = await this.influxDatabase.ping(5000);
 
-      console.log(connection);
+      if (connection.some((host) => host.online)) {
+        logger.info('Database connection established successfully');
 
-      logger.info('Database connection established successfully.');
+        await this.eventBus.initialized;
 
-      /**
-       * Start server after everything is ready...
-       */
+        /**
+         * Start server after everything is ready
+         */
 
-      this.httpServer.listen(port, () =>
-        logger.info(`Server successfully started at port ${port}.`),
-      );
+        this.httpServer.listen(port, () =>
+          logger.info(`Server successfully started at port ${port}`),
+        );
+
+        /**
+         * Add event bus listeners
+         */
+
+        logAddedListener();
+      } else {
+        throw new Error('Database connection cannot be established!');
+      }
     } catch (error) {
       logger.error(`Unable to start ${name} service!`);
 
       /**
        * In case something is wrong log error
-       * and kill process...
+       * and kill process
        */
 
       logger.error(error);
@@ -65,23 +78,26 @@ class Server {
 
   public static async shutDownServer(): Promise<void> {
     try {
-      logger.info(`${name} service is stopping...`);
+      logger.info(`${name} service is stopping`);
+
+      /**
+       * No need to close influxdb connection,
+       * https://github.com/node-influx/node-influx/issues/289
+       */
+
+      await this.eventBus.close();
+
+      logger.info('Server is shutting down');
 
       this.httpServer.close((error) => {
-        logger.info('Server shutting down...');
-
-        if (error) {
-          process.exit(1);
-        }
-
-        process.exit(0);
+        error ? process.exit(1) : process.exit(0);
       });
     } catch (error) {
-      logger.info('Could not shut down service gracefully, exiting...');
+      logger.error('Could not shut down service gracefully, exiting');
 
       /**
        * In case something is wrong log error
-       * and kill process...
+       * and kill process
        */
 
       logger.error(error);

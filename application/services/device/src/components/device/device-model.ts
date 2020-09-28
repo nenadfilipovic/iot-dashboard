@@ -8,7 +8,7 @@ import {
   BaseEntity,
 } from 'typeorm';
 
-import { DeviceAttributes, DeviceType } from './deviceTypes';
+import { DeviceAttributes, DeviceType } from './device-types';
 
 @Entity()
 class Device extends BaseEntity implements DeviceAttributes {

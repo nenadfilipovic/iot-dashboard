@@ -18,6 +18,6 @@
   "forwardPorts": [3001],
   "postCreateCommand": "sh .devcontainer/refresh.sh",
   "remoteUser": "node",
-  "shutdownAction": "stopCompose",
+  "shutdownAction": "none",
   "workspaceFolder": "/workspace/application/services/user"
 }

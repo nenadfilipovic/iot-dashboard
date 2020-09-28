@@ -1,2 +1,2 @@
-export { User } from './userModel';
-export { userRouter } from './userRoutes';
+export { User } from './user-model';
+export { userRouter } from './user-routes';

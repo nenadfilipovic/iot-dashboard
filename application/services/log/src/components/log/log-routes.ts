@@ -1,9 +1,8 @@
 import KoaRouter from 'koa-router';
 import config from 'config';
 
-import { validateToken } from '../../middlewares/jwtMiddleware';
-
-import { getAllLogs } from './logController';
+import { validateToken } from '../../middlewares/jwt-middleware';
+import { getAllLogs } from './log-controller';
 
 const prefix: string = config.get('service.prefix');
 

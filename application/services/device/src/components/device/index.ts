@@ -1,2 +1,2 @@
-export { Device } from './deviceModel';
-export { deviceRouter } from './deviceRoutes';
+export { Device } from './device-model';
+export { deviceRouter } from './device-routes';

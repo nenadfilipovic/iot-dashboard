@@ -1,5 +1,5 @@
 import { logger } from '../utils/logger';
-import { BaseError } from './BaseError';
+import { BaseError } from './base-error';
 
 class ErrorHandler {
   public static async handleError(error: Error): Promise<void> {

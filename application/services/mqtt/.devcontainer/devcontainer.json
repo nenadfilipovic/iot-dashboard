@@ -1,5 +1,5 @@
 {
-  "name": "MQTT-Service",
+  "name": "Mqtt-Service",
   "service": "mqtt-service",
   "dockerComposeFile": [
     "../../../../docker-compose.yml",
@@ -9,12 +9,15 @@
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
     "extensions.ignoreRecommendations": true,
-    "editor.formatOnSaveMode": "modifications"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    }
   },
   "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
   "forwardPorts": [],
   "postCreateCommand": "sh .devcontainer/refresh.sh",
   "remoteUser": "node",
-  "shutdownAction": "stopCompose",
+  "shutdownAction": "none",
   "workspaceFolder": "/workspace/application/services/mqtt"
 }

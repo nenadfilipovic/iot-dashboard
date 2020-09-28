@@ -1,13 +1,13 @@
 import http from 'http';
 import config from 'config';
 
-import { initDatabase } from './database';
+import { mysqlDatabaseConnection } from './database';
 import { app } from './app';
 import { logger } from './utils/logger';
-import { ErrorHandler } from './errors/ErrorHandler';
+import { ErrorHandler } from './errors/error-handler';
 
 const name: string = config.get('service.name');
-const port: string = config.get('service.port');
+const port: number = config.get('service.port');
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
@@ -26,35 +26,33 @@ process.on('SIGINT', () => {
 
 class Server {
   private static httpServer = http.createServer(app.callback());
-  private static appDatabase = initDatabase;
+  private static mysqlDatabase = mysqlDatabaseConnection;
 
   public static async startServer(): Promise<void> {
     try {
-      logger.info(`${name} service is starting...`);
+      logger.info(`${name} service is starting`);
 
       /**
-       * Load server, db, etc...
+       * Load server, db, etc
        */
 
-      const connection = await this.appDatabase.connect();
+      await this.mysqlDatabase.connect();
 
-      if (connection.isConnected) {
-        logger.info('Database connection established successfully.');
+      logger.info('Database connection established successfully');
 
-        /**
-         * Start server after everything is ready...
-         */
+      /**
+       * Start server after everything is ready
+       */
 
-        this.httpServer.listen(port, () =>
-          logger.info(`Server successfully started at port ${port}.`),
-        );
-      }
+      this.httpServer.listen(port, () =>
+        logger.info(`Server successfully started at port ${port}`),
+      );
     } catch (error) {
       logger.error(`Unable to start ${name} service!`);
 
       /**
        * In case something is wrong log error
-       * and kill process...
+       * and kill process
        */
 
       logger.error(error);
@@ -65,29 +63,23 @@ class Server {
 
   public static async shutDownServer(): Promise<void> {
     try {
-      logger.info(`${name} service is stopping...`);
+      logger.info(`${name} service is stopping`);
 
-      await this.appDatabase.close();
+      logger.info('Database connection is closing');
 
-      if (!this.appDatabase.isConnected) {
-        logger.info('Database connection is closed.');
+      await this.mysqlDatabase.close();
 
-        this.httpServer.close((error) => {
-          logger.info('Server shutting down...');
+      logger.info('Server is shutting down');
 
-          if (error) {
-            process.exit(1);
-          }
-
-          process.exit(0);
-        });
-      }
+      this.httpServer.close((error) => {
+        error ? process.exit(1) : process.exit(0);
+      });
     } catch (error) {
-      logger.info('Could not shut down service gracefully, exiting...');
+      logger.error('Could not shut down service gracefully, exiting!');
 
       /**
        * In case something is wrong log error
-       * and kill process...
+       * and kill process
        */
 
       logger.error(error);
