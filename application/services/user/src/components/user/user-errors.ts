@@ -1,5 +1,8 @@
-const USER_ALREADY_EXIST = 'Provided email or user handle is already in use!';
-const USER_DOES_NOT_EXIST = 'User does not exist!';
-const BAD_CREDENTIALS = 'Bad credentials, please try again!';
+const errors = {
+  USER_DOES_NOT_EXIST: 'User you are reffering to does not exist!',
+  BAD_CREDENTIALS: 'Bad credentials, please try again!',
+  USER_ALREADY_EXIST:
+    'User with provided email address or handle already exist!',
+};
 
-export { USER_DOES_NOT_EXIST, USER_ALREADY_EXIST, BAD_CREDENTIALS };
+export { errors };

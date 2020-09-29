@@ -7,7 +7,7 @@
     "port": 1883,
     "username": "admin",
     "password": "password",
-    "topic": "#/"
+    "topic": "#"
   },
   "amqp": {
     "host": "rabbitmq"

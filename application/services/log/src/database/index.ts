@@ -7,7 +7,7 @@ const username: string = config.get('db.username');
 const password: string = config.get('db.password');
 const database: string = config.get('db.database');
 
-const influxDatabaseConnection = new Influx.InfluxDB({
+const influxDatabase = new Influx.InfluxDB({
   host,
   port,
   database,
@@ -15,4 +15,4 @@ const influxDatabaseConnection = new Influx.InfluxDB({
   password,
 });
 
-export { influxDatabaseConnection };
+export { influxDatabase };

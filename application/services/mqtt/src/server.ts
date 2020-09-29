@@ -2,8 +2,8 @@ import config from 'config';
 
 import { logger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
-import { eventBus } from './event-bus';
 import { mqttClient } from './mqtt-client';
+import { amqpClient } from './event-bus';
 
 const name: string = config.get('service.name');
 const topic: string = config.get('mqtt.topic');
@@ -24,7 +24,7 @@ process.on('SIGINT', () => {
 });
 
 class Server {
-  private static eventBus = eventBus;
+  private static amqpClient = amqpClient;
   private static mqttClient = mqttClient;
 
   public static async startServer(): Promise<void> {
@@ -35,38 +35,44 @@ class Server {
        * Load server, db, etc
        */
 
-      mqttClient.on('connect', () => {
-        logger.info('Mqtt client have successfully connected to broker'),
-          mqttClient.subscribe(topic);
+      this.amqpClient.on('open_connection', () => {
+        logger.info('[AMQP] client connection is ready');
+      });
+
+      this.mqttClient.on('connect', () => {
+        logger.info('[MQTT] client is up and connected');
+        this.mqttClient.subscribe(topic);
       });
     } catch (error) {
-      logger.error(`Unable to start ${name} service!`);
-
-      /**
-       * In case something is wrong log error
-       * and kill process
-       */
-
-      logger.error(error);
-      process.exit(1);
+      this.terminate(name, error);
     }
   }
 
   public static async shutDownServer(): Promise<void> {
     try {
       logger.info(`${name} service is stopping`);
-      this.mqttClient.end();
-    } catch (error) {
-      logger.error('Unable to shut down service gracefully, exiting');
 
       /**
-       * In case something is wrong log error
-       * and kill process
+       * Stop server, db, etc
        */
 
-      logger.error(error);
-      process.exit(1);
+      await this.amqpClient.close();
+      this.mqttClient.end();
+    } catch (error) {
+      this.terminate(name, error);
     }
+  }
+
+  public static async terminate(name: string, error: Error): Promise<void> {
+    logger.error(`Unable to start / stop ${name} service!`);
+
+    /**
+     * In case something is wrong log error
+     * and kill process
+     */
+
+    logger.error(error);
+    process.exit(1);
   }
 }
 

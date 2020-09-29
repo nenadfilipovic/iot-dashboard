@@ -1,11 +1,11 @@
 import http from 'http';
 import config from 'config';
 
-import { influxDatabaseConnection } from './database';
+import { influxDatabase } from './database';
 import { app } from './app';
 import { logger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
-import { eventBusConnection } from './event-bus';
+import { amqpClient } from './event-bus';
 import { logAddedListener } from './event-bus/receive';
 
 const name: string = config.get('service.name');
@@ -28,8 +28,8 @@ process.on('SIGINT', () => {
 
 class Server {
   private static httpServer = http.createServer(app.callback());
-  private static influxDatabase = influxDatabaseConnection;
-  private static eventBus = eventBusConnection;
+  private static influxDatabase = influxDatabase;
+  private static amqpClient = amqpClient;
 
   public static async startServer(): Promise<void> {
     try {
@@ -39,12 +39,14 @@ class Server {
        * Load server, db, etc
        */
 
-      const connection = await this.influxDatabase.ping(5000);
+      const influxDatabaseConnected = await this.influxDatabase.ping(5000);
 
-      if (connection.some((host) => host.online)) {
+      if (influxDatabaseConnected.some((host) => host.online)) {
         logger.info('Database connection established successfully');
 
-        await this.eventBus.initialized;
+        this.amqpClient.on('open_connection', () => {
+          logger.info('[AMQP] client connection is ready');
+        });
 
         /**
          * Start server after everything is ready
@@ -63,16 +65,7 @@ class Server {
         throw new Error('Database connection cannot be established!');
       }
     } catch (error) {
-      logger.error(`Unable to start ${name} service!`);
-
-      /**
-       * In case something is wrong log error
-       * and kill process
-       */
-
-      logger.error(error);
-
-      process.exit(1);
+      this.terminate(name, error);
     }
   }
 
@@ -85,7 +78,7 @@ class Server {
        * https://github.com/node-influx/node-influx/issues/289
        */
 
-      await this.eventBus.close();
+      await this.amqpClient.close();
 
       logger.info('Server is shutting down');
 
@@ -93,17 +86,20 @@ class Server {
         error ? process.exit(1) : process.exit(0);
       });
     } catch (error) {
-      logger.error('Could not shut down service gracefully, exiting');
-
-      /**
-       * In case something is wrong log error
-       * and kill process
-       */
-
-      logger.error(error);
-
-      process.exit(1);
+      this.terminate(name, error);
     }
+  }
+
+  public static async terminate(name: string, error: Error): Promise<void> {
+    logger.error(`Unable to start / stop ${name} service!`);
+
+    /**
+     * In case something is wrong log error
+     * and kill process
+     */
+
+    logger.error(error);
+    process.exit(1);
   }
 }
 

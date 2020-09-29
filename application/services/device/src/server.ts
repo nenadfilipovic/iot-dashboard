@@ -1,7 +1,7 @@
 import http from 'http';
 import config from 'config';
 
-import { mysqlDatabaseConnection } from './database';
+import { mysqlDatabase } from './database';
 import { app } from './app';
 import { logger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
@@ -26,7 +26,7 @@ process.on('SIGINT', () => {
 
 class Server {
   private static httpServer = http.createServer(app.callback());
-  private static mysqlDatabase = mysqlDatabaseConnection;
+  private static mysqlDatabase = mysqlDatabase;
 
   public static async startServer(): Promise<void> {
     try {
@@ -48,16 +48,7 @@ class Server {
         logger.info(`Server successfully started at port ${port}`),
       );
     } catch (error) {
-      logger.error(`Unable to start ${name} service!`);
-
-      /**
-       * In case something is wrong log error
-       * and kill process
-       */
-
-      logger.error(error);
-
-      process.exit(1);
+      this.terminate(name, error);
     }
   }
 
@@ -75,17 +66,20 @@ class Server {
         error ? process.exit(1) : process.exit(0);
       });
     } catch (error) {
-      logger.error('Could not shut down service gracefully, exiting!');
-
-      /**
-       * In case something is wrong log error
-       * and kill process
-       */
-
-      logger.error(error);
-
-      process.exit(1);
+      this.terminate(name, error);
     }
+  }
+
+  public static async terminate(name: string, error: Error): Promise<void> {
+    logger.error(`Unable to start / stop ${name} service!`);
+
+    /**
+     * In case something is wrong log error
+     * and kill process
+     */
+
+    logger.error(error);
+    process.exit(1);
   }
 }
 

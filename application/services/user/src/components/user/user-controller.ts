@@ -1,16 +1,11 @@
 import { DefaultContext } from 'koa';
-import { validate } from 'class-validator';
 
 import { User } from './user-model';
 import { logger } from '../../utils/logger';
 import { createToken } from '../../middlewares/jwt-middleware';
 import { UserAttributes } from './user-types';
 import { BaseError } from '../../errors/base-error';
-import {
-  USER_ALREADY_EXIST,
-  USER_DOES_NOT_EXIST,
-  BAD_CREDENTIALS,
-} from './user-errors';
+import { errors } from './user-errors';
 
 /**
  * Register user
@@ -25,26 +20,11 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
     userPassword,
   } = ctx.request.body as UserAttributes;
 
-  /**
-   * Fail very fast in case of bad input
-   */
-
-  const validateResult = await validate(
-    { userHandle, userFirstName, userLastName, userEmailAddress, userPassword },
-    {
-      forbidUnknownValues: true,
-      validationError: { target: false, value: false },
-    },
-  );
-
-  if (validateResult.length > 0) {
-  }
-
   const existingUser = await User.findOne({
     where: [{ userHandle }, { userEmailAddress }],
   });
 
-  if (existingUser) throw new BaseError(USER_ALREADY_EXIST, 400);
+  if (existingUser) throw new BaseError(errors.USER_ALREADY_EXIST, 400);
 
   const newUser = User.create({
     userHandle,
@@ -56,7 +36,7 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
 
   const user = await User.save(newUser);
 
-  const token = createToken(user.userUniqueIndentifier);
+  const token = createToken(user.userHandle);
 
   ctx.session = { token };
 
@@ -76,30 +56,24 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyUser = async (ctx: DefaultContext): Promise<void> => {
-  const userUniqueIndentifier = ctx.state.user.id;
+  const userHandle = ctx.state.user.id;
 
   const existingUser = await User.findOne({
-    where: { userUniqueIndentifier },
+    where: { userHandle },
   });
 
-  if (!existingUser) throw new BaseError(USER_DOES_NOT_EXIST, 400);
+  if (!existingUser) throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
 
-  const {
-    userHandle,
-    userFirstName,
-    userLastName,
-    userEmailAddress,
-    userPassword,
-  } = ctx.request.body as UserAttributes;
+  const { userFirstName, userLastName, userEmailAddress, userPassword } = ctx
+    .request.body as UserAttributes;
 
-  const alreadyUsedProperty = await User.findOne({
-    where: [{ userHandle }, { userEmailAddress }],
+  const emailAlreadyUsed = await User.findOne({
+    where: { userEmailAddress },
   });
 
-  if (alreadyUsedProperty) throw new BaseError(USER_ALREADY_EXIST, 400);
+  if (emailAlreadyUsed) throw new BaseError(errors.USER_ALREADY_EXIST, 400);
 
   const modifiedUser = User.merge(existingUser, {
-    userHandle,
     userFirstName,
     userLastName,
     userEmailAddress,
@@ -126,13 +100,13 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const removeUser = async (ctx: DefaultContext): Promise<void> => {
-  const userUniqueIndentifier = ctx.state.user.id;
+  const userHandle = ctx.state.user.id;
 
   const existingUser = await User.findOne({
-    where: { userUniqueIndentifier },
+    where: { userHandle },
   });
 
-  if (!existingUser) throw new BaseError(USER_DOES_NOT_EXIST, 400);
+  if (!existingUser) throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
 
   await User.delete(existingUser);
 
@@ -153,12 +127,12 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
-  const userUniqueIndentifier = ctx.state.user.id;
+  const userHandle = ctx.state.user.id;
 
-  const user = User.findOne({ where: { userUniqueIndentifier } });
+  const user = await User.findOne({ where: { userHandle } });
 
   if (!user) {
-    throw new BaseError(USER_DOES_NOT_EXIST, 400);
+    throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
   }
 
   Object.assign(user, { userPassword: undefined });
@@ -190,15 +164,15 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
     where: { ...loginOptions },
   });
 
-  if (!existingUser) throw new BaseError(USER_DOES_NOT_EXIST, 400);
+  if (!existingUser) throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
 
   const correctPassword = await existingUser.validatePassword(userPassword);
 
   if (!correctPassword) {
-    throw new BaseError(BAD_CREDENTIALS, 400);
+    throw new BaseError(errors.BAD_CREDENTIALS, 400);
   }
 
-  const token = createToken(existingUser.userUniqueIndentifier);
+  const token = createToken(existingUser.userHandle);
 
   ctx.session = { token };
 
@@ -209,10 +183,6 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
     message: 'You have successfully logged in.',
     data: existingUser,
   };
-
-  logger.info(
-    `User: ${existingUser.userUniqueIndentifier} successfully logged in.`,
-  );
 };
 
 /**
@@ -220,16 +190,12 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logUserOut = async (ctx: DefaultContext): Promise<void> => {
-  const userUniqueIndentifier = ctx.state.user.id;
-
   ctx.session = null;
 
   ctx.body = {
     status: 'success',
     message: 'You have successfully logged out.',
   };
-
-  logger.info(`User: ${userUniqueIndentifier} successfully logged out.`);
 };
 
 /**

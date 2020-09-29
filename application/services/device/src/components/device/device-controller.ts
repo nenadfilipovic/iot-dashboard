@@ -4,11 +4,7 @@ import { Device } from './device-model';
 import { logger } from '../../utils/logger';
 import { BaseError } from '../../errors/base-error';
 import { DeviceAttributes } from './device-types';
-import {
-  DEVICE_CHANNEL_USED,
-  DEVICE_DOES_NOT_EXIST,
-  NO_PERMISION,
-} from './device-errors';
+import { errors } from './device-errors';
 
 /**
  * Register device
@@ -18,14 +14,10 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
   const { deviceName, deviceChannel, deviceDescription, deviceType } = ctx
     .request.body as DeviceAttributes;
 
-  /**
-   * Validation here
-   */
-
   const existingDevice = await Device.findOne({ where: { deviceChannel } });
 
   if (existingDevice) {
-    throw new BaseError(DEVICE_CHANNEL_USED, 400);
+    throw new BaseError(errors.DEVICE_CHANNEL_USED, 400);
   }
 
   const deviceOwner = ctx.state.user.id;
@@ -56,33 +48,26 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
-  const deviceUniqueIndentifier = ctx.request.params.id;
+  const deviceChannel = ctx.request.params.id;
 
   const existingDevice = await Device.findOne({
-    where: { deviceUniqueIndentifier },
+    where: { deviceChannel },
   });
 
-  if (!existingDevice) throw new BaseError(DEVICE_DOES_NOT_EXIST, 400);
+  if (!existingDevice) throw new BaseError(errors.DEVICE_DOES_NOT_EXIST, 400);
 
   const deviceOwner = ctx.state.user.id;
 
   if (deviceOwner !== existingDevice.deviceOwner) {
-    throw new BaseError(NO_PERMISION, 403);
+    throw new BaseError(errors.NO_PERMISION, 403);
   }
 
-  const { deviceName, deviceDescription, deviceChannel, deviceType } = ctx
-    .request.body as DeviceAttributes;
-
-  const alreadyUsedProperty = await Device.findOne({
-    where: { deviceChannel },
-  });
-
-  if (alreadyUsedProperty) throw new BaseError(DEVICE_CHANNEL_USED, 400);
+  const { deviceName, deviceDescription, deviceType } = ctx.request
+    .body as DeviceAttributes;
 
   const modifiedDevice = Device.merge(existingDevice, {
     deviceName,
     deviceDescription,
-    deviceChannel,
     deviceType,
   });
 
@@ -104,18 +89,18 @@ const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const removeDevice = async (ctx: DefaultContext): Promise<void> => {
-  const deviceUniqueIndentifier = ctx.request.params.id;
+  const deviceChannel = ctx.request.params.id;
 
   const existingDevice = await Device.findOne({
-    where: { deviceUniqueIndentifier },
+    where: { deviceChannel },
   });
 
-  if (!existingDevice) throw new BaseError(DEVICE_DOES_NOT_EXIST, 400);
+  if (!existingDevice) throw new BaseError(errors.DEVICE_DOES_NOT_EXIST, 400);
 
   const deviceOwner = ctx.state.user.id;
 
   if (deviceOwner !== existingDevice.deviceOwner) {
-    throw new BaseError(NO_PERMISION, 403);
+    throw new BaseError(errors.NO_PERMISION, 403);
   }
 
   await Device.delete(existingDevice);
@@ -135,18 +120,18 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const getSingleDevice = async (ctx: DefaultContext): Promise<void> => {
-  const deviceUniqueIndentifier = ctx.request.params.id;
+  const deviceChannel = ctx.request.params.id;
 
   const existingDevice = await Device.findOne({
-    where: { deviceUniqueIndentifier },
+    where: { deviceChannel },
   });
 
-  if (!existingDevice) throw new BaseError(DEVICE_DOES_NOT_EXIST, 400);
+  if (!existingDevice) throw new BaseError(errors.DEVICE_DOES_NOT_EXIST, 400);
 
   const deviceOwner = ctx.state.user.id;
 
   if (deviceOwner !== existingDevice.deviceOwner) {
-    throw new BaseError(NO_PERMISION, 403);
+    throw new BaseError(errors.NO_PERMISION, 403);
   }
 
   ctx.body = {
@@ -179,7 +164,7 @@ const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const mqttAcl = async (ctx: DefaultContext): Promise<void> => {
-  const { userHandle, deviceName, deviceChannel } = ctx.request.body;
+  const { userHandle, deviceChannel } = ctx.request.body;
 
   if (userHandle === 'admin') {
     ctx.response.status = 200;
@@ -187,7 +172,7 @@ const mqttAcl = async (ctx: DefaultContext): Promise<void> => {
   }
 
   const existingDevice = await Device.findOne({
-    where: { deviceName, deviceChannel },
+    where: { deviceOwner: userHandle, deviceChannel },
   });
 
   if (!existingDevice) {

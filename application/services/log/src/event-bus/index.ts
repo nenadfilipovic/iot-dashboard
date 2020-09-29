@@ -1,37 +1,26 @@
-import * as Amqp from 'amqp-ts';
+import * as amqp from 'amqp-ts';
 import config from 'config';
 
 import { logger } from '../utils/logger';
 
 const host: string = config.get('amqp.host');
 
-const eventBusConnection = new Amqp.Connection(`amqp://${host}?heartbeat=60`);
+const amqpClient = new amqp.Connection(`amqp://${host}?heartbeat=60`);
 
-const exchange = eventBusConnection.declareExchange('log-added', 'fanout', {
-  durable: true,
-});
-const queue = eventBusConnection.declareQueue('', { exclusive: true });
-
-queue.bind(exchange);
-
-eventBusConnection.on('open_connection', () => {
-  logger.info('Event bus connection is ready');
+amqpClient.on('close_connection', () => {
+  logger.info('[AMQP] client is closing');
 });
 
-eventBusConnection.on('close_connection', () => {
-  logger.info('Event bus is closing');
+amqpClient.on('lost_connection', () => {
+  logger.error('[AMQP] client has lost connection and will try to reconnect');
 });
 
-eventBusConnection.on('lost_connection', () => {
-  logger.error('Event bus has lost connection and will try to reconnect');
+amqpClient.on('trying_connect', () => {
+  logger.info('[AMQP] client is trying to reconnect');
 });
 
-eventBusConnection.on('trying_connect', () => {
-  logger.info('Event bus is trying to reconnect');
+amqpClient.on('re_established_connection', () => {
+  logger.info('[AMQP] client has re-established connection');
 });
 
-eventBusConnection.on('re_established_connection', () => {
-  logger.info('Event bus has re-established connection');
-});
-
-export { queue, eventBusConnection };
+export { amqpClient };
