@@ -42,6 +42,10 @@ class Server {
       this.mqttClient.on('connect', () => {
         logger.info('[MQTT] client is up and connected');
         this.mqttClient.subscribe(topic);
+        this.mqttClient.publish(
+          'admin/nenad2',
+          JSON.stringify({ himdsd: 55, temp: 55, fluid: 55 }),
+        );
       });
     } catch (error) {
       this.terminate(name, error);

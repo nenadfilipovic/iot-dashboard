@@ -15,13 +15,19 @@ const mqttConfig = {
   username,
   password,
   reconnectPeriod: 10000,
+  clientId: 'nenad2',
 };
 
 const mqttClient = mqtt.connect(mqttConfig);
 
+/**
+ * Here we destructure mqtt message,
+ * and take message and topic
+ * from it
+ */
+
 mqttClient.on('message', (topic, message) => {
   if (!topic.startsWith('$')) logAddedProducer(parseMessage(topic, message));
-  mqttClient.end();
 });
 
 mqttClient.on('end', () => {
@@ -36,11 +42,17 @@ mqttClient.on('reconnect', () => {
   logger.info('[MQTT] client is trying to reconnect');
 });
 
+/**
+ * Mqtt message comes as Buffer so we need,
+ * to convert it to string and then parse
+ * as JSON because broker require you
+ * to send your data as JSON string
+ */
+
 const parseMessage = (topic: string, message: Buffer) => {
-  const parsedMessage = JSON.parse(message.toString());
   return {
     topic,
-    message: parsedMessage,
+    message: JSON.parse(message.toString()),
   };
 };
 

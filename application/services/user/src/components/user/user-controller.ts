@@ -6,6 +6,7 @@ import { createToken } from '../../middlewares/jwt-middleware';
 import { UserAttributes } from './user-types';
 import { BaseError } from '../../errors/base-error';
 import { errors } from './user-errors';
+import { userRemovedProducer } from '../../event-bus/send';
 
 /**
  * Register user
@@ -108,7 +109,7 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
 
   if (!existingUser) throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
 
-  await User.delete(existingUser);
+  await User.delete(existingUser.userUniqueIndentifier);
 
   ctx.session = null;
 
@@ -116,6 +117,8 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
     status: 'success',
     message: 'You have successfully deleted your account.',
   };
+
+  userRemovedProducer(existingUser.userHandle);
 
   logger.info(
     `User: ${existingUser.userUniqueIndentifier} successfully removed.`,

@@ -1,4 +1,3 @@
-import { IsString, IsUUID, IsAlphanumeric, Matches } from 'class-validator';
 import {
   Entity,
   Column,
@@ -16,20 +15,12 @@ class Device extends BaseEntity implements DeviceAttributes {
   deviceUniqueIndentifier!: string;
 
   @Column()
-  @IsUUID('4', { message: 'Invalid device owner identification format!' })
   deviceOwner!: string;
 
   @Column()
-  @IsString({ message: 'Device name must be a string!' })
-  @Matches(/^[a-zA-Z0-9.-]*$/, {
-    message: 'Device name can only contain letters, numbers dash and dot!',
-  })
   deviceName!: string;
 
   @Column({ unique: true })
-  @IsAlphanumeric('en-US', {
-    message: 'Device channel can only contain letters and numbers!',
-  })
   deviceChannel!: string;
 
   @Column({ nullable: true })

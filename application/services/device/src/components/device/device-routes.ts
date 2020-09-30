@@ -7,7 +7,6 @@ import {
   removeDevice,
   getSingleDevice,
   getAllDevices,
-  mqttAcl,
 } from './device-controller';
 
 import { validateToken } from '../../middlewares/jwt-middleware';
@@ -22,8 +21,6 @@ deviceRouter
   .get('/:id', validateToken, getSingleDevice)
 
   .post('/', validateToken, registerDevice)
-
-  .post('/mqtt/acl', mqttAcl)
 
   .patch('/:id', validateToken, modifyDevice)
 

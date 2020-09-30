@@ -6,7 +6,11 @@ import { app } from './app';
 import { logger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
 import { amqpClient } from './event-bus';
-import { logAddedListener } from './event-bus/receive';
+import {
+  logAddedListener,
+  deviceRemovedListener,
+  userRemovedListener,
+} from './event-bus/receive';
 
 const name: string = config.get('service.name');
 const port: number = config.get('service.port');
@@ -61,6 +65,8 @@ class Server {
          */
 
         logAddedListener();
+        deviceRemovedListener();
+        userRemovedListener();
       } else {
         throw new Error('Database connection cannot be established!');
       }

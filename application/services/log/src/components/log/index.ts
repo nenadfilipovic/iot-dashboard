@@ -1,2 +1,6 @@
 export { logRouter } from './log-routes';
-export { registerLog } from './log-controller';
+export {
+  registerLogViaMqtt,
+  removeMeasurementOnRemoveUser,
+  removeSeriesOnRemoveDevice,
+} from './log-controller';

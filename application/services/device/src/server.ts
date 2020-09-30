@@ -5,6 +5,8 @@ import { mysqlDatabase } from './database';
 import { app } from './app';
 import { logger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
+import { amqpClient } from './event-bus';
+import { userRemovedListener } from './event-bus/receive';
 
 const name: string = config.get('service.name');
 const port: number = config.get('service.port');
@@ -27,6 +29,7 @@ process.on('SIGINT', () => {
 class Server {
   private static httpServer = http.createServer(app.callback());
   private static mysqlDatabase = mysqlDatabase;
+  private static amqpClient = amqpClient;
 
   public static async startServer(): Promise<void> {
     try {
@@ -35,6 +38,10 @@ class Server {
       /**
        * Load server, db, etc
        */
+
+      this.amqpClient.on('open_connection', () => {
+        logger.info('[AMQP] client connection is ready');
+      });
 
       await this.mysqlDatabase.connect();
 
@@ -47,6 +54,12 @@ class Server {
       this.httpServer.listen(port, () =>
         logger.info(`Server successfully started at port ${port}`),
       );
+
+      /**
+       * Add event bus listeners
+       */
+
+      userRemovedListener();
     } catch (error) {
       this.terminate(name, error);
     }
@@ -55,6 +68,8 @@ class Server {
   public static async shutDownServer(): Promise<void> {
     try {
       logger.info(`${name} service is stopping`);
+
+      await this.amqpClient.close();
 
       logger.info('Database connection is closing');
 

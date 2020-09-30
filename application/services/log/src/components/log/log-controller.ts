@@ -11,34 +11,109 @@ const getAllLogs = async (ctx: DefaultContext): Promise<void> => {
   const deviceOwner = ctx.state.user.id;
   const deviceChannel = ctx.request.params.id;
 
-  const logs = await influxDatabase.query(`
-      select * from "${deviceOwner}/${deviceChannel}"
-      order by time desc
-    `);
+  const recievedLogs = await influxDatabase.query(
+    `select *::field from "${deviceOwner}" where device = '${deviceChannel}' order by time desc`,
+  );
 
   ctx.body = {
     status: 'success',
     message: 'You have successfully retrieved all your logs.',
-    data: logs,
+    data: recievedLogs,
   };
 };
 
 /**
- * Register log
+ * Register log on event
  */
 
-const registerLog = async (message: Message): Promise<void> => {
-  const parsedMessage = JSON.parse(message.content.toString());
+const registerLogViaMqtt = async (payload: Message): Promise<void> => {
+  try {
+    const { topic, message } = payload.getContent() as {
+      topic: string;
+      message: { [key: string]: number };
+    };
 
-  console.log(parsedMessage);
+    /**
+     * In influxDB measurement is something like
+     * table and tag is like unique column
+     */
 
-  await influxDatabase.writeMeasurement(parsedMessage.topic, [
-    {
-      fields: { ...parsedMessage.message },
-    },
-  ]);
+    /**
+     * Mqtt topic carry 2 important information,
+     * user unique handler and device channel,
+     * example admin/dashboard,
+     * we use user handle as measurement name,
+     * and device channel as unique tag inside measurement
+     */
 
-  message.ack();
+    const [userHandle, deviceChannel] = topic.split('/');
+
+    await influxDatabase.writeMeasurement(userHandle, [
+      {
+        tags: { device: deviceChannel },
+        fields: { ...message },
+      },
+    ]);
+
+    payload.ack();
+  } catch {
+    payload.nack();
+  }
 };
 
-export { getAllLogs, registerLog };
+/**
+ * Remove complete measurement when
+ * belonging user remove its account
+ */
+
+const removeMeasurementOnRemoveUser = async (
+  payload: Message,
+): Promise<void> => {
+  try {
+    const userHandle = payload.getContent() as string;
+
+    /**
+     * Every user have its measurement table
+     * so we destroy it after he
+     * disable his account
+     */
+
+    await influxDatabase.query(`
+        drop measurement "${userHandle}"
+      `);
+
+    payload.ack();
+  } catch {
+    payload.nack();
+  }
+};
+
+/**
+ * Remove only series that belong to device
+ * that is beign deleted
+ */
+
+const removeSeriesOnRemoveDevice = async (payload: Message): Promise<void> => {
+  console.log(payload.getContent());
+  try {
+    const { deviceOwner, deviceChannel } = payload.getContent() as {
+      deviceOwner: string;
+      deviceChannel: string;
+    };
+
+    await influxDatabase.query(`
+        drop series from "${deviceOwner}" where "device"='${deviceChannel}'
+      `);
+
+    payload.ack();
+  } catch {
+    payload.nack();
+  }
+};
+
+export {
+  getAllLogs,
+  registerLogViaMqtt,
+  removeMeasurementOnRemoveUser,
+  removeSeriesOnRemoveDevice,
+};

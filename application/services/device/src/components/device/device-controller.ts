@@ -1,10 +1,12 @@
 import { DefaultContext } from 'koa';
+import { Message } from 'amqp-ts';
 
 import { Device } from './device-model';
 import { logger } from '../../utils/logger';
 import { BaseError } from '../../errors/base-error';
 import { DeviceAttributes } from './device-types';
 import { errors } from './device-errors';
+import { deviceRemovedProducer } from '../../event-bus/send';
 
 /**
  * Register device
@@ -103,7 +105,7 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
     throw new BaseError(errors.NO_PERMISION, 403);
   }
 
-  await Device.delete(existingDevice);
+  await Device.delete(existingDevice.deviceUniqueIndentifier);
 
   ctx.body = {
     status: 'success',
@@ -113,6 +115,32 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
   logger.info(
     `Device: ${existingDevice.deviceUniqueIndentifier} successfully removed.`,
   );
+
+  /**
+   * This action will remove only logs
+   * from this device,
+   * we need to send device owner
+   * so it can find correct measurement
+   * and device channel so it knows which
+   * series to remove
+   */
+
+  deviceRemovedProducer({ deviceOwner, deviceChannel });
+};
+
+/**
+ * Delete all devices user owns after
+ * he disables his account
+ */
+
+const removeDeviceOnRemoveUser = async (payload: Message): Promise<void> => {
+  try {
+    const deviceOwner = payload.getContent() as string;
+    await Device.delete({ deviceOwner });
+    payload.ack();
+  } catch {
+    payload.nack();
+  }
 };
 
 /**
@@ -159,35 +187,11 @@ const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
-/**
- * MQTT acl route
- */
-
-const mqttAcl = async (ctx: DefaultContext): Promise<void> => {
-  const { userHandle, deviceChannel } = ctx.request.body;
-
-  if (userHandle === 'admin') {
-    ctx.response.status = 200;
-    return;
-  }
-
-  const existingDevice = await Device.findOne({
-    where: { deviceOwner: userHandle, deviceChannel },
-  });
-
-  if (!existingDevice) {
-    ctx.response.status = 400;
-    return;
-  }
-
-  ctx.response.status = 200;
-};
-
 export {
   registerDevice,
   modifyDevice,
   removeDevice,
+  removeDeviceOnRemoveUser,
   getSingleDevice,
   getAllDevices,
-  mqttAcl,
 };

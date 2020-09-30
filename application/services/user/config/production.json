@@ -11,10 +11,13 @@
     "expiresIn": "5m"
   },
   "db": {
-    "host": "db",
+    "host": "database",
     "port": 3306,
     "username": "user",
     "password": "password",
     "database": "user"
+  },
+  "amqp": {
+    "host": "rabbitmq"
   }
 }
