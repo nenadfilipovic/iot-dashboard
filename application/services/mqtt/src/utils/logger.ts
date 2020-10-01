@@ -15,7 +15,7 @@ const loggerFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} - [${level}] : ${message}`;
 });
 
-const logger = createLogger({
+const appLogger = createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
   exitOnError: true,
   handleExceptions: true,
@@ -32,4 +32,4 @@ const logger = createLogger({
   transports: [new transports.Console()],
 });
 
-export { logger };
+export { appLogger };

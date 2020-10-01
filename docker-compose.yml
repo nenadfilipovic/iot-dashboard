@@ -43,6 +43,7 @@ services:
     environment:
       EMQX_ALLOW_ANONYMOUS: "false"
       EMQX_ACL_NOMATCH: "deny"
+      EMQX_CACHE_ACL: "true"
       EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard,emqx_auth_http"
     volumes:
       - ./application/broker/emqx_auth_http.conf:/opt/emqx/etc/plugins/emqx_auth_http.conf

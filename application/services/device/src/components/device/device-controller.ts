@@ -2,11 +2,11 @@ import { DefaultContext } from 'koa';
 import { Message } from 'amqp-ts';
 
 import { Device } from './device-model';
-import { logger } from '../../utils/logger';
+import { appLogger } from '../../utils/logger';
 import { BaseError } from '../../errors/base-error';
 import { DeviceAttributes } from './device-types';
-import { errors } from './device-errors';
-import { deviceRemovedProducer } from '../../event-bus/send';
+import { Errors } from './device-errors';
+import { deviceRemovedPublisher } from '../../event-bus/publishers';
 
 /**
  * Register device
@@ -19,7 +19,7 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
   const existingDevice = await Device.findOne({ where: { deviceChannel } });
 
   if (existingDevice) {
-    throw new BaseError(errors.DEVICE_CHANNEL_USED, 400);
+    throw new BaseError(Errors.CHANNEL_USED, 400);
   }
 
   const deviceOwner = ctx.state.user.id;
@@ -40,7 +40,7 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
     data: device,
   };
 
-  logger.info(
+  appLogger.info(
     `Device: ${device.deviceUniqueIndentifier} successfully created.`,
   );
 };
@@ -56,12 +56,12 @@ const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
     where: { deviceChannel },
   });
 
-  if (!existingDevice) throw new BaseError(errors.DEVICE_DOES_NOT_EXIST, 400);
+  if (!existingDevice) throw new BaseError(Errors.DOES_NOT_EXIST, 400);
 
   const deviceOwner = ctx.state.user.id;
 
   if (deviceOwner !== existingDevice.deviceOwner) {
-    throw new BaseError(errors.NO_PERMISION, 403);
+    throw new BaseError(Errors.NO_PERMISION, 403);
   }
 
   const { deviceName, deviceDescription, deviceType } = ctx.request
@@ -81,7 +81,7 @@ const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
     data: device,
   };
 
-  logger.info(
+  appLogger.info(
     `Device: ${device.deviceUniqueIndentifier} data successfully modified.`,
   );
 };
@@ -97,12 +97,12 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
     where: { deviceChannel },
   });
 
-  if (!existingDevice) throw new BaseError(errors.DEVICE_DOES_NOT_EXIST, 400);
+  if (!existingDevice) throw new BaseError(Errors.DOES_NOT_EXIST, 400);
 
   const deviceOwner = ctx.state.user.id;
 
   if (deviceOwner !== existingDevice.deviceOwner) {
-    throw new BaseError(errors.NO_PERMISION, 403);
+    throw new BaseError(Errors.NO_PERMISION, 403);
   }
 
   await Device.delete(existingDevice.deviceUniqueIndentifier);
@@ -112,7 +112,7 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
     message: 'You have successfully deleted your device.',
   };
 
-  logger.info(
+  appLogger.info(
     `Device: ${existingDevice.deviceUniqueIndentifier} successfully removed.`,
   );
 
@@ -125,7 +125,7 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
    * series to remove
    */
 
-  deviceRemovedProducer({ deviceOwner, deviceChannel });
+  deviceRemovedPublisher({ deviceOwner, deviceChannel });
 };
 
 /**
@@ -154,12 +154,12 @@ const getSingleDevice = async (ctx: DefaultContext): Promise<void> => {
     where: { deviceChannel },
   });
 
-  if (!existingDevice) throw new BaseError(errors.DEVICE_DOES_NOT_EXIST, 400);
+  if (!existingDevice) throw new BaseError(Errors.DOES_NOT_EXIST, 400);
 
   const deviceOwner = ctx.state.user.id;
 
   if (deviceOwner !== existingDevice.deviceOwner) {
-    throw new BaseError(errors.NO_PERMISION, 403);
+    throw new BaseError(Errors.NO_PERMISION, 403);
   }
 
   ctx.body = {
@@ -187,6 +187,32 @@ const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
   };
 };
 
+/**
+ * Mqtt acl route
+ */
+
+const mqttAcl = async (ctx: DefaultContext): Promise<void> => {
+  const { deviceOwner, deviceChannel, deviceTopic } = ctx.request.body;
+
+  if (deviceOwner === 'admin') {
+    ctx.response.status = 200;
+    ctx.body = 'ignore';
+    return;
+  }
+
+  const existingDevice = await Device.findOne({
+    where: { deviceOwner, deviceChannel },
+  });
+
+  if (!existingDevice || existingDevice.deviceTopic !== deviceTopic) {
+    ctx.response.status = 400;
+    return;
+  }
+
+  ctx.response.status = 200;
+  return;
+};
+
 export {
   registerDevice,
   modifyDevice,
@@ -194,4 +220,5 @@ export {
   removeDeviceOnRemoveUser,
   getSingleDevice,
   getAllDevices,
+  mqttAcl,
 };

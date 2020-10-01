@@ -1,12 +1,12 @@
 import { DefaultContext } from 'koa';
 
 import { User } from './user-model';
-import { logger } from '../../utils/logger';
+import { appLogger } from '../../utils/logger';
 import { createToken } from '../../middlewares/jwt-middleware';
 import { UserAttributes } from './user-types';
 import { BaseError } from '../../errors/base-error';
-import { errors } from './user-errors';
-import { userRemovedProducer } from '../../event-bus/send';
+import { Errors } from './user-errors';
+import { userRemovedPublisher } from '../../event-bus/publishers';
 
 /**
  * Register user
@@ -25,7 +25,7 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
     where: [{ userHandle }, { userEmailAddress }],
   });
 
-  if (existingUser) throw new BaseError(errors.USER_ALREADY_EXIST, 400);
+  if (existingUser) throw new BaseError(Errors.USER_EXIST, 400);
 
   const newUser = User.create({
     userHandle,
@@ -49,7 +49,9 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
     data: user,
   };
 
-  logger.info(`User: ${user.userUniqueIndentifier} successfully registered.`);
+  appLogger.info(
+    `User: ${user.userUniqueIndentifier} successfully registered.`,
+  );
 };
 
 /**
@@ -63,7 +65,7 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
     where: { userHandle },
   });
 
-  if (!existingUser) throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
+  if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
   const { userFirstName, userLastName, userEmailAddress, userPassword } = ctx
     .request.body as UserAttributes;
@@ -72,7 +74,7 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
     where: { userEmailAddress },
   });
 
-  if (emailAlreadyUsed) throw new BaseError(errors.USER_ALREADY_EXIST, 400);
+  if (emailAlreadyUsed) throw new BaseError(Errors.USER_EXIST, 400);
 
   const modifiedUser = User.merge(existingUser, {
     userFirstName,
@@ -91,7 +93,7 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
     data: user,
   };
 
-  logger.info(
+  appLogger.info(
     `User: ${user.userUniqueIndentifier} data successfully modified.`,
   );
 };
@@ -107,7 +109,7 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
     where: { userHandle },
   });
 
-  if (!existingUser) throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
+  if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
   await User.delete(existingUser.userUniqueIndentifier);
 
@@ -118,9 +120,9 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
     message: 'You have successfully deleted your account.',
   };
 
-  userRemovedProducer(existingUser.userHandle);
+  userRemovedPublisher(existingUser.userHandle);
 
-  logger.info(
+  appLogger.info(
     `User: ${existingUser.userUniqueIndentifier} successfully removed.`,
   );
 };
@@ -135,7 +137,7 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
   const user = await User.findOne({ where: { userHandle } });
 
   if (!user) {
-    throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
+    throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
   }
 
   Object.assign(user, { userPassword: undefined });
@@ -167,12 +169,12 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
     where: { ...loginOptions },
   });
 
-  if (!existingUser) throw new BaseError(errors.USER_DOES_NOT_EXIST, 400);
+  if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
   const correctPassword = await existingUser.validatePassword(userPassword);
 
   if (!correctPassword) {
-    throw new BaseError(errors.BAD_CREDENTIALS, 400);
+    throw new BaseError(Errors.BAD_CREDENTIALS, 400);
   }
 
   const token = createToken(existingUser.userHandle);

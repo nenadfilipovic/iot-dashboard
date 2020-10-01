@@ -57,7 +57,7 @@ const registerLogViaMqtt = async (payload: Message): Promise<void> => {
 
     payload.ack();
   } catch {
-    payload.nack();
+    payload.reject();
   }
 };
 
@@ -84,7 +84,7 @@ const removeMeasurementOnRemoveUser = async (
 
     payload.ack();
   } catch {
-    payload.nack();
+    payload.reject();
   }
 };
 
@@ -94,7 +94,6 @@ const removeMeasurementOnRemoveUser = async (
  */
 
 const removeSeriesOnRemoveDevice = async (payload: Message): Promise<void> => {
-  console.log(payload.getContent());
   try {
     const { deviceOwner, deviceChannel } = payload.getContent() as {
       deviceOwner: string;
@@ -107,7 +106,7 @@ const removeSeriesOnRemoveDevice = async (payload: Message): Promise<void> => {
 
     payload.ack();
   } catch {
-    payload.nack();
+    payload.reject();
   }
 };
 

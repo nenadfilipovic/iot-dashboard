@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  AfterLoad,
 } from 'typeorm';
 
 import { DeviceAttributes, DeviceType } from './device-types';
@@ -29,11 +30,18 @@ class Device extends BaseEntity implements DeviceAttributes {
   @Column({ type: 'enum', enum: DeviceType, default: DeviceType.esp8266 })
   deviceType!: DeviceType;
 
+  deviceTopic!: string;
+
   @UpdateDateColumn({ nullable: true })
   deviceModifyDate!: Date;
 
   @CreateDateColumn()
   deviceRegisterDate!: Date;
+
+  @AfterLoad()
+  setTopic(): void {
+    this.deviceTopic = this.deviceOwner + '/' + this.deviceChannel;
+  }
 }
 
 export { Device };

@@ -3,7 +3,7 @@ import config from 'config';
 
 import { mysqlDatabase } from './database';
 import { app } from './app';
-import { logger } from './utils/logger';
+import { appLogger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
 import { User } from './components/user';
 import { amqpClient } from './event-bus';
@@ -33,19 +33,19 @@ class Server {
 
   public static async startServer(): Promise<void> {
     try {
-      logger.info(`${name} service is starting`);
+      appLogger.info(`${name} service is starting`);
 
       /**
        * Load server, db, etc
        */
 
       this.amqpClient.on('open_connection', () => {
-        logger.info('[AMQP] client connection is ready');
+        appLogger.info('[AMQP] client connection is ready');
       });
 
       const mysqlDatabaseConected = await this.mysqlDatabase.connect();
 
-      logger.info('Database connection established successfully');
+      appLogger.info('Database connection established successfully');
 
       /**
        * Create default admin user
@@ -67,7 +67,7 @@ class Server {
        */
 
       this.httpServer.listen(port, () =>
-        logger.info(`Server successfully started at port ${port}`),
+        appLogger.info(`Server successfully started at port ${port}`),
       );
     } catch (error) {
       this.terminate(name, error);
@@ -76,15 +76,15 @@ class Server {
 
   public static async shutDownServer(): Promise<void> {
     try {
-      logger.info(`${name} service is stopping`);
+      appLogger.info(`${name} service is stopping`);
 
       await this.amqpClient.close();
 
-      logger.info('Database connection is closing');
+      appLogger.info('Database connection is closing');
 
       await this.mysqlDatabase.close();
 
-      logger.info('Server is shutting down');
+      appLogger.info('Server is shutting down');
 
       this.httpServer.close((error) => {
         error ? process.exit(1) : process.exit(0);
@@ -95,14 +95,14 @@ class Server {
   }
 
   public static async terminate(name: string, error: Error): Promise<void> {
-    logger.error(`Unable to start / stop ${name} service!`);
+    appLogger.error(`Unable to start / stop ${name} service!`);
 
     /**
      * In case something is wrong log error
      * and kill process
      */
 
-    logger.error(error);
+    appLogger.error(error);
     process.exit(1);
   }
 }

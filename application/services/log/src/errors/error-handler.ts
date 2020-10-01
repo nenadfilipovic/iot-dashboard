@@ -1,9 +1,15 @@
-import { logger } from '../utils/logger';
+import { appLogger } from '../utils/logger';
 import { BaseError } from './base-error';
 
 class ErrorHandler {
   public static async handleError(error: Error): Promise<void> {
-    await logger.error(error);
+    /**
+     * Currently no need for await
+     * but when we add logging to log file
+     * it will be needed
+     */
+
+    await appLogger.error(error);
   }
 
   public static isTrustedError(error: Error): boolean {

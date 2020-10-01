@@ -3,14 +3,14 @@ import config from 'config';
 
 import { influxDatabase } from './database';
 import { app } from './app';
-import { logger } from './utils/logger';
+import { appLogger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
 import { amqpClient } from './event-bus';
 import {
-  logAddedListener,
-  deviceRemovedListener,
-  userRemovedListener,
-} from './event-bus/receive';
+  logAddedSubscriber,
+  deviceRemovedSubscriber,
+  userRemovedSubscriber,
+} from './event-bus/subscribers';
 
 const name: string = config.get('service.name');
 const port: number = config.get('service.port');
@@ -37,7 +37,7 @@ class Server {
 
   public static async startServer(): Promise<void> {
     try {
-      logger.info(`${name} service is starting`);
+      appLogger.info(`${name} service is starting`);
 
       /**
        * Load server, db, etc
@@ -46,10 +46,10 @@ class Server {
       const influxDatabaseConnected = await this.influxDatabase.ping(5000);
 
       if (influxDatabaseConnected.some((host) => host.online)) {
-        logger.info('Database connection established successfully');
+        appLogger.info('Database connection established successfully');
 
         this.amqpClient.on('open_connection', () => {
-          logger.info('[AMQP] client connection is ready');
+          appLogger.info('[AMQP] client connection is ready');
         });
 
         /**
@@ -57,16 +57,16 @@ class Server {
          */
 
         this.httpServer.listen(port, () =>
-          logger.info(`Server successfully started at port ${port}`),
+          appLogger.info(`Server successfully started at port ${port}`),
         );
 
         /**
          * Add event bus listeners
          */
 
-        logAddedListener();
-        deviceRemovedListener();
-        userRemovedListener();
+        logAddedSubscriber();
+        deviceRemovedSubscriber();
+        userRemovedSubscriber();
       } else {
         throw new Error('Database connection cannot be established!');
       }
@@ -77,7 +77,7 @@ class Server {
 
   public static async shutDownServer(): Promise<void> {
     try {
-      logger.info(`${name} service is stopping`);
+      appLogger.info(`${name} service is stopping`);
 
       /**
        * No need to close influxdb connection,
@@ -86,7 +86,7 @@ class Server {
 
       await this.amqpClient.close();
 
-      logger.info('Server is shutting down');
+      appLogger.info('Server is shutting down');
 
       this.httpServer.close((error) => {
         error ? process.exit(1) : process.exit(0);
@@ -97,14 +97,14 @@ class Server {
   }
 
   public static async terminate(name: string, error: Error): Promise<void> {
-    logger.error(`Unable to start / stop ${name} service!`);
+    appLogger.error(`Unable to start / stop ${name} service!`);
 
     /**
      * In case something is wrong log error
      * and kill process
      */
 
-    logger.error(error);
+    appLogger.error(error);
     process.exit(1);
   }
 }

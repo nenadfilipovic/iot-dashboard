@@ -1,8 +1,8 @@
 import config from 'config';
 import mqtt from 'mqtt';
 
-import { logAddedProducer } from '../event-bus/send';
-import { logger } from '../utils/logger';
+import { logAddedPublisher } from '../event-bus/publishers';
+import { appLogger } from '../utils/logger';
 
 const host: string = config.get('mqtt.host');
 const port: number = config.get('mqtt.port');
@@ -15,7 +15,6 @@ const mqttConfig = {
   username,
   password,
   reconnectPeriod: 10000,
-  clientId: 'nenad2',
 };
 
 const mqttClient = mqtt.connect(mqttConfig);
@@ -27,19 +26,19 @@ const mqttClient = mqtt.connect(mqttConfig);
  */
 
 mqttClient.on('message', (topic, message) => {
-  if (!topic.startsWith('$')) logAddedProducer(parseMessage(topic, message));
+  if (!topic.startsWith('$')) logAddedPublisher(parseMessage(topic, message));
 });
 
 mqttClient.on('end', () => {
-  logger.info('[MQTT] client is shutting down');
+  appLogger.info('[MQTT] client is shutting down');
 });
 
 mqttClient.on('error', (error) => {
-  logger.error(error);
+  appLogger.error(error);
 });
 
 mqttClient.on('reconnect', () => {
-  logger.info('[MQTT] client is trying to reconnect');
+  appLogger.info('[MQTT] client is trying to reconnect');
 });
 
 /**
@@ -57,3 +56,17 @@ const parseMessage = (topic: string, message: Buffer) => {
 };
 
 export { mqttClient };
+
+const mqtt2 = mqtt.connect({
+  host,
+  port,
+  username: 'dashboard',
+  password: '1234567',
+  reconnectPeriod: 10000,
+  clientId: 'nenad2',
+});
+
+mqtt2.on('connect', () => {
+  mqtt2.publish('dashboard/nenad2', JSON.stringify({ nenad: 'jebac' }));
+  mqtt2.end();
+});
