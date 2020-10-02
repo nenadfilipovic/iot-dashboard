@@ -26,6 +26,7 @@ const mqttClient = mqtt.connect(mqttConfig);
  */
 
 mqttClient.on('message', (topic, message) => {
+  console.log(message.toString());
   if (!topic.startsWith('$')) logAddedPublisher(parseMessage(topic, message));
 });
 
@@ -55,7 +56,7 @@ const parseMessage = (topic: string, message: Buffer) => {
   };
 };
 
-export { mqttClient };
+export { mqttClient, mqtt2 };
 
 const mqtt2 = mqtt.connect({
   host,
@@ -64,9 +65,4 @@ const mqtt2 = mqtt.connect({
   password: '1234567',
   reconnectPeriod: 10000,
   clientId: 'nenad2',
-});
-
-mqtt2.on('connect', () => {
-  mqtt2.publish('dashboard/nenad2', JSON.stringify({ nenad: 'jebac' }));
-  mqtt2.end();
 });

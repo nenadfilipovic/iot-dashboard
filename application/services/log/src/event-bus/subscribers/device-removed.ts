@@ -1,7 +1,7 @@
 import { amqpClient, appExchange } from '../index';
 import { removeSeriesOnRemoveDevice } from '../../components/log';
 
-const queue = amqpClient.declareQueue('device.removed.queue', {
+const queue = amqpClient.declareQueue('removeSeriesOnRemoveDevice', {
   durable: true,
 });
 

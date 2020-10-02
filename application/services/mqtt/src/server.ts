@@ -2,7 +2,7 @@ import config from 'config';
 
 import { appLogger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
-import { mqttClient } from './mqtt-client';
+import { mqttClient, mqtt2 } from './mqtt-client';
 import { amqpClient } from './event-bus';
 
 const name: string = config.get('service.name');
@@ -42,6 +42,11 @@ class Server {
       this.mqttClient.on('connect', () => {
         appLogger.info('[MQTT] client is up and connected');
         this.mqttClient.subscribe(topic);
+        mqtt2.publish(
+          'dashboard/nenad2',
+          JSON.stringify({ nenad: 'jebascsssasdasdsad' }),
+          { qos: 2 },
+        );
       });
     } catch (error) {
       this.terminate(name, error);
