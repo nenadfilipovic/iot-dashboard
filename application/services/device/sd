@@ -1,8 +1,0 @@
-@IsUUID('4', { message: 'Invalid device owner identification format!' })
-@IsString({ message: 'Device name must be a string!' })
-  @Matches(/^[a-zA-Z0-9.-]*$/, {
-    message: 'Device name can only contain letters, numbers dash and dot!',
-  })
-@IsAlphanumeric('en-US', {
-    message: 'Device channel can only contain letters and numbers!',
-  })

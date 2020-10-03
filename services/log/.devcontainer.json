@@ -1,0 +1,23 @@
+{
+  "name": "Log-Service",
+  "service": "log-service",
+  "dockerComposeFile": [
+    "../../docker-compose.yml",
+    "../../docker-compose.dev.yml"
+  ],
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "extensions.ignoreRecommendations": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    }
+  },
+  "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
+  "forwardPorts": [3003],
+  "postCreateCommand": "",
+  "remoteUser": "node",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/services/log"
+}

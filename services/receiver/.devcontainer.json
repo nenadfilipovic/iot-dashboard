@@ -1,0 +1,23 @@
+{
+  "name": "Receiver-Service",
+  "service": "receiver-service",
+  "dockerComposeFile": [
+    "../../docker-compose.yml",
+    "../../docker-compose.dev.yml"
+  ],
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "extensions.ignoreRecommendations": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    }
+  },
+  "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
+  "forwardPorts": [],
+  "postCreateCommand": "",
+  "remoteUser": "node",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/services/receiver"
+}
