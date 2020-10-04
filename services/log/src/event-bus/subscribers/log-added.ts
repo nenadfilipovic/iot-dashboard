@@ -1,7 +1,7 @@
-import { amqpConnection, amqpExchange } from '../index';
+import { amqpClient, amqpExchange } from '../';
 import { registerLogViaMqtt } from '../../components/log';
 
-const queue = amqpConnection.declareQueue('registerLogViaMqtt', {
+const queue = amqpClient.declareQueue('registerLogViaMqtt', {
   durable: true,
 });
 

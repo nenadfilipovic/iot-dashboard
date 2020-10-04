@@ -1,7 +1,7 @@
-import { amqpConnection, amqpExchange } from '../index';
+import { amqpClient, amqpExchange } from '../';
 import { removeDeviceOnRemoveUser } from '../../components/device';
 
-const queue = amqpConnection.declareQueue('removeDeviceOnRemoveUser', {
+const queue = amqpClient.declareQueue('removeDeviceOnRemoveUser', {
   durable: true,
 });
 

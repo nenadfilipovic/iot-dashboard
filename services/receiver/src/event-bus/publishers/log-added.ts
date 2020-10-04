@@ -1,10 +1,10 @@
-import { Amqp, amqpConnection, amqpExchange } from '../index';
+import { Amqp, amqpClient, amqpExchange } from '../';
 
 const logAddedPublisher = (payload: {
   topic: string;
   message: string;
 }): void => {
-  amqpConnection.completeConfiguration().then(() => {
+  amqpClient.completeConfiguration().then(() => {
     const message = new Amqp.Message(payload);
     amqpExchange.send(message, 'log.added');
   });

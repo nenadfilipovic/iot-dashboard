@@ -1,10 +1,10 @@
-import { Amqp, amqpConnection, amqpExchange } from '../index';
+import { Amqp, amqpClient, amqpExchange } from '../';
 
 const deviceRemovedPublisher = (payload: {
   deviceOwner: string;
   deviceChannel: string;
 }): void => {
-  amqpConnection.completeConfiguration().then(() => {
+  amqpClient.completeConfiguration().then(() => {
     const message = new Amqp.Message(payload);
     amqpExchange.send(message, 'device.removed');
   });

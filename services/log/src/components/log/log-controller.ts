@@ -1,7 +1,7 @@
 import { Message } from 'amqp-ts';
 import { DefaultContext } from 'koa';
 
-import { influxDatabase } from '../../server';
+import { influxDatabase } from '../../database';
 
 /**
  * Display all device logs
@@ -51,7 +51,7 @@ const registerLogViaMqtt = async (payload: Message): Promise<void> => {
     await influxDatabase.writeMeasurement(userHandle, [
       {
         tags: { device: deviceChannel },
-        fields: { ...message },
+        fields: message,
       },
     ]);
 

@@ -1,10 +1,18 @@
 import * as Influx from 'influx';
-import { ISingleHostConfig } from 'influx';
+import config from 'config';
 
-const influxDatabaseConnection = (
-  databaseConfig: ISingleHostConfig,
-): Influx.InfluxDB => {
-  return new Influx.InfluxDB({ ...databaseConfig });
-};
+const host: string = config.get('influxdb.host');
+const port: number = config.get('influxdb.port');
+const username: string = config.get('influxdb.username');
+const password: string = config.get('influxdb.password');
+const database: string = config.get('services.log.influxdb.database');
 
-export { influxDatabaseConnection };
+const influxDatabase = new Influx.InfluxDB({
+  host,
+  port,
+  username,
+  password,
+  database,
+});
+
+export { influxDatabase };

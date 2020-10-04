@@ -4,23 +4,18 @@ import http from 'http';
 import config from 'config';
 
 import { app } from './app';
+import { influxDatabase } from './database';
 import { appLogger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
-import { amqpConnection } from './event-bus';
+import { amqpClient } from './event-bus'; //
 import {
   logAddedSubscriber,
   deviceRemovedSubscriber,
   userRemovedSubscriber,
 } from './event-bus/subscribers';
-import { influxDatabaseConnection } from './database';
 
-const serviceName: string = config.get('services.log.name');
-const servicePort: number = config.get('services.log.port');
-const influxHost: string = config.get('influxdb.host');
-const influxPort: number = config.get('influxdb.port');
-const influxUsername: string = config.get('influxdb.username');
-const influxPassword: string = config.get('influxdb.password');
-const influxDatabaseName: string = config.get('services.log.influxdb.name');
+const name: string = config.get('services.log.name');
+const port: number = config.get('services.log.port');
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
@@ -39,29 +34,15 @@ process.on('SIGINT', () => {
 
 const httpServer = http.createServer(app.callback());
 
-const influxDatabase = influxDatabaseConnection({
-  database: influxDatabaseName,
-  username: influxUsername,
-  password: influxPassword,
-  port: influxPort,
-  host: influxHost,
-});
-
 class Server {
   public static async startServer() {
     try {
-      appLogger.info(`${serviceName} service is starting`);
+      appLogger.info(`${name} service is starting`);
 
       const influxDatabaseConnected = await influxDatabase.ping(5000);
 
       if (influxDatabaseConnected.some((host) => host.online)) {
         appLogger.info('Database connection established successfully');
-
-        /**
-         * Start event bus
-         */
-
-        await amqpConnection.initialized;
 
         /**
          * Add event bus listeners
@@ -75,32 +56,32 @@ class Server {
          * Start server after everything is ready
          */
 
-        httpServer.listen(servicePort, () =>
-          appLogger.info(`Server successfully started at port ${servicePort}`),
+        httpServer.listen(port, () =>
+          appLogger.info(`Server successfully started at port ${port}`),
         );
       }
     } catch (error) {
-      this.terminateServer(serviceName, error);
+      this.terminateServer(name, error);
     }
   }
 
   public static async stopServer() {
     try {
-      appLogger.info(`${serviceName} service is stopping`);
+      appLogger.info(`${name} service is stopping`);
 
       /**
        * No need to close influxdb connection,
        * https://github.com/node-influx/node-influx/issues/289
        */
 
-      await amqpConnection.close();
+      await amqpClient.close();
 
       httpServer.close((error) => {
         appLogger.info('Server is shutting down');
         error ? process.exit(1) : process.exit(0);
       });
     } catch (error) {
-      this.terminateServer(serviceName, error);
+      this.terminateServer(name, error);
     }
   }
 
@@ -118,5 +99,3 @@ class Server {
 }
 
 Server.startServer();
-
-export { influxDatabase };

@@ -1,7 +1,7 @@
-import { amqpConnection, amqpExchange } from '../index';
+import { amqpClient, amqpExchange } from '../';
 import { removeMeasurementOnRemoveUser } from '../../components/log';
 
-const queue = amqpConnection.declareQueue('removeMeasurementOnRemoveUser', {
+const queue = amqpClient.declareQueue('removeMeasurementOnRemoveUser', {
   durable: true,
 });
 

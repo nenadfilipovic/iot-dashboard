@@ -3,23 +3,12 @@ process.env['NODE_CONFIG_DIR'] = '../../config';
 import config from 'config';
 
 import { appLogger } from './utils/logger';
+import { amqpClient } from './event-bus';
+import { mqttClient } from './mqtt-client';
 import { ErrorHandler } from './errors/error-handler';
-import { amqpConnection } from './event-bus';
-import { logAddedPublisher } from './event-bus/publishers';
-import { mqttConnection } from './mqtt-client';
 
-const serviceName: string = config.get('services.receiver.name');
-const mqttClientHost: string = config.get('services.receiver.mqttClient.host');
-const mqttClientPort: number = config.get('services.receiver.mqttClient.port');
-const mqttClientUsername: string = config.get(
-  'services.receiver.mqttClient.username',
-);
-const mqttClientPassword: string = config.get(
-  'services.receiver.mqttClient.password',
-);
-const mqttClientTopic: string = config.get(
-  'services.receiver.mqttClient.topic',
-);
+const name: string = config.get('services.receiver.name');
+const topic: string = config.get('services.receiver.mqttClient.topic');
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
@@ -36,84 +25,34 @@ process.on('SIGINT', () => {
   Server.stopServer();
 });
 
-const mqttClient = mqttConnection({
-  host: mqttClientHost,
-  port: mqttClientPort,
-  username: mqttClientUsername,
-  password: mqttClientPassword,
-});
-
 class Server {
   public static async startServer() {
     try {
-      appLogger.info(`${serviceName} service is starting`);
+      appLogger.info(`${name} service is starting`);
 
       /**
-       * Start event bus
+       * Subscribe to topic after connection
+       * is ready
        */
 
-      await amqpConnection.initialized;
-
-      /**
-       * Start mqtt client
-       */
-
-      mqttClient
-
-        /**
-         * Here we destructure mqtt message,
-         * and take message and topic
-         * from it
-         */
-
-        .on('message', (topic, message) => {
-          if (!topic.startsWith('$'))
-            logAddedPublisher(parseMessage(topic, message));
-        })
-
-        .on('end', () => {
-          appLogger.info('[MQTT] client is shutting down');
-        })
-
-        .on('error', (error) => {
-          appLogger.error(error);
-        })
-
-        .on('reconnect', () => {
-          appLogger.info('[MQTT] client is trying to reconnect');
-        });
-
-      /**
-       * Mqtt message comes as Buffer so we need,
-       * to convert it to string and then parse
-       * as JSON because broker require you
-       * to send your data as JSON string
-       */
-
-      const parseMessage = (topic: string, message: Buffer) => {
-        return {
-          topic,
-          message: JSON.parse(message.toString()),
-        };
-      };
-
-      await mqttClient.subscribe(mqttClientTopic);
-
-      appLogger.info('[MQTT] client is up and connected');
+      mqttClient.on('connect', () => {
+        appLogger.info('[MQTT] - Client successfully connected');
+        mqttClient.subscribe(topic, { qos: 2 });
+      });
     } catch (error) {
-      this.terminateServer(serviceName, error);
+      this.terminateServer(name, error);
     }
   }
 
   public static async stopServer() {
     try {
-      appLogger.info(`${serviceName} service is stopping`);
+      appLogger.info(`${name} service is stopping`);
 
-      await amqpConnection.close();
+      await amqpClient.close();
 
-      await mqttClient.end();
+      mqttClient.end();
     } catch (error) {
-      this.terminateServer(serviceName, error);
+      this.terminateServer(name, error);
     }
   }
 

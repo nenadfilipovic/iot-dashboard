@@ -5,7 +5,7 @@
       "port": 3001,
       "prefix": "/api/users",
       "mysql": {
-        "name": "user"
+        "database": "user"
       }
     },
     "device": {
@@ -13,7 +13,7 @@
       "port": 3002,
       "prefix": "/api/devices",
       "mysql": {
-        "name": "device"
+        "database": "device"
       }
     },
     "log": {
@@ -21,16 +21,15 @@
       "port": 3003,
       "prefix": "/api/logs",
       "influxdb": {
-        "name": "log"
+        "database": "log"
       }
     },
     "receiver": {
       "name": "Receiver",
       "mqttClient": {
-        "host": "emqx",
-        "port": 1883,
         "username": "admin",
         "password": "password",
+        "clientId": "dashboard",
         "topic": "#"
       }
     }
@@ -57,5 +56,9 @@
     "port": 8086,
     "username": "user",
     "password": "password"
+  },
+  "emqx": {
+    "host": "emqx",
+    "port": 1883
   }
 }

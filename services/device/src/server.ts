@@ -3,20 +3,15 @@ process.env['NODE_CONFIG_DIR'] = '../../config';
 import http from 'http';
 import config from 'config';
 
-import { mysqlDatabaseConnection } from './database';
+import { mysqlDatabase } from './database';
 import { app } from './app';
 import { appLogger } from './utils/logger';
 import { ErrorHandler } from './errors/error-handler';
-import { amqpConnection } from './event-bus';
+import { amqpClient } from './event-bus';
 import { userRemovedSubscriber } from './event-bus/subscribers';
 
-const serviceName: string = config.get('services.device.name');
-const servicePort: number = config.get('services.device.port');
-const mysqlHost: string = config.get('mysql.host');
-const mysqlPort: number = config.get('mysql.port');
-const mysqlUsername: string = config.get('mysql.username');
-const mysqlPassword: string = config.get('mysql.password');
-const mysqlDatabaseName: string = config.get('services.device.mysql.name');
+const name: string = config.get('services.device.name');
+const port: number = config.get('services.device.port');
 
 process.on('unhandledRejection', (reason: string) => {
   throw reason;
@@ -35,19 +30,10 @@ process.on('SIGINT', () => {
 
 const httpServer = http.createServer(app.callback());
 
-const mysqlDatabase = mysqlDatabaseConnection({
-  type: 'mysql',
-  host: mysqlHost,
-  port: mysqlPort,
-  username: mysqlUsername,
-  password: mysqlPassword,
-  database: mysqlDatabaseName,
-});
-
 class Server {
   public static async startServer() {
     try {
-      appLogger.info(`${serviceName} service is starting`);
+      appLogger.info(`${name} service is starting`);
 
       /**
        * Load server, db, etc
@@ -58,17 +44,11 @@ class Server {
       appLogger.info('Database connection established successfully');
 
       /**
-       * Start event bus
-       */
-
-      await amqpConnection.initialized;
-
-      /**
        * Start server after everything is ready
        */
 
-      httpServer.listen(servicePort, () =>
-        appLogger.info(`Server successfully started at port ${servicePort}`),
+      httpServer.listen(port, () =>
+        appLogger.info(`Server successfully started at port ${port}`),
       );
 
       /**
@@ -77,26 +57,26 @@ class Server {
 
       userRemovedSubscriber();
     } catch (error) {
-      this.terminateServer(serviceName, error);
+      this.terminateServer(name, error);
     }
   }
 
   public static async stopServer() {
     try {
-      appLogger.info(`${serviceName} service is stopping`);
+      appLogger.info(`${name} service is stopping`);
 
       await mysqlDatabase.close();
 
       appLogger.info('Database connection successfully closed');
 
-      await amqpConnection.close();
+      await amqpClient.close(); //
 
       httpServer.close((error) => {
         appLogger.info('Server is shutting down');
         error ? process.exit(1) : process.exit(0);
       });
     } catch (error) {
-      this.terminateServer(serviceName, error);
+      this.terminateServer(name, error);
     }
   }
 
