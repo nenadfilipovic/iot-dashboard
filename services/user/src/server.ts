@@ -48,11 +48,11 @@ class Server {
        */
 
       const adminUser = mysqlDatabase.getRepository(User).create({
-        userHandle: 'admin',
-        userFirstName: 'dashboard',
-        userLastName: 'user',
-        userEmailAddress: 'admin@home.com',
-        userPassword: 'password',
+        handle: 'admin',
+        firstName: 'dashboard',
+        lastName: 'user',
+        emailAddress: 'admin@home.com',
+        password: 'password',
       });
 
       await adminUser.save();

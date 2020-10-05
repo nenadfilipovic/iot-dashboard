@@ -13,45 +13,20 @@ import { userRemovedPublisher } from '../../event-bus/publishers';
  */
 
 const registerUser = async (ctx: DefaultContext): Promise<void> => {
-  const {
-    userHandle,
-    userFirstName,
-    userLastName,
-    userEmailAddress,
-    userPassword,
-  } = ctx.request.body as UserAttributes;
-
-  const existingUser = await User.findOne({
-    where: [{ userHandle }, { userEmailAddress }],
-  });
-
-  if (existingUser) throw new BaseError(Errors.USER_EXIST, 400);
-
   const newUser = User.create({
-    userHandle,
-    userFirstName,
-    userLastName,
-    userEmailAddress,
-    userPassword,
+    ...(ctx.request.body as UserAttributes),
   });
 
   const user = await User.save(newUser);
 
-  const token = createToken(user.userHandle);
+  const token = createToken(user.handle);
 
   ctx.session = { token };
 
-  Object.assign(user, { userPassword: undefined });
-
   ctx.body = {
     status: 'success',
-    message: 'You have successfully registered new account.',
-    data: user,
+    data: { user },
   };
-
-  appLogger.info(
-    `User: ${user.userUniqueIndentifier} successfully registered.`,
-  );
 };
 
 /**
@@ -59,43 +34,25 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyUser = async (ctx: DefaultContext): Promise<void> => {
-  const userHandle = ctx.state.user.id;
+  const handle = ctx.state.user.id;
 
   const existingUser = await User.findOne({
-    where: { userHandle },
+    where: { handle },
   });
 
   if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  const { userFirstName, userLastName, userEmailAddress, userPassword } = ctx
-    .request.body as UserAttributes;
-
-  const emailAlreadyUsed = await User.findOne({
-    where: { userEmailAddress },
+  const user = await User.save({
+    ...existingUser,
+    ...ctx.request.body,
   });
 
-  if (emailAlreadyUsed) throw new BaseError(Errors.USER_EXIST, 400);
-
-  const modifiedUser = User.merge(existingUser, {
-    userFirstName,
-    userLastName,
-    userEmailAddress,
-    userPassword,
-  });
-
-  const user = await User.save(modifiedUser);
-
-  Object.assign(user, { userPassword: undefined });
+  //ctx.session = null;
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully updated your data.',
-    data: user,
+    data: { user },
   };
-
-  appLogger.info(
-    `User: ${user.userUniqueIndentifier} data successfully modified.`,
-  );
 };
 
 /**
@@ -103,28 +60,26 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const removeUser = async (ctx: DefaultContext): Promise<void> => {
-  const userHandle = ctx.state.user.id;
+  const handle = ctx.state.user.id;
 
   const existingUser = await User.findOne({
-    where: { userHandle },
+    where: { handle },
   });
 
   if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  await User.delete(existingUser.userUniqueIndentifier);
+  await User.delete(existingUser.id);
 
   ctx.session = null;
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully deleted your account.',
+    data: null,
   };
 
-  userRemovedPublisher(existingUser.userHandle);
+  userRemovedPublisher(existingUser.handle);
 
-  appLogger.info(
-    `User: ${existingUser.userUniqueIndentifier} successfully removed.`,
-  );
+  appLogger.info(`User: ${existingUser.id} successfully removed.`);
 };
 
 /**
@@ -154,30 +109,21 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logUserIn = async (ctx: DefaultContext): Promise<void> => {
-  const { userHandle, userEmailAddress, userPassword } = ctx.request
-    .body as UserAttributes;
-
-  /**
-   * Support for logging in via email and username.
-   */
-
-  const loginOptions = userHandle
-    ? { userHandle: userHandle }
-    : { userEmailAddress: userEmailAddress };
+  const { handle, password } = ctx.request.body as UserAttributes;
 
   const existingUser = await User.findOne({
-    where: { ...loginOptions },
+    where: { handle },
   });
 
   if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  const correctPassword = await existingUser.validatePassword(userPassword);
+  const correctPassword = await existingUser.validatePassword(password);
 
   if (!correctPassword) {
     throw new BaseError(Errors.BAD_CREDENTIALS, 400);
   }
 
-  const token = createToken(existingUser.userHandle);
+  const token = createToken(existingUser.handle);
 
   ctx.session = { token };
 
@@ -208,10 +154,10 @@ const logUserOut = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const mqttAuth = async (ctx: DefaultContext): Promise<void> => {
-  const { userHandle, userPassword } = ctx.request.body as UserAttributes;
+  const { handle, password } = ctx.request.body as UserAttributes;
 
   const existingUser = await User.findOne({
-    where: { userHandle },
+    where: { handle },
   });
 
   if (!existingUser) {
@@ -219,7 +165,7 @@ const mqttAuth = async (ctx: DefaultContext): Promise<void> => {
     return;
   }
 
-  const correctPassword = await existingUser.validatePassword(userPassword);
+  const correctPassword = await existingUser.validatePassword(password);
 
   if (!correctPassword) {
     ctx.response.status = 400;

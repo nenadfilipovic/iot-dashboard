@@ -6,27 +6,45 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
-  BeforeUpdate,
   BaseEntity,
+  AfterInsert,
+  AfterUpdate,
+  BeforeUpdate,
 } from 'typeorm';
 import {
-  IsEmail,
   IsAlpha,
   IsAlphanumeric,
   MinLength,
   IsEnum,
   IsOptional,
   validate,
+  IsEmail,
+  Validate,
 } from 'class-validator';
 
-import { UserAttributes, UserType } from './user-types';
+import { UserAttributes, Type } from './user-types';
+import { appLogger } from '../../utils/logger';
+import { IsUniqueInDatabase } from './user-validate';
+
+const validationConfig = (isUpdate: boolean) => {
+  return {
+    skipMissingProperties: isUpdate,
+    forbidUnknownValues: true,
+    validationError: { target: false },
+  };
+};
 
 @Entity()
 class User extends BaseEntity implements UserAttributes {
   @PrimaryGeneratedColumn('uuid')
-  userUniqueIndentifier!: string;
+  id!: string;
+
+  /**
+   *
+   */
 
   @Column({ unique: true })
+  @Validate(IsUniqueInDatabase, { message: 'Handle is already in use' })
   @IsAlphanumeric('en-US', {
     message: 'User handle must contain only letters and numbers',
   })
@@ -34,7 +52,11 @@ class User extends BaseEntity implements UserAttributes {
     message:
       'User handle must be longer than or equal to $constraint1 characters',
   })
-  userHandle!: string;
+  handle!: string;
+
+  /**
+   *
+   */
 
   @Column()
   @IsAlpha('en-US', {
@@ -44,7 +66,11 @@ class User extends BaseEntity implements UserAttributes {
     message:
       'User first name must be longer than or equal to $constraint1 characters',
   })
-  userFirstName!: string;
+  firstName!: string;
+
+  /**
+   *
+   */
 
   @Column()
   @IsAlpha('en-US', {
@@ -54,11 +80,20 @@ class User extends BaseEntity implements UserAttributes {
     message:
       'User last name must be longer than or equal to $constraint1 characters',
   })
-  userLastName!: string;
+  lastName!: string;
+
+  /**
+   *
+   */
 
   @Column({ unique: true })
-  @IsEmail({}, { message: 'Email must be in valid format' })
-  userEmailAddress!: string;
+  @Validate(IsUniqueInDatabase, { message: 'Email address is already in use' })
+  @IsEmail({}, { message: 'Please provide valid email address' })
+  emailAddress!: string;
+
+  /**
+   *
+   */
 
   @Column()
   @IsAlphanumeric('en-US', {
@@ -68,39 +103,101 @@ class User extends BaseEntity implements UserAttributes {
     message:
       'User password must be longer than or equal to $constraint1 characters',
   })
-  userPassword!: string;
+  password!: string;
 
-  @Column({ type: 'enum', enum: UserType, default: UserType.standard })
+  /**
+   *
+   */
+
+  @Column({ type: 'enum', enum: Type, default: Type.standard })
   @IsOptional()
-  @IsEnum(UserType)
-  userRole!: UserType;
+  @IsEnum(Type)
+  role!: Type;
+
+  /**
+   *
+   */
 
   @UpdateDateColumn({ nullable: true })
-  userModifyDate!: Date;
+  modifyDate!: Date;
+
+  /**
+   *
+   */
 
   @CreateDateColumn()
-  userRegisterDate!: Date;
+  registerDate!: Date;
 
-  // TODO - return errors from here
-  // check if this breaks hashing or password validation
+  /**
+   *
+   */
+
   @BeforeInsert()
-  @BeforeUpdate()
-  async validate(): Promise<void> {
-    const errors = await validate(this, {
-      skipMissingProperties: false,
-      forbidUnknownValues: true,
-    });
-    console.log(errors);
-  }
+  async actionsBeforeInsert(): Promise<void> {
+    /**
+     * First validate input
+     */
+    console.log('insert');
 
-  async hashPassword(): Promise<void> {
-    if (!!this.userPassword) {
-      this.userPassword = await bcrypt.hash(this.userPassword, 12);
+    const errors = await validate(this, validationConfig(false));
+    console.log(errors);
+
+    /**
+     * Second hash password to avoid problems
+     */
+
+    if (!!this.password) {
+      this.password = await bcrypt.hash(this.password, 12);
     }
   }
 
-  async validatePassword(userPassword: string): Promise<boolean> {
-    return await bcrypt.compare(userPassword, this.userPassword);
+  /**
+   *
+   */
+
+  @BeforeUpdate()
+  async actionsBeforeUpdate(): Promise<void> {
+    /**
+     * First validate input
+     */
+    console.log('update');
+
+    const errors = await validate(this, validationConfig(true));
+    console.log(errors);
+
+    /**
+     * Second hash password to avoid problems
+     */
+
+    if (!!this.password) {
+      this.password = await bcrypt.hash(this.password, 12);
+    }
+  }
+
+  /**
+   *
+   */
+
+  @AfterInsert()
+  actionsAfterInsert(): void {
+    appLogger.info(`User: ${this.id} successfully registered.`);
+  }
+
+  /**
+   *
+   */
+
+  @AfterUpdate()
+  actionsAfterUpdate(): void {
+    appLogger.info(`User: ${this.id} data successfully modified.`);
+  }
+
+  /**
+   *
+   */
+
+  async validatePassword(password: string): Promise<boolean> {
+    return await bcrypt.compare(password, this.password);
   }
 }
 

@@ -1,16 +1,16 @@
 export interface UserAttributes {
-  userUniqueIndentifier: string;
-  userHandle: string;
-  userFirstName: string;
-  userLastName: string;
-  userEmailAddress: string;
-  userPassword: string;
-  userRole: UserType;
-  userModifyDate: Date;
-  userRegisterDate: Date;
+  id: string;
+  handle: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  password: string;
+  role: Type;
+  modifyDate: Date;
+  registerDate: Date;
 }
 
-export enum UserType {
+export enum Type {
   admin = 'admin',
   standard = 'standard',
 }
