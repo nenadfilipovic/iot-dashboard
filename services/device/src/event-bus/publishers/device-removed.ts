@@ -1,8 +1,8 @@
 import { Amqp, amqpClient, amqpExchange } from '../';
 
 const deviceRemovedPublisher = (payload: {
-  deviceOwner: string;
-  deviceChannel: string;
+  owner: string;
+  channel: string;
 }): void => {
   amqpClient.completeConfiguration().then(() => {
     const message = new Amqp.Message(payload);

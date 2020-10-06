@@ -5,12 +5,12 @@ export interface UserAttributes {
   lastName: string;
   emailAddress: string;
   password: string;
-  role: Type;
+  role: Role;
   modifyDate: Date;
   registerDate: Date;
 }
 
-export enum Type {
+export enum Role {
   admin = 'admin',
   standard = 'standard',
 }

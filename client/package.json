@@ -1,7 +1,7 @@
 {
-  "name": "frontend",
+  "name": "client",
   "version": "1.0.0",
-  "description": "Frontend for IOT Dashboard project",
+  "description": "Client for IOT Dashboard project",
   "author": "Nenad Filipovic",
   "license": "MIT",
   "private": true,

@@ -7,42 +7,30 @@ import { BaseError } from '../../errors/base-error';
 import { DeviceAttributes } from './device-types';
 import { Errors } from './device-errors';
 import { deviceRemovedPublisher } from '../../event-bus/publishers';
+import { modifySchema, registerSchema } from './device-validation';
 
 /**
  * Register device
  */
 
 const registerDevice = async (ctx: DefaultContext): Promise<void> => {
-  const { deviceName, deviceChannel, deviceDescription, deviceType } = ctx
-    .request.body as DeviceAttributes;
+  await registerSchema.validateAsync({
+    ...ctx.request.body,
+  });
 
-  const existingDevice = await Device.findOne({ where: { deviceChannel } });
-
-  if (existingDevice) {
-    throw new BaseError(Errors.CHANNEL_USED, 400);
-  }
-
-  const deviceOwner = ctx.state.user.id;
+  const owner = ctx.state.user.id;
 
   const newDevice = Device.create({
-    deviceOwner,
-    deviceName,
-    deviceDescription,
-    deviceChannel,
-    deviceType,
+    ...(ctx.request.body as DeviceAttributes),
+    owner: owner,
   });
 
   const device = await Device.save(newDevice);
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully registered new device.',
-    data: device,
+    data: { device },
   };
-
-  appLogger.info(
-    `Device: ${device.deviceUniqueIndentifier} successfully created.`,
-  );
 };
 
 /**
@@ -50,40 +38,34 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
-  const deviceChannel = ctx.request.params.id;
+  await modifySchema.validateAsync({
+    ...ctx.request.body,
+  });
+
+  const channel = ctx.request.params.id;
 
   const existingDevice = await Device.findOne({
-    where: { deviceChannel },
+    where: { channel },
   });
 
   if (!existingDevice) throw new BaseError(Errors.DOES_NOT_EXIST, 400);
 
-  const deviceOwner = ctx.state.user.id;
+  const owner = ctx.state.user.id;
 
-  if (deviceOwner !== existingDevice.deviceOwner) {
+  if (owner !== existingDevice.owner) {
     throw new BaseError(Errors.NO_PERMISION, 403);
   }
 
-  const { deviceName, deviceDescription, deviceType } = ctx.request
-    .body as DeviceAttributes;
-
   const modifiedDevice = Device.merge(existingDevice, {
-    deviceName,
-    deviceDescription,
-    deviceType,
+    ...(ctx.request.body as DeviceAttributes),
   });
 
   const device = await Device.save(modifiedDevice);
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully updated your device.',
-    data: device,
+    data: { device },
   };
-
-  appLogger.info(
-    `Device: ${device.deviceUniqueIndentifier} data successfully modified.`,
-  );
 };
 
 /**
@@ -91,30 +73,28 @@ const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const removeDevice = async (ctx: DefaultContext): Promise<void> => {
-  const deviceChannel = ctx.request.params.id;
+  const channel = ctx.request.params.id;
 
   const existingDevice = await Device.findOne({
-    where: { deviceChannel },
+    where: { channel },
   });
 
   if (!existingDevice) throw new BaseError(Errors.DOES_NOT_EXIST, 400);
 
-  const deviceOwner = ctx.state.user.id;
+  const owner = ctx.state.user.id;
 
-  if (deviceOwner !== existingDevice.deviceOwner) {
+  if (owner !== existingDevice.owner) {
     throw new BaseError(Errors.NO_PERMISION, 403);
   }
 
-  await Device.delete(existingDevice.deviceUniqueIndentifier);
+  await Device.delete(existingDevice.id);
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully deleted your device.',
+    data: null,
   };
 
-  appLogger.info(
-    `Device: ${existingDevice.deviceUniqueIndentifier} successfully removed.`,
-  );
+  appLogger.info(`Device: ${existingDevice.id} successfully removed.`);
 
   /**
    * This action will remove only logs
@@ -125,7 +105,7 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
    * series to remove
    */
 
-  deviceRemovedPublisher({ deviceOwner, deviceChannel });
+  deviceRemovedPublisher({ owner, channel });
 };
 
 /**
@@ -135,8 +115,8 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
 
 const removeDeviceOnRemoveUser = async (payload: Message): Promise<void> => {
   try {
-    const deviceOwner = payload.getContent() as string;
-    await Device.delete({ deviceOwner });
+    const owner = payload.getContent() as string;
+    await Device.delete({ owner });
     payload.ack();
   } catch {
     payload.nack();
@@ -148,24 +128,23 @@ const removeDeviceOnRemoveUser = async (payload: Message): Promise<void> => {
  */
 
 const getSingleDevice = async (ctx: DefaultContext): Promise<void> => {
-  const deviceChannel = ctx.request.params.id;
+  const channel = ctx.request.params.id;
 
-  const existingDevice = await Device.findOne({
-    where: { deviceChannel },
+  const device = await Device.findOne({
+    where: { channel },
   });
 
-  if (!existingDevice) throw new BaseError(Errors.DOES_NOT_EXIST, 400);
+  if (!device) throw new BaseError(Errors.DOES_NOT_EXIST, 400);
 
-  const deviceOwner = ctx.state.user.id;
+  const owner = ctx.state.user.id;
 
-  if (deviceOwner !== existingDevice.deviceOwner) {
+  if (owner !== device.owner) {
     throw new BaseError(Errors.NO_PERMISION, 403);
   }
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully retrieved your device data.',
-    data: existingDevice,
+    data: { device },
   };
 };
 
@@ -174,16 +153,15 @@ const getSingleDevice = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
-  const deviceOwner = ctx.state.user.id;
+  const owner = ctx.state.user.id;
 
   const devices = await Device.find({
-    where: { deviceOwner },
+    where: { owner },
   });
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully retrieved all your devices.',
-    data: devices,
+    data: { devices },
   };
 };
 
@@ -192,19 +170,19 @@ const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const mqttAcl = async (ctx: DefaultContext): Promise<void> => {
-  const { deviceOwner, deviceChannel, deviceTopic } = ctx.request.body;
+  const { owner, channel, topic } = ctx.request.body;
 
-  if (deviceOwner === 'admin') {
+  if (owner === 'admin') {
     ctx.response.status = 200;
     ctx.body = 'ignore';
     return;
   }
 
   const existingDevice = await Device.findOne({
-    where: { deviceOwner, deviceChannel },
+    where: { owner, channel },
   });
 
-  if (!existingDevice || existingDevice.deviceTopic !== deviceTopic) {
+  if (!existingDevice || existingDevice.topic !== topic) {
     ctx.response.status = 400;
     return;
   }

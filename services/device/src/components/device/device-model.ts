@@ -6,77 +6,59 @@ import {
   UpdateDateColumn,
   BaseEntity,
   AfterLoad,
-  BeforeInsert,
-  BeforeUpdate,
+  AfterInsert,
+  AfterUpdate,
 } from 'typeorm';
-import {
-  IsAlphanumeric,
-  MinLength,
-  IsEnum,
-  IsOptional,
-  validate,
-} from 'class-validator';
 
-import { DeviceAttributes, DeviceType } from './device-types';
+import { DeviceAttributes, Type } from './device-types';
+import { appLogger } from '../../utils/logger';
 
 @Entity()
 class Device extends BaseEntity implements DeviceAttributes {
   @PrimaryGeneratedColumn('uuid')
-  deviceUniqueIndentifier!: string;
+  id!: string;
 
   @Column()
-  deviceOwner!: string;
+  owner!: string;
 
   @Column()
-  @IsAlphanumeric('en-US', {
-    message: 'Device name must contain only letters and numbers',
-  })
-  @MinLength(3, {
-    message:
-      'Device name must be longer than or equal to $constraint1 characters',
-  })
-  deviceName!: string;
+  name!: string;
 
   @Column({ unique: true })
-  @IsAlphanumeric('en-US', {
-    message: 'Device channel must contain only letters and numbers',
-  })
-  @MinLength(5, {
-    message:
-      'Device channel must be longer than or equal to $constraint1 characters',
-  })
-  deviceChannel!: string;
+  channel!: string;
 
   @Column({ nullable: true })
-  @IsOptional()
-  deviceDescription!: string;
+  description!: string;
 
-  @Column({ type: 'enum', enum: DeviceType, default: DeviceType.esp8266 })
-  @IsOptional()
-  @IsEnum(DeviceType)
-  deviceType!: DeviceType;
+  @Column({ type: 'enum', enum: Type, default: Type.esp8266 })
+  type!: Type;
 
-  deviceTopic!: string;
+  topic!: string;
 
   @UpdateDateColumn({ nullable: true })
-  deviceModifyDate!: Date;
+  modifyDate!: Date;
 
   @CreateDateColumn()
-  deviceRegisterDate!: Date;
+  registerDate!: Date;
 
   @AfterLoad()
   setTopic(): void {
-    this.deviceTopic = this.deviceOwner + '/' + this.deviceChannel;
+    this.topic = this.owner + '/' + this.channel;
   }
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async validate(): Promise<void> {
-    const errors = await validate(this, {
-      skipMissingProperties: false,
-      forbidUnknownValues: true,
-    });
-    console.log(errors);
+  @AfterInsert()
+  afterInsertActions(): void {
+    appLogger.info(`Device: ${this.id} successfully created.`);
+  }
+
+  @AfterUpdate()
+  afterUpdateActions(): void {
+    appLogger.info(`Device: ${this.id} data successfully modified.`);
+  }
+
+  toJSON(): this {
+    Object.assign(this, { topic: undefined });
+    return this;
   }
 }
 

@@ -7,12 +7,15 @@ import { UserAttributes } from './user-types';
 import { BaseError } from '../../errors/base-error';
 import { Errors } from './user-errors';
 import { userRemovedPublisher } from '../../event-bus/publishers';
+import { registerSchema, modifySchema } from './user-validation';
 
 /**
  * Register user
  */
 
 const registerUser = async (ctx: DefaultContext): Promise<void> => {
+  await registerSchema.validateAsync({ ...ctx.request.body });
+
   const newUser = User.create({
     ...(ctx.request.body as UserAttributes),
   });
@@ -34,6 +37,8 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyUser = async (ctx: DefaultContext): Promise<void> => {
+  await modifySchema.validateAsync({ ...ctx.request.body });
+
   const handle = ctx.state.user.id;
 
   const existingUser = await User.findOne({
@@ -42,12 +47,9 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
 
   if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  const user = await User.save({
-    ...existingUser,
-    ...ctx.request.body,
-  });
+  Object.assign(existingUser, { ...ctx.request.body });
 
-  //ctx.session = null;
+  const user = await existingUser.save();
 
   ctx.body = {
     status: 'success',
@@ -87,20 +89,17 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
-  const userHandle = ctx.state.user.id;
+  const handle = ctx.state.user.id;
 
-  const user = await User.findOne({ where: { userHandle } });
+  const user = await User.findOne({ where: { handle } });
 
   if (!user) {
     throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
   }
 
-  Object.assign(user, { userPassword: undefined });
-
   ctx.body = {
     status: 'success',
-    message: 'You have successfully retrieved your account data.',
-    data: user,
+    data: { user },
   };
 };
 
@@ -109,30 +108,31 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logUserIn = async (ctx: DefaultContext): Promise<void> => {
-  const { handle, password } = ctx.request.body as UserAttributes;
+  const { handle, password, emailAddress } = ctx.request.body as UserAttributes;
 
-  const existingUser = await User.findOne({
-    where: { handle },
+  const loginOptions = handle
+    ? { handle: handle }
+    : { emailAddress: emailAddress };
+
+  const user = await User.findOne({
+    where: { ...loginOptions },
   });
 
-  if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
+  if (!user) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  const correctPassword = await existingUser.validatePassword(password);
+  const correctPassword = await user.validatePassword(password);
 
   if (!correctPassword) {
     throw new BaseError(Errors.BAD_CREDENTIALS, 400);
   }
 
-  const token = createToken(existingUser.handle);
+  const token = createToken(user.handle);
 
   ctx.session = { token };
 
-  Object.assign(existingUser, { userPassword: undefined });
-
   ctx.body = {
     status: 'success',
-    message: 'You have successfully logged in.',
-    data: existingUser,
+    data: { user },
   };
 };
 
@@ -145,7 +145,7 @@ const logUserOut = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully logged out.',
+    data: null,
   };
 };
 

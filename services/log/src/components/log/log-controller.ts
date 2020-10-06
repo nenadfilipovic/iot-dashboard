@@ -8,17 +8,16 @@ import { influxDatabase } from '../../database';
  */
 
 const getAllLogs = async (ctx: DefaultContext): Promise<void> => {
-  const deviceOwner = ctx.state.user.id;
-  const deviceChannel = ctx.request.params.id;
+  const owner = ctx.state.user.id;
+  const channel = ctx.request.params.id;
 
-  const recievedLogs = await influxDatabase.query(
-    `select *::field from "${deviceOwner}" where device = '${deviceChannel}' order by time desc`,
+  const logs = await influxDatabase.query(
+    `select *::field from "${owner}" where device = '${channel}' order by time desc`,
   );
 
   ctx.body = {
     status: 'success',
-    message: 'You have successfully retrieved all your logs.',
-    data: recievedLogs,
+    data: { logs },
   };
 };
 
@@ -46,11 +45,11 @@ const registerLogViaMqtt = async (payload: Message): Promise<void> => {
      * and device channel as unique tag inside measurement
      */
 
-    const [userHandle, deviceChannel] = topic.split('/');
+    const [handle, channel] = topic.split('/');
 
-    await influxDatabase.writeMeasurement(userHandle, [
+    await influxDatabase.writeMeasurement(handle, [
       {
-        tags: { device: deviceChannel },
+        tags: { device: channel },
         fields: message,
       },
     ]);
@@ -70,7 +69,7 @@ const removeMeasurementOnRemoveUser = async (
   payload: Message,
 ): Promise<void> => {
   try {
-    const userHandle = payload.getContent() as string;
+    const handle = payload.getContent() as string;
 
     /**
      * Every user have its measurement table
@@ -79,7 +78,7 @@ const removeMeasurementOnRemoveUser = async (
      */
 
     await influxDatabase.query(`
-        drop measurement "${userHandle}"
+        drop measurement "${handle}"
       `);
 
     payload.ack();
@@ -95,13 +94,13 @@ const removeMeasurementOnRemoveUser = async (
 
 const removeSeriesOnRemoveDevice = async (payload: Message): Promise<void> => {
   try {
-    const { deviceOwner, deviceChannel } = payload.getContent() as {
-      deviceOwner: string;
-      deviceChannel: string;
+    const { owner, channel } = payload.getContent() as {
+      owner: string;
+      channel: string;
     };
 
     await influxDatabase.query(`
-        drop series from "${deviceOwner}" where "device"='${deviceChannel}'
+        drop series from "${owner}" where "device"='${channel}'
       `);
 
     payload.ack();
