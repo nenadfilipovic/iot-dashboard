@@ -48,12 +48,12 @@ class Device extends BaseEntity implements DeviceAttributes {
 
   @AfterInsert()
   afterInsertActions(): void {
-    appLogger.info(`Device: ${this.id} successfully created.`);
+    appLogger.info(`Device: ${this.id} successfully created`);
   }
 
   @AfterUpdate()
   afterUpdateActions(): void {
-    appLogger.info(`Device: ${this.id} data successfully modified.`);
+    appLogger.info(`Device: ${this.id} data successfully modified`);
   }
 
   toJSON(): this {

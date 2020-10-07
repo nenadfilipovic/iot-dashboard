@@ -14,9 +14,9 @@ import MemoryIcon from '@material-ui/icons/Memory';
 
 import { PageSegment } from '../components/PageSegment';
 import {
-  Device,
-  DeviceAttributesCasting,
-  DeviceType,
+  DeviceAttributes,
+  DeviceTypesCasting,
+  Type,
   ReactSVGComponent,
 } from '../types';
 
@@ -28,69 +28,62 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const {
-  deviceName,
-  deviceChannel,
-  deviceDescription,
-  deviceType,
-} = DeviceAttributesCasting;
+const { name, channel, description, type } = DeviceTypesCasting;
 
-const deviceTypeOptions = (['esp32', 'esp8266'] as DeviceType[]).map(
-  (option) => (
-    <MenuItem key={option} value={option}>
-      {option}
-    </MenuItem>
-  ),
-);
+const typeOptions = (['esp32', 'esp8266'] as Type[]).map((option) => (
+  <MenuItem key={option} value={option}>
+    {option}
+  </MenuItem>
+));
 
 const CreateDevice = () => {
   const classes = useStyles();
 
-  const { control, handleSubmit } = useForm<Device>({
+  const { control, handleSubmit } = useForm<DeviceAttributes>({
     defaultValues: {
-      deviceName: '',
-      deviceChannel: '',
-      deviceDescription: '',
-      deviceType: 'esp32',
+      name: '',
+      channel: '',
+      description: '',
+      type: Type.esp8266,
     },
   });
 
-  const onSubmit = (data: Device) => console.log(data);
+  const onSubmit = (data: DeviceAttributes) => console.log(data);
 
-  const createDeviceFormFields = [
+  const formFields = [
     {
       label: 'Name',
-      name: deviceName,
+      name: name,
       control,
     },
     {
       label: 'Topic',
-      name: deviceChannel,
+      name: channel,
       control,
     },
     {
       label: 'Description',
-      name: deviceDescription,
+      name: description,
       control,
     },
     {
       label: 'Type',
-      name: deviceType,
+      name: type,
       control,
       select: true,
-      children: deviceTypeOptions,
+      children: typeOptions,
     },
   ];
 
   const createDeviceForm = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PageSegment
-        headerTitle="Add new device"
-        headerSubtitle="Please enter data for device you want to create."
-        headerIcon={MemoryIcon as ReactSVGComponent}
-        bodyContent={
+        title="Add new device"
+        subtitle="Please enter data for device you want to create"
+        icon={MemoryIcon as ReactSVGComponent}
+        content={
           <Grid container direction="column" spacing={2}>
-            {createDeviceFormFields.map((field) => (
+            {formFields.map((field) => (
               <Grid item>
                 <Controller
                   as={
@@ -108,11 +101,10 @@ const CreateDevice = () => {
                 />
               </Grid>
             ))}
-            <Grid item></Grid>
           </Grid>
         }
-        bodyActions={
-          <Button variant="contained" color="primary" fullWidth type="submit">
+        actions={
+          <Button color="primary" fullWidth type="submit">
             Create
           </Button>
         }

@@ -2,8 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-import InsertChartIcon from '@material-ui/icons/InsertChart';
-import FaceIcon from '@material-ui/icons/Face';
 import {
   Hidden,
   Drawer,
@@ -16,12 +14,15 @@ import {
   List,
   Link,
 } from '@material-ui/core';
+import InsertChartIcon from '@material-ui/icons/InsertChart';
+import FaceIcon from '@material-ui/icons/Face';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 import avatar from '../assets/images/avatar.svg';
 import { MenuItem } from '../components/MenuItem';
 import { Logo } from '../components/Logo';
 import { UserAvatar } from '../components/UserAvatar';
-import { User, ReactSVGComponent, RootState } from '../types';
+import { UserAttributes, ReactSVGComponent, RootState } from '../types';
 
 const navigationItems = [
   {
@@ -38,6 +39,11 @@ const navigationItems = [
     itemPath: '/profile',
     itemTitle: 'Profile',
     itemIcon: FaceIcon,
+  },
+  {
+    itemPath: '/logout',
+    itemTitle: 'Logout',
+    itemIcon: ExitToAppIcon,
   },
 ];
 
@@ -58,17 +64,11 @@ const Sidebar = ({
 }) => {
   const classes = useStyles();
 
-  const currentUser = useSelector(
-    (state: RootState) => state.notificationReducer.message,
-  );
-
-  console.log(currentUser);
-
-  const userData: User = {
-    userFirstName: 'nenad',
-    userLastName: 'filipovic',
-    userHandle: 'nenad88',
-    userEmailAddress: 'nenad@nenad.com',
+  const userData = {
+    firstName: 'nenad',
+    lastName: 'filipovic',
+    handle: 'nenad88',
+    emailAddress: 'nenad@nenad.com',
   };
 
   const sidebarContent = (
@@ -79,7 +79,7 @@ const Sidebar = ({
       className={classes.sidebarContent}
     >
       <Box display="flex" flexDirection="column" padding="0 16px 16px 16px">
-        <Logo />
+        <Logo height="24" width="24" />
         <Box
           display="flex"
           flexDirection="column"
@@ -88,12 +88,12 @@ const Sidebar = ({
         >
           <UserAvatar image={avatar} />
           <Typography
-            children={`${userData.userFirstName} ${userData.userLastName}`}
+            children={`${userData.lastName} ${userData.lastName}`}
             variant="h5"
           />
           <Link underline="none" component={NavLink} to="/app/profile">
             <Typography
-              children={userData.userHandle}
+              children={userData.handle}
               color="secondary"
               variant="body2"
             />

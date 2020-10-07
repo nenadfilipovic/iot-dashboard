@@ -41,7 +41,7 @@ app
     return next().catch((error) => {
       if (401 == error.status) {
         ctx.status = 401;
-        throw new BaseError('Action requires authentication!', 401);
+        throw new BaseError('Action requires authentication', 401);
       } else {
         throw error;
       }

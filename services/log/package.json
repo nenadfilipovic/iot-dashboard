@@ -46,7 +46,7 @@
     "koa-logger": "^3.2.1",
     "koa-router": "^9.4.0",
     "koa-session": "^6.0.0",
-    "pm2": "^4.4.1",
+    "pm2": "^4.5.0",
     "typescript": "^3.9.7",
     "winston": "^3.3.3"
   },

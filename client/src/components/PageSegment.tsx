@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   Card,
   CardHeader,
@@ -9,26 +10,34 @@ import {
   Theme,
   createStyles,
   Typography,
+  Avatar,
 } from '@material-ui/core';
 
 import { ReactSVGComponent } from '../types';
 
 export interface PageSegmentAttributes {
-  headerTitle: string;
-  headerSubtitle: string;
-  headerIcon: ReactSVGComponent;
-  headerActions?: JSX.Element;
-  bodyContent?: JSX.Element;
-  bodyActions?: JSX.Element;
+  title: string;
+  subtitle: string | Date;
+  icon: ReactSVGComponent;
+  headerMenu?: JSX.Element;
+  content?: JSX.Element;
+  actions?: JSX.Element;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    headerActions: {
+    title: {
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+    avatar: {
+      color: theme.palette.getContrastText(theme.palette.secondary.main),
+      backgroundColor: theme.palette.secondary.main,
+    },
+    headerMenu: {
       margin: 0,
       alignSelf: 'center',
     },
-    bodyActions: {
+    actions: {
       padding: '16px',
       justifyContent: 'flex-end',
     },
@@ -36,42 +45,38 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const PageSegment = ({
-  headerTitle,
-  headerSubtitle,
-  headerIcon: Icon,
-  headerActions,
-  bodyContent,
-  bodyActions,
+  title,
+  subtitle,
+  icon: Icon,
+  headerMenu,
+  content,
+  actions,
 }: PageSegmentAttributes) => {
   const classes = useStyles();
 
   return (
     <Card>
       <CardHeader
-        classes={{ action: classes.headerActions }}
-        title={<Typography children={headerTitle} variant="body1" />}
-        subheader={
-          <Typography
-            color="textSecondary"
-            children={headerSubtitle}
-            variant="body2"
-          />
+        classes={{ action: classes.headerMenu }}
+        title={<Typography className={classes.title} children={title} />}
+        subheader={<Typography variant="body2" children={subtitle} />}
+        avatar={
+          <Avatar className={classes.avatar} variant="rounded">
+            <Icon />
+          </Avatar>
         }
-        avatar={<Icon />}
-        action={<React.Fragment>{headerActions}</React.Fragment>}
+        action={<React.Fragment>{headerMenu}</React.Fragment>}
       />
-      {bodyContent && (
+      {content && (
         <React.Fragment>
           <Divider />
-          <CardContent>{bodyContent}</CardContent>
+          <CardContent>{content}</CardContent>
         </React.Fragment>
       )}
-      {bodyActions && (
+      {actions && (
         <React.Fragment>
           <Divider />
-          <CardActions className={classes.bodyActions}>
-            {bodyActions}
-          </CardActions>
+          <CardActions className={classes.actions}>{actions}</CardActions>
         </React.Fragment>
       )}
     </Card>

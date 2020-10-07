@@ -1,0 +1,29 @@
+{
+  "services": {
+    "user": {
+      "name": "User",
+      "port": 3001,
+      "prefix": "/api/users",
+      "mysql": {
+        "database": "user"
+      }
+    }
+  },
+  "jwt": {
+    "secret": "0xXElKawk6iSUI9y6NPZKuRa8bwSrttsImmsWTNJqIfPT5cNfsdYzhI3PYtLdRQ",
+    "expiresIn": "15m"
+  },
+  "cookies": {
+    "key": "qo8egoBEIckRK59IEEEGNH13u5B9ef5Hoj1ch7A4oSkACL8YzYYMDhZTvJLJM20",
+    "expiresIn": 1
+  },
+  "rabbitmq": {
+    "host": "rabbitmq"
+  },
+  "mysql": {
+    "host": "mysql",
+    "port": 3306,
+    "username": "user",
+    "password": "password"
+  }
+}

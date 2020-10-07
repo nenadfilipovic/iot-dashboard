@@ -37,7 +37,7 @@ const Dashboard = () => {
     </Box>
   );
 
-  return <div>{dashboardContent}</div>;
+  return <React.Fragment>{dashboardContent}</React.Fragment>;
 };
 
 export { Dashboard };

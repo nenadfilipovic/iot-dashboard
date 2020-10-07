@@ -39,7 +39,6 @@ const deviceReducer = (
     case GET_ALL_DEVICES_SUCCESS:
       return {
         ...state,
-        devices: [...state.devices, action.payload],
       };
 
     default:

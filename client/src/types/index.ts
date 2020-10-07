@@ -2,6 +2,10 @@ import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { rootReducer } from '../reducers';
 
+/**
+ * App types
+ */
+
 export type RootState = ReturnType<typeof rootReducer>;
 
 export type AppThunk<ReturnType = void> = ThunkAction<
@@ -11,117 +15,8 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action<string>
 >;
 
-export interface User {
-  userHandle: string;
-  userFirstName: string;
-  userLastName: string;
-  userEmailAddress: string;
-  userPassword?: string;
-  userLocation?: string;
-  userRole?: UserType;
-  userLastLoginDate?: string;
-  userRegisterDate?: string;
-}
-
-export enum UserAttributesCasting {
-  userHandle = 'userHandle',
-  userFirstName = 'userFirstName',
-  userLastName = 'userLastName',
-  userEmailAddress = 'userEmailAddress',
-  userPassword = 'userPassword',
-  userLocation = 'userLocation',
-  userRole = 'userRole',
-  userLastLoginDate = 'userLastLoginDate',
-  userRegisterDate = 'userRegisterDate',
-}
-
-type UserType = 'admin' | 'standard';
-
-export interface UserState {
-  user: User | null;
-}
-
-export interface Device {
-  deviceUniqueIndentifier: string;
-  deviceName: string;
-  deviceChannel: string;
-  deviceDescription: string;
-  deviceType: DeviceType;
-  deviceCreateDate: string;
-}
-
-export enum DeviceAttributesCasting {
-  deviceUniqueIndentifier = 'deviceUniqueIndentifier',
-  deviceName = 'deviceName',
-  deviceChannel = 'deviceChannel',
-  deviceDescription = 'deviceDescription',
-  deviceType = 'deviceType',
-  deviceCreateDate = 'deviceCreateDate',
-}
-
-export type DeviceType = 'esp32' | 'esp8266';
-
-export interface DeviceState {
-  devices: Device[];
-}
-
 export interface NotificationState {
-  type: string;
   message: string;
-}
-
-export interface SystemState {
-  isLoading: boolean;
-}
-
-export type ReactSVGComponent = React.FC<React.SVGProps<SVGSVGElement>>;
-
-export const REGISTER_USER_SUCCESS = 'REGISTER_USER_SUCCESS';
-
-interface RegisterUserSuccess {
-  type: typeof REGISTER_USER_SUCCESS;
-  payload: User;
-}
-
-export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
-
-interface GetUserSuccess {
-  type: typeof GET_USER_SUCCESS;
-  payload: User;
-}
-
-export const MODIFY_USER_SUCCESS = 'MODIFY_USER_SUCCESS';
-
-interface ModifyUserSuccess {
-  type: typeof MODIFY_USER_SUCCESS;
-  payload: User;
-}
-
-export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
-
-interface LogInUserSuccess {
-  type: typeof LOGIN_USER_SUCCESS;
-  payload: User;
-}
-
-export const LOGOUT_USER_SUCCESS = 'LOGOUT_USER_SUCCESS';
-
-interface LogOutUserSuccess {
-  type: typeof LOGOUT_USER_SUCCESS;
-}
-
-export type UserActionTypes =
-  | RegisterUserSuccess
-  | GetUserSuccess
-  | ModifyUserSuccess
-  | LogInUserSuccess
-  | LogOutUserSuccess;
-
-export const NOTIFICATION_SUCCESS = 'NOTIFICATION_SUCCESS';
-
-interface NotificationSuccess {
-  type: typeof NOTIFICATION_SUCCESS;
-  payload: string;
 }
 
 export const NOTIFICATION_FAILURE = 'NOTIFICATION_FAILURE';
@@ -137,10 +32,11 @@ interface ClearNotifications {
   type: typeof CLEAR_NOTIFICATIONS;
 }
 
-export type NotificationActionTypes =
-  | NotificationSuccess
-  | NotificationFailure
-  | ClearNotifications;
+export type NotificationActionTypes = NotificationFailure | ClearNotifications;
+
+export interface SystemState {
+  isLoading: boolean;
+}
 
 export const ACTION_STARTED = 'ACTION_STARTED';
 
@@ -148,13 +44,116 @@ interface ActionStarted {
   type: typeof ACTION_STARTED;
 }
 
-export const ACTION_STOPPED = 'ACTION_STOPPED';
+export const ACTION_ENDED = 'ACTION_ENDED';
 
 interface ActionStopped {
-  type: typeof ACTION_STOPPED;
+  type: typeof ACTION_ENDED;
 }
 
 export type SystemActionTypes = ActionStarted | ActionStopped;
+
+export type ReactSVGComponent = React.FC<React.SVGProps<SVGSVGElement>>;
+
+/**
+ * User types
+ */
+
+export interface UserAttributes {
+  id: string;
+  handle: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  password: string;
+  role: Role;
+  modifyDate: Date;
+  registerDate: Date;
+}
+
+export enum Role {
+  admin = 'admin',
+  standard = 'standard',
+}
+
+export enum UserTypesCasting {
+  handle = 'handle',
+  firstName = 'firstName',
+  lastName = 'lastName',
+  emailAddress = 'emailAddress',
+  password = 'password',
+  role = 'role',
+  modifyDate = 'modifyDate',
+  registerDate = 'registerDate',
+}
+
+export interface UserState {
+  user: UserAttributes | null;
+}
+
+export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
+
+interface GetUserSuccess {
+  type: typeof GET_USER_SUCCESS;
+}
+
+export const MODIFY_USER_SUCCESS = 'MODIFY_USER_SUCCESS';
+
+interface ModifyUserSuccess {
+  type: typeof MODIFY_USER_SUCCESS;
+}
+
+export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
+
+interface LogInUserSuccess {
+  type: typeof LOGIN_USER_SUCCESS;
+  payload: UserAttributes;
+}
+
+export const LOGOUT_USER_SUCCESS = 'LOGOUT_USER_SUCCESS';
+
+interface LogOutUserSuccess {
+  type: typeof LOGOUT_USER_SUCCESS;
+}
+
+export type UserActionTypes =
+  | GetUserSuccess
+  | ModifyUserSuccess
+  | LogInUserSuccess
+  | LogOutUserSuccess;
+
+/**
+ * Device types
+ */
+
+export interface DeviceAttributes {
+  id: string;
+  owner?: string;
+  name: string;
+  channel: string;
+  description: string;
+  type: Type;
+  modifyDate: Date;
+  registerDate: Date;
+}
+
+export enum Type {
+  esp32 = 'esp32',
+  esp8266 = 'esp8266',
+}
+
+export enum DeviceTypesCasting {
+  id = 'id',
+  name = 'name',
+  channel = 'channel',
+  description = 'description',
+  type = 'type',
+  modifyDate = 'modifyDate',
+  registerDate = 'registerDate',
+}
+
+export interface DeviceState {
+  devices: DeviceAttributes[];
+}
 
 export const REGISTER_DEVICE_SUCCESS = 'REGISTER_DEVICE_SUCCESS';
 
@@ -166,7 +165,6 @@ export const MODIFY_DEVICE_SUCCESS = 'MODIFY_DEVICE_SUCCESS';
 
 interface ModifyDeviceSuccess {
   type: typeof MODIFY_DEVICE_SUCCESS;
-  payload: Device;
 }
 
 export const REMOVE_DEVICE_SUCCESS = 'REMOVE_DEVICE_SUCCESS';
@@ -179,14 +177,12 @@ export const GET_SINGLE_DEVICE_SUCCESS = 'GET_SINGLE_DEVICE_SUCCESS';
 
 interface GetSingleDeviceSuccess {
   type: typeof GET_SINGLE_DEVICE_SUCCESS;
-  payload: Device;
 }
 
 export const GET_ALL_DEVICES_SUCCESS = 'GET_ALL_DEVICES_SUCCESS';
 
 interface GetAllDevicesSuccess {
   type: typeof GET_ALL_DEVICES_SUCCESS;
-  payload: Device;
 }
 
 export type DeviceActionTypes =

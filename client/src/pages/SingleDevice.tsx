@@ -6,74 +6,82 @@ import InfoIcon from '@material-ui/icons/Info';
 
 import { Chart } from '../components/Chart';
 import { PageSegment } from '../components/PageSegment';
-import { Device, DeviceAttributesCasting, ReactSVGComponent } from '../types';
+import {
+  DeviceAttributes,
+  DeviceTypesCasting,
+  Type,
+  ReactSVGComponent,
+} from '../types';
 
 const {
-  deviceName,
-  deviceChannel,
-  deviceDescription,
-  deviceType,
-  deviceCreateDate,
-} = DeviceAttributesCasting;
+  name,
+  channel,
+  description,
+  type,
+  registerDate,
+  modifyDate,
+} = DeviceTypesCasting;
 
 const SingleDevice = () => {
   const [editable, setEditable] = useState<boolean>(false);
 
-  const { control, handleSubmit } = useForm<Device>({
+  const { control, handleSubmit } = useForm<DeviceAttributes>({
     defaultValues: {
-      deviceName: 'Device',
-      deviceChannel: 'home',
-      deviceType: 'esp32',
-      deviceDescription: 'Sensor from living room',
-      deviceCreateDate: new Date().toLocaleString(),
+      name: 'Device',
+      channel: 'home',
+      type: Type.esp8266,
+      description: 'Sensor from living room',
+      modifyDate: new Date(),
+      registerDate: new Date(),
     },
   });
 
-  const onSubmit = (data: Device) => console.log(data);
+  const onSubmit = (data: DeviceAttributes) => console.log(data);
 
-  const deviceFormFields = [
+  const formFields = [
     {
       label: 'Name',
-      name: deviceName,
+      name: name,
       control,
     },
     {
       label: 'Type',
-      name: deviceType,
+      name: type,
       control,
       disabled: true,
     },
     {
       label: 'Topic',
-      name: deviceChannel,
+      name: channel,
       control,
     },
     {
       label: 'Description',
-      name: deviceDescription,
+      name: description,
       control,
     },
     {
+      label: 'Modified',
+      name: modifyDate,
+      control,
+      disabled: true,
+    },
+    {
       label: 'Created',
-      name: deviceCreateDate,
+      name: registerDate,
       control,
       disabled: true,
     },
   ];
 
   const button = editable ? (
-    <Button
-      onClick={() => setEditable(!editable)}
-      variant="contained"
-      color="primary"
-    >
+    <Button onClick={() => setEditable(!editable)} color="primary">
       Save
     </Button>
   ) : (
     <Button
       onClick={() => setEditable(!editable)}
       type="submit"
-      variant="contained"
       color="primary"
     >
       Edit
@@ -83,12 +91,12 @@ const SingleDevice = () => {
   const deviceForm = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PageSegment
-        headerTitle="Information"
-        headerSubtitle="You can review or edit your device properties here."
-        headerIcon={InfoIcon as ReactSVGComponent}
-        bodyContent={
+        title="Information"
+        subtitle="You can review or edit your device properties here"
+        icon={InfoIcon as ReactSVGComponent}
+        content={
           <Grid container spacing={2}>
-            {deviceFormFields.map((field) => (
+            {formFields.map((field) => (
               <Grid item md={4} xs={12}>
                 <Controller
                   as={
@@ -106,7 +114,7 @@ const SingleDevice = () => {
             ))}
           </Grid>
         }
-        bodyActions={button}
+        actions={button}
       />
     </form>
   );
@@ -116,10 +124,10 @@ const SingleDevice = () => {
       <Grid item>{deviceForm}</Grid>
       <Grid item>
         <PageSegment
-          headerTitle="Readings"
-          headerSubtitle="Check data readings from your device."
-          headerIcon={TimelineIcon as ReactSVGComponent}
-          bodyContent={<Chart />}
+          title="Readings"
+          subtitle="Check data readings from your device"
+          icon={TimelineIcon as ReactSVGComponent}
+          content={<Chart />}
         />
       </Grid>
     </Grid>

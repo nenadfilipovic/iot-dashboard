@@ -1,5 +1,5 @@
 #!/bin/bash
-(cd application/services/user; sh build.sh)
-(cd application/services/device; sh build.sh)
-(cd application/services/mqtt; sh build.sh)
-(cd application/services/log; sh build.sh)
+(cd services/user; sh build.sh)
+(cd services/device; sh build.sh)
+(cd services/receiver; sh build.sh)
+(cd services/log; sh build.sh)

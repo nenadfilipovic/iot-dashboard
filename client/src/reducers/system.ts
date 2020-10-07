@@ -2,7 +2,7 @@ import {
   SystemState,
   SystemActionTypes,
   ACTION_STARTED,
-  ACTION_STOPPED,
+  ACTION_ENDED,
 } from '../types';
 
 const initialState: SystemState = {
@@ -19,7 +19,7 @@ const systemReducer = (
         isLoading: true,
       };
 
-    case ACTION_STOPPED:
+    case ACTION_ENDED:
       return {
         ...state,
         isLoading: false,

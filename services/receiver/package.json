@@ -21,10 +21,13 @@
     "ts-node-dev": "^1.0.0-pre.57"
   },
   "dependencies": {
+    "@types/amqplib": "^0.5.13",
+    "@types/bluebird": "^3.5.32",
     "@types/config": "0.0.36",
     "amqp-ts": "^1.8.0",
     "config": "^3.3.1",
     "mqtt": "^4.2.1",
+    "pm2": "^4.5.0",
     "typescript": "^3.9.7",
     "winston": "^3.3.3"
   },

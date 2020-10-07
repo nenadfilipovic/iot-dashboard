@@ -1,4 +1,4 @@
-import { SystemActionTypes, ACTION_STARTED, ACTION_STOPPED } from '../types';
+import { SystemActionTypes, ACTION_STARTED, ACTION_ENDED } from '../types';
 
 const actionStart = (): SystemActionTypes => {
   return {
@@ -8,7 +8,7 @@ const actionStart = (): SystemActionTypes => {
 
 const actionStop = (): SystemActionTypes => {
   return {
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   };
 };
 

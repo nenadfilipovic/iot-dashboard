@@ -1,19 +1,33 @@
 version: "3"
 services:
-  client-service:
-    image: nenadfilipovic/iot-dashboard/client-service
+  client:
+    image: nenadfilipovic/iot-dashboard-client:latest
+    depends_on: 
+     - nginx
 
   user-service:
-    image: nenadfilipovic/iot-dashboard/user-service
+    image: nenadfilipovic/iot-dashboard-user-service:latest
+    depends_on: 
+      - mysql
+      - rabbitmq
 
   device-service:
-    image: nenadfilipovic/iot-dashboard/device-service
+    image: nenadfilipovic/iot-dashboard-device-service:latest
+    depends_on: 
+      - mysql
+      - rabbitmq
 
   log-service:
-    image: nenadfilipovic/iot-dashboard/log-service
+    image: nenadfilipovic/iot-dashboard-log-service:latest
+    depends_on: 
+      - influx-db
+      - rabbitmq
 
   receiver-service:
-    image: nenadfilipovic/iot-dashboard/receiver-service
+    image: nenadfilipovic/iot-dashboard-receiver-service:latest
+    depends_on: 
+      - emqx
+      - rabbitmq
 
   nginx:
     image: nginx:1.19.2-alpine
@@ -21,6 +35,11 @@ services:
       - "80:80"
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - user-service
+      - device-service
+      - log-service
+      - receiver-service
 
   mysql:
     image: mysql:5.7

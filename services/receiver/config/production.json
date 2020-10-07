@@ -1,0 +1,20 @@
+{
+  "services": {
+    "receiver": {
+      "name": "Receiver",
+      "mqttClient": {
+        "username": "admin",
+        "password": "password",
+        "clientId": "dashboard",
+        "topic": "#"
+      }
+    }
+  },
+  "rabbitmq": {
+    "host": "rabbitmq"
+  },
+  "emqx": {
+    "host": "emqx",
+    "port": 1883
+  }
+}

@@ -1,4 +1,6 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
+
 import {
   Button,
   createStyles,
@@ -7,7 +9,6 @@ import {
   Typography,
   ListItem,
 } from '@material-ui/core';
-import { NavLink } from 'react-router-dom';
 
 import { ReactSVGComponent } from '../types';
 
@@ -30,7 +31,6 @@ const useStyles = makeStyles((theme: Theme) =>
       '& $svg': {
         color: theme.palette.primary.main,
       },
-      backgroundColor: theme.palette.grey[100],
     },
     menuItemIcon: {
       marginRight: theme.spacing(1),
@@ -58,11 +58,7 @@ const MenuItem = ({
         to={itemPath}
       >
         <Icon className={classes.menuItemIcon} />
-        <Typography
-          children={itemTitle}
-          className={classes.menuItemTitle}
-          variant="body1"
-        />
+        <Typography children={itemTitle} className={classes.menuItemTitle} />
       </Button>
     </ListItem>
   );

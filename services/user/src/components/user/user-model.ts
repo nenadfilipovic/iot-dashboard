@@ -62,12 +62,12 @@ class User extends BaseEntity implements UserAttributes {
 
   @AfterInsert()
   actionsAfterInsert(): void {
-    appLogger.info(`User: ${this.id} successfully registered.`);
+    appLogger.info(`User: ${this.id} successfully registered`);
   }
 
   @AfterUpdate()
   actionsAfterUpdate(): void {
-    appLogger.info(`User: ${this.id} data successfully modified.`);
+    appLogger.info(`User: ${this.id} data successfully modified`);
   }
 
   async validatePassword(password: string): Promise<boolean> {

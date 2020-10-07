@@ -17,7 +17,7 @@ const mqttClient = mqtt.connect({
   password,
   clientId,
   clean: false,
-  connectTimeout: 10000,
+  reconnectPeriod: 30000,
 });
 
 mqttClient

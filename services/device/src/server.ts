@@ -1,5 +1,3 @@
-process.env['NODE_CONFIG_DIR'] = '../../config';
-
 import http from 'http';
 import config from 'config';
 
@@ -81,7 +79,7 @@ class Server {
   }
 
   public static terminateServer(name: string, error: Error) {
-    appLogger.error(`Unable to start / stop ${name} service!`);
+    appLogger.error(`Unable to start / stop ${name} service`);
 
     /**
      * In case something is wrong log error

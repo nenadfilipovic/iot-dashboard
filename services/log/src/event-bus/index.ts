@@ -5,7 +5,11 @@ import { appLogger } from '../utils/logger';
 
 const host: string = config.get('rabbitmq.host');
 
-const amqpClient = new Amqp.Connection(`amqp://${host}?heartbeat=60`);
+const amqpClient = new Amqp.Connection(
+  `amqp://${host}?heartbeat=60`,
+  {},
+  { retries: 30, interval: 30000 },
+);
 
 const amqpExchange = amqpClient.declareExchange('app.exchange', 'direct', {
   durable: true,

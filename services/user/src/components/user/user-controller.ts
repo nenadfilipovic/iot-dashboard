@@ -7,7 +7,7 @@ import { UserAttributes } from './user-types';
 import { BaseError } from '../../errors/base-error';
 import { Errors } from './user-errors';
 import { userRemovedPublisher } from '../../event-bus/publishers';
-import { registerSchema, modifySchema } from './user-validation';
+import { registerSchema, modifySchema, loginSchema } from './user-validation';
 
 /**
  * Register user
@@ -28,7 +28,8 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    data: { user },
+    message: 'You have successfully registered new account',
+    data: { ...user },
   };
 };
 
@@ -53,7 +54,8 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    data: { user },
+    message: 'You have successfully modified your data',
+    data: { ...user },
   };
 };
 
@@ -75,13 +77,12 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
   ctx.session = null;
 
   ctx.body = {
-    status: 'success',
     data: null,
   };
 
   userRemovedPublisher(existingUser.handle);
 
-  appLogger.info(`User: ${existingUser.id} successfully removed.`);
+  appLogger.info(`User: ${existingUser.id} successfully removed`);
 };
 
 /**
@@ -99,7 +100,7 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    data: { user },
+    data: { ...user },
   };
 };
 
@@ -108,14 +109,12 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logUserIn = async (ctx: DefaultContext): Promise<void> => {
-  const { handle, password, emailAddress } = ctx.request.body as UserAttributes;
+  await loginSchema.validateAsync({ ...ctx.request.body });
 
-  const loginOptions = handle
-    ? { handle: handle }
-    : { emailAddress: emailAddress };
+  const { handle, password } = ctx.request.body as UserAttributes;
 
   const user = await User.findOne({
-    where: { ...loginOptions },
+    where: { handle },
   });
 
   if (!user) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);

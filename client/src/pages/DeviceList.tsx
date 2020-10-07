@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import {
   Grid,
   Button,
@@ -25,11 +26,11 @@ import DescriptionIcon from '@material-ui/icons/Description';
 
 import { PageSegment } from '../components/PageSegment';
 import { CreateDevice } from './CreateDevice';
-import { Device, ReactSVGComponent } from '../types';
+import { DeviceAttributes, Type, ReactSVGComponent } from '../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    fab: {
+    actionButton: {
       position: 'fixed',
       bottom: theme.spacing(5),
       right: theme.spacing(5),
@@ -37,14 +38,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const deviceData: Device[] = [
+const deviceData: DeviceAttributes[] = [
   {
-    deviceUniqueIndentifier: '123',
-    deviceName: 'Device-1',
-    deviceChannel: 'home',
-    deviceType: 'esp32',
-    deviceDescription: 'Living room sensor.',
-    deviceCreateDate: '18:05:03:19-02-2020',
+    id: '123',
+    name: 'Device-1',
+    channel: 'home',
+    type: Type.esp8266,
+    description: 'Living room sensor',
+    modifyDate: new Date(),
+    registerDate: new Date(),
   },
 ];
 
@@ -62,10 +64,10 @@ const DeviceList = () => {
   const devices = deviceData.map((device) => (
     <Grid item xs={12} sm={6} md={4}>
       <PageSegment
-        headerTitle={device.deviceName}
-        headerSubtitle={device.deviceCreateDate}
-        headerIcon={MemoryIcon as ReactSVGComponent}
-        headerActions={
+        title={device.name}
+        subtitle={device.registerDate}
+        icon={MemoryIcon as ReactSVGComponent}
+        headerMenu={
           <React.Fragment>
             <IconButton
               onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
@@ -84,44 +86,41 @@ const DeviceList = () => {
             </Menu>
           </React.Fragment>
         }
-        bodyContent={
+        content={
           <List dense>
             <ListItem divider>
               <ListItemIcon>
                 <SettingsRemoteIcon />
               </ListItemIcon>
               <ListItemText
-                primary="This is device topic or channel."
-                secondary={device.deviceChannel}
+                primary="This is device topic or channel"
+                secondary={device.channel}
               />
             </ListItem>
             <ListItem divider>
               <ListItemIcon>
                 <InfoIcon />
               </ListItemIcon>
-              <ListItemText
-                primary="Device type."
-                secondary={device.deviceType}
-              />
+              <ListItemText primary="Device type" secondary={device.type} />
             </ListItem>
             <ListItem>
               <ListItemIcon>
                 <DescriptionIcon />
               </ListItemIcon>
               <ListItemText
-                primary="Device description, like where is device located."
-                secondary={device.deviceDescription}
+                primary="Device description, like where is device located"
+                secondary={device.description}
               />
             </ListItem>
           </List>
         }
-        bodyActions={
+        actions={
           <Button
             fullWidth
             variant="contained"
             color="primary"
             component={NavLink}
-            to={`/devices/${device.deviceUniqueIndentifier}`}
+            to={`/devices/${device.id}`}
           >
             Details
           </Button>
@@ -135,7 +134,7 @@ const DeviceList = () => {
       <Grid container spacing={2}>
         {devices}
       </Grid>
-      <Fab onClick={() => setModalOpen(true)} className={classes.fab}>
+      <Fab onClick={() => setModalOpen(true)} className={classes.actionButton}>
         <AddIcon />
       </Fab>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>

@@ -2,6 +2,8 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { joiResolver } from '@hookform/resolvers/joi';
+import Joi from 'joi';
 
 import {
   Grid,
@@ -18,77 +20,98 @@ import LockIcon from '@material-ui/icons/Lock';
 import PeopleIcon from '@material-ui/icons/People';
 
 import { PageSegment } from '../components/PageSegment';
-import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
+import { UserAttributes, UserTypesCasting, ReactSVGComponent } from '../types';
 import { registerUser } from '../actions';
 
 const {
-  userFirstName,
-  userLastName,
-  userHandle,
-  userEmailAddress,
-  userPassword,
-} = UserAttributesCasting;
+  firstName,
+  lastName,
+  handle,
+  emailAddress,
+  password,
+} = UserTypesCasting;
+
+const registerSchema = Joi.object({
+  handle: Joi.string().alphanum().min(5).required(),
+  firstName: Joi.string().min(3).required(),
+  lastName: Joi.string().min(3).required(),
+  emailAddress: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required(),
+  password: Joi.string().min(7).required(),
+});
 
 const Register = () => {
   const dispatch = useDispatch();
 
-  const { control, handleSubmit } = useForm<User>({
+  const { control, handleSubmit, errors } = useForm<UserAttributes>({
     defaultValues: {
-      userFirstName: '',
-      userLastName: '',
-      userHandle: '',
-      userEmailAddress: '',
-      userPassword: '',
+      firstName: '',
+      lastName: '',
+      handle: '',
+      emailAddress: '',
+      password: '',
     },
+    resolver: joiResolver(registerSchema),
   });
 
-  const onSubmit = (data: User) => {
+  const onSubmit = (data: UserAttributes) => {
     dispatch(registerUser(data));
   };
 
-  const inputFieldData = [
+  const formFields = [
     {
       label: 'First Name',
-      name: userFirstName,
+      name: firstName,
       control,
+      error: !!errors.firstName?.message,
+      helperText: errors.firstName?.message,
       icon: PersonIcon,
     },
     {
       label: 'Last Name',
-      name: userLastName,
+      name: lastName,
       control,
+      error: !!errors.lastName?.message,
+      helperText: errors.lastName?.message,
       icon: PeopleIcon,
     },
     {
-      label: 'Username',
-      name: userHandle,
+      label: 'Handle',
+      name: handle,
       control,
+      error: !!errors.handle?.message,
+      helperText: errors.handle?.message,
       icon: PermIdentityIcon,
     },
     {
-      label: 'Password',
-      name: userPassword,
+      label: 'Email',
+      name: emailAddress,
       control,
-      icon: LockIcon,
+      error: !!errors.emailAddress?.message,
+      helperText: errors.emailAddress?.message,
+      icon: AlternateEmailIcon,
     },
     {
-      label: 'Email',
-      name: userEmailAddress,
+      label: 'Password',
+      name: password,
       control,
-      icon: AlternateEmailIcon,
+      error: !!errors.password?.message,
+      helperText: errors.password?.message,
+      icon: LockIcon,
     },
   ];
 
   const registerForm = (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
       <PageSegment
-        headerTitle="Register"
-        headerSubtitle="Please enter your data to register new account."
-        headerIcon={VpnKeyIcon as ReactSVGComponent}
-        bodyContent={
+        title="Register"
+        subtitle="Please enter your data to register new account"
+        icon={VpnKeyIcon as ReactSVGComponent}
+        content={
           <Grid container direction="column" spacing={2}>
-            {inputFieldData.map((field) => (
-              <Grid item>
+            {formFields.map((field) => (
+              <Grid key={field.name} item>
                 <Controller
                   as={
                     <TextField
@@ -111,12 +134,12 @@ const Register = () => {
             ))}
           </Grid>
         }
-        bodyActions={
+        actions={
           <React.Fragment>
-            <Button color="primary" variant="contained" type="submit">
+            <Button color="secondary" variant="contained" type="submit">
               Register
             </Button>
-            <Button color="primary" component={NavLink} to={'/login'}>
+            <Button component={NavLink} to={'/login'}>
               Login
             </Button>
           </React.Fragment>

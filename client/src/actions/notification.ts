@@ -1,16 +1,8 @@
 import {
   NotificationActionTypes,
-  NOTIFICATION_SUCCESS,
   NOTIFICATION_FAILURE,
   CLEAR_NOTIFICATIONS,
 } from '../types';
-
-const notificationSuccess = (message: string): NotificationActionTypes => {
-  return {
-    type: NOTIFICATION_SUCCESS,
-    payload: message,
-  };
-};
 
 const notificationFailure = (message: string): NotificationActionTypes => {
   return {
@@ -25,4 +17,4 @@ const clearNotifications = (): NotificationActionTypes => {
   };
 };
 
-export { notificationSuccess, notificationFailure, clearNotifications };
+export { notificationFailure, clearNotifications };

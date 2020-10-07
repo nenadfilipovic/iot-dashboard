@@ -1,5 +1,10 @@
 import Joi from 'joi';
 
+const loginSchema = Joi.object({
+  handle: Joi.string().alphanum().min(5).required(),
+  password: Joi.string().min(7).required(),
+})
+
 const registerSchema = Joi.object({
   handle: Joi.string().alphanum().min(5).required(),
   firstName: Joi.string().min(3).required(),
@@ -14,4 +19,4 @@ const modifySchema = Joi.object({
   password: Joi.string().min(7),
 });
 
-export { registerSchema, modifySchema };
+export {loginSchema, registerSchema, modifySchema };

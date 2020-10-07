@@ -1,33 +1,35 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
+// const themeConfig = {
+//   lighterBlue: '#191d3a',
+//   darkShadow: '0 0 5px 0 #000',
+//   windowShadow: '1px solid #e1e4e8',
+// };
+
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#24292E',
+      main: '#24292e',
     },
     secondary: {
-      main: '#ADBEC5',
+      main: '#ec5990',
     },
     background: {
-      default: '#FAFBFC',
+      default: '#081229',
+    },
+    text: {
+      primary: '#24292e',
+    },
+    error: {
+      main: '#ec5990',
     },
   },
-  typography: { fontFamily: '"Roboto Condensed", sans-serif' },
+  typography: { fontFamily: '"Quicksand", sans-serif;' },
   props: {
-    MuiButtonBase: {
-      disableRipple: true,
-    },
-    MuiPaper: { variant: 'outlined' },
-  },
-  overrides: {
-    MuiButton: {
-      text: { textTransform: 'none' },
-    },
-    MuiPaper: { root: { boxShadow: '0 0 1px rgba(106,115,125,.35)' } },
+    MuiButton: { size: 'small' },
+    MuiButtonBase: { disableRipple: true },
   },
 });
-
-export { theme };
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
@@ -37,3 +39,5 @@ declare module '@material-ui/core/styles/createMuiTheme' {
     customProperties?: {};
   }
 }
+
+export { theme };

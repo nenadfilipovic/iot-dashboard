@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+
 import {
   Grid,
   TextField,
@@ -13,43 +14,50 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import { PageSegment } from '../components/PageSegment';
-import { User, UserAttributesCasting, ReactSVGComponent } from '../types';
+import { UserAttributes, UserTypesCasting, ReactSVGComponent } from '../types';
 
 const {
-  userFirstName,
-  userLastName,
-  userPassword,
-  userEmailAddress,
-} = UserAttributesCasting;
+  handle,
+  firstName,
+  lastName,
+  password,
+  emailAddress,
+} = UserTypesCasting;
 
 const Profile = () => {
-  const { control, handleSubmit } = useForm<User>({
+  const { control, handleSubmit } = useForm<UserAttributes>({
     defaultValues: {
-      userFirstName: 'Nenad',
-      userLastName: 'Filipovic',
-      userPassword: 'nenad123',
-      userEmailAddress: 'nenad@nenad.com',
+      handle: 'nenad88',
+      firstName: 'Nenad',
+      lastName: 'Filipovic',
+      password: 'nenad123',
+      emailAddress: 'nenad@nenad.com',
     },
   });
 
   const [visiblePassword, setVisiblePassword] = useState<boolean>(false);
 
-  const onSubmit = (data: User) => console.log(data);
+  const onSubmit = (data: UserAttributes) => console.log(data);
 
-  const profileFormFields = [
+  const formFields = [
+    {
+      label: 'Handle',
+      name: handle,
+      control,
+    },
     {
       label: 'First Name',
-      name: userFirstName,
+      name: firstName,
       control,
     },
     {
       label: 'Last Name',
-      name: userLastName,
+      name: lastName,
       control,
     },
     {
       label: 'Password',
-      name: userPassword,
+      name: password,
       control,
       type: visiblePassword ? 'text' : 'password',
       InputProps: {
@@ -64,7 +72,7 @@ const Profile = () => {
     },
     {
       label: 'Email',
-      name: userEmailAddress,
+      name: emailAddress,
       control,
     },
   ];
@@ -72,12 +80,12 @@ const Profile = () => {
   const profileForm = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PageSegment
-        headerTitle="Profile details"
-        headerSubtitle="Review or edit you profile details."
-        headerIcon={FaceIcon as ReactSVGComponent}
-        bodyContent={
+        title="Profile details"
+        subtitle="Review or edit you profile details."
+        icon={FaceIcon as ReactSVGComponent}
+        content={
           <Grid container spacing={2}>
-            {profileFormFields.map((field) => (
+            {formFields.map((field) => (
               <Grid item md={4} xs={12}>
                 <Controller
                   as={<TextField {...field} variant="outlined" fullWidth />}
@@ -88,8 +96,8 @@ const Profile = () => {
             ))}
           </Grid>
         }
-        bodyActions={
-          <Button variant="contained" type="submit" color="primary">
+        actions={
+          <Button type="submit" color="primary">
             Save
           </Button>
         }
@@ -102,14 +110,10 @@ const Profile = () => {
       <Grid item>{profileForm}</Grid>
       <Grid item>
         <PageSegment
-          headerTitle="Remove account"
-          headerSubtitle="With this option you can disable your account."
-          headerIcon={HighlightOffIcon as ReactSVGComponent}
-          bodyActions={
-            <Button variant="contained" color="primary">
-              Delete
-            </Button>
-          }
+          title="Remove account"
+          subtitle="With this option you can disable your account"
+          icon={HighlightOffIcon as ReactSVGComponent}
+          actions={<Button color="primary">Delete</Button>}
         />
       </Grid>
     </Grid>

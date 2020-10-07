@@ -1,27 +1,23 @@
 import { client } from '../api/client';
-import { Device } from '../types';
+import { DeviceAttributes } from '../types';
 
-const _registerDevice = (formData: Device) => {
+const _registerDevice = (formData: DeviceAttributes) => {
   return client.post('/devices', formData);
 };
 
 const _modifyDevice = (
-  deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
-  formData: Device,
+  id: DeviceAttributes['id'],
+  formData: DeviceAttributes,
 ) => {
-  return client.patch(`/devices/${deviceUniqueIndentifier}`, formData);
+  return client.patch(`/devices/${id}`, formData);
 };
 
-const _removeDevice = (
-  deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
-) => {
-  return client.delete(`/devices/${deviceUniqueIndentifier}`);
+const _removeDevice = (id: DeviceAttributes['id']) => {
+  return client.delete(`/devices/${id}`);
 };
 
-const _getSingleDevice = (
-  deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
-) => {
-  return client.get(`/devices/${deviceUniqueIndentifier}`);
+const _getSingleDevice = (id: DeviceAttributes['id']) => {
+  return client.get(`/devices/${id}`);
 };
 
 const _getAllDevices = () => {

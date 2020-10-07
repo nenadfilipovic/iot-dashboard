@@ -26,7 +26,7 @@ const errorMiddleware = async (ctx: Context, next: Next): Promise<void> => {
       ctx.status = 500;
       ctx.body = {
         status: 'error',
-        message: 'Something went wrong, please try again later!',
+        message: 'Something went wrong, please try again later',
       };
     }
     ctx.app.emit('error', error, ctx);

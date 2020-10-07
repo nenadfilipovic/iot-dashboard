@@ -1,11 +1,11 @@
 import { client } from '../api/client';
-import { User } from '../types';
+import { UserAttributes } from '../types';
 
-const _registerUser = async (formData: User) => {
+const _registerUser = async (formData: UserAttributes) => {
   return client.post('/users', formData);
 };
 
-const _modifyUser = async (formData: User) => {
+const _modifyUser = async (formData: UserAttributes) => {
   return client.patch('/users', formData);
 };
 
@@ -17,7 +17,7 @@ const _getCurrentUser = async () => {
   return client.get('/users');
 };
 
-const _logUserIn = (formData: User) => {
+const _logUserIn = (formData: UserAttributes) => {
   return client.post('/users/login', formData);
 };
 

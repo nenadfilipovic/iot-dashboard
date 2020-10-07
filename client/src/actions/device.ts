@@ -1,5 +1,5 @@
 import {
-  Device,
+  DeviceAttributes,
   AppThunk,
   REGISTER_DEVICE_SUCCESS,
   MODIFY_DEVICE_SUCCESS,
@@ -7,8 +7,7 @@ import {
   GET_SINGLE_DEVICE_SUCCESS,
   GET_ALL_DEVICES_SUCCESS,
   ACTION_STARTED,
-  ACTION_STOPPED,
-  NOTIFICATION_SUCCESS,
+  ACTION_ENDED,
   NOTIFICATION_FAILURE,
 } from '../types';
 import {
@@ -19,7 +18,9 @@ import {
   _removeDevice,
 } from '../services/device';
 
-const registerDevice = (formData: Device): AppThunk => async (dispatch) => {
+const registerDevice = (formData: DeviceAttributes): AppThunk => async (
+  dispatch,
+) => {
   dispatch({
     type: ACTION_STARTED,
   });
@@ -28,103 +29,81 @@ const registerDevice = (formData: Device): AppThunk => async (dispatch) => {
       dispatch({
         type: REGISTER_DEVICE_SUCCESS,
       });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
-      });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
 const modifyDevice = (
-  deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
-  formData: Device,
+  id: DeviceAttributes['id'],
+  formData: DeviceAttributes,
 ): AppThunk => async (dispatch) => {
   dispatch({
     type: ACTION_STARTED,
   });
-  await _modifyDevice(deviceUniqueIndentifier, formData)
+  await _modifyDevice(id, formData)
     .then((response) => {
       dispatch({
         type: MODIFY_DEVICE_SUCCESS,
-        payload: response.data,
-      });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
-const removeDevice = (
-  deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
-): AppThunk => async (dispatch) => {
+const removeDevice = (id: DeviceAttributes['id']): AppThunk => async (
+  dispatch,
+) => {
   dispatch({
     type: ACTION_STARTED,
   });
-  await _removeDevice(deviceUniqueIndentifier)
+  await _removeDevice(id)
     .then((response) => {
       dispatch({
         type: REMOVE_DEVICE_SUCCESS,
       });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
-      });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
-const getSingleDevice = (
-  deviceUniqueIndentifier: Device['deviceUniqueIndentifier'],
-): AppThunk => async (dispatch) => {
+const getSingleDevice = (id: DeviceAttributes['id']): AppThunk => async (
+  dispatch,
+) => {
   dispatch({
     type: ACTION_STARTED,
   });
-  await _getSingleDevice(deviceUniqueIndentifier)
+  await _getSingleDevice(id)
     .then((response) => {
       dispatch({
         type: GET_SINGLE_DEVICE_SUCCESS,
-        payload: response.data,
-      });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
@@ -136,21 +115,15 @@ const getAllDevices = (): AppThunk => async (dispatch) => {
     .then((response) => {
       dispatch({
         type: GET_ALL_DEVICES_SUCCESS,
-        payload: response.data,
-      });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 

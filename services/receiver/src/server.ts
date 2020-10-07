@@ -1,5 +1,3 @@
-process.env['NODE_CONFIG_DIR'] = '../../config';
-
 import config from 'config';
 
 import { appLogger } from './utils/logger';
@@ -51,13 +49,15 @@ class Server {
       await amqpClient.close();
 
       mqttClient.end();
+
+      process.exit(0);
     } catch (error) {
       this.terminateServer(name, error);
     }
   }
 
   public static terminateServer(name: string, error: Error) {
-    appLogger.error(`Unable to start / stop ${name} service!`);
+    appLogger.error(`Unable to start / stop ${name} service`);
 
     /**
      * In case something is wrong log error

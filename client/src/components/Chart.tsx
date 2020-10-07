@@ -1,5 +1,4 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
 import {
   LineChart,
   CartesianGrid,
@@ -10,6 +9,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+
+import { Box } from '@material-ui/core';
 
 // TODO Replace with global state
 const data = [

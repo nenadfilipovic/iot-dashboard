@@ -15,7 +15,7 @@ const Basic = () => {
     </Box>
   );
 
-  return <div>{basicLayoutContent}</div>;
+  return <React.Fragment>{basicLayoutContent}</React.Fragment>;
 };
 
 export { Basic };

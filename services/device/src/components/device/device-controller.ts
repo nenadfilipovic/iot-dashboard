@@ -94,7 +94,7 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
     data: null,
   };
 
-  appLogger.info(`Device: ${existingDevice.id} successfully removed.`);
+  appLogger.info(`Device: ${existingDevice.id} successfully removed`);
 
   /**
    * This action will remove only logs

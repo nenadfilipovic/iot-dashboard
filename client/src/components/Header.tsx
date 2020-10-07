@@ -28,7 +28,7 @@ const Header = ({ onNavOpen }: { onNavOpen: () => void }) => {
 
   const classes = useStyles();
   return (
-    <AppBar color="transparent" elevation={0} position="relative">
+    <AppBar position="relative">
       <Toolbar>
         <Hidden lgUp>
           <IconButton onClick={onNavOpen}>

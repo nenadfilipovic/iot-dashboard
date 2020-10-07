@@ -7,9 +7,8 @@ const errorMiddleware = async (ctx: Context, next: Next): Promise<void> => {
   try {
     await next();
   } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      error = handleDuplicateFields(error);
-    }
+    error = handleDuplicateFields(error);
+
     const isOperationalError = ErrorHandler.isTrustedError(error);
     if (isOperationalError || error.isJoi) {
       ctx.status = error.statusCode || error.status || 400;
@@ -29,7 +28,7 @@ const errorMiddleware = async (ctx: Context, next: Next): Promise<void> => {
       ctx.status = 500;
       ctx.body = {
         status: 'error',
-        message: 'Something went wrong, please try again later!',
+        message: 'Something went wrong, please try again later',
       };
     }
     ctx.app.emit('error', error, ctx);

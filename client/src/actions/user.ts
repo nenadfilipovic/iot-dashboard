@@ -1,13 +1,11 @@
 import {
   AppThunk,
-  User,
-  REGISTER_USER_SUCCESS,
+  UserAttributes,
   GET_USER_SUCCESS,
   MODIFY_USER_SUCCESS,
   LOGIN_USER_SUCCESS,
   ACTION_STARTED,
-  ACTION_STOPPED,
-  NOTIFICATION_SUCCESS,
+  ACTION_ENDED,
   NOTIFICATION_FAILURE,
   LOGOUT_USER_SUCCESS,
 } from '../types';
@@ -20,7 +18,9 @@ import {
   _logUserOut,
 } from '../services/user';
 
-const registerUser = (formData: User): AppThunk => async (dispatch) => {
+const registerUser = (formData: UserAttributes): AppThunk => async (
+  dispatch,
+) => {
   dispatch({
     type: ACTION_STARTED,
   });
@@ -31,29 +31,20 @@ const registerUser = (formData: User): AppThunk => async (dispatch) => {
        * log him in immediately
        */
       dispatch({
-        type: REGISTER_USER_SUCCESS,
-      });
-      dispatch({
         type: LOGIN_USER_SUCCESS,
-        payload: response.data,
-      });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error.response,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
-const modifyUser = (formData: User): AppThunk => async (dispatch) => {
+const modifyUser = (formData: UserAttributes): AppThunk => async (dispatch) => {
   dispatch({
     type: ACTION_STARTED,
   });
@@ -61,21 +52,15 @@ const modifyUser = (formData: User): AppThunk => async (dispatch) => {
     .then((response) => {
       dispatch({
         type: MODIFY_USER_SUCCESS,
-        payload: response.data,
-      });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
@@ -92,11 +77,10 @@ const removeUser = (): AppThunk => async (dispatch) => {
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
@@ -108,48 +92,37 @@ const getCurrentUser = (): AppThunk => async (dispatch) => {
     .then((response) => {
       dispatch({
         type: GET_USER_SUCCESS,
-        payload: response.data,
-      });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
-const logUserIn = (formData: User): AppThunk => async (dispatch) => {
+const logUserIn = (formData: UserAttributes): AppThunk => async (dispatch) => {
   dispatch({
     type: ACTION_STARTED,
   });
   await _logUserIn(formData)
-    .then(({ data }) => {
+    .then((response) => {
       dispatch({
         type: LOGIN_USER_SUCCESS,
-        data: data.user,
-      });
-      dispatch({
-        type: NOTIFICATION_SUCCESS,
-        status: data.status,
-        message: data.message,
+        payload: response.data,
       });
     })
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error.response,
+        payload: error.response.data,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
@@ -158,19 +131,14 @@ const logUserOut = (): AppThunk => async (dispatch) => {
     type: ACTION_STARTED,
   });
   await _logUserOut()
-    .then(() => {
-      dispatch({
-        type: LOGOUT_USER_SUCCESS,
-      });
-    })
+    .then(() => {})
     .catch((error) => {
       dispatch({
         type: NOTIFICATION_FAILURE,
-        payload: error,
       });
     });
   dispatch({
-    type: ACTION_STOPPED,
+    type: ACTION_ENDED,
   });
 };
 
