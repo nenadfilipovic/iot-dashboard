@@ -11,6 +11,8 @@ import {
   AfterUpdate,
   BeforeUpdate,
   AfterLoad,
+  AfterRemove,
+  Index,
 } from 'typeorm';
 
 import { UserAttributes, Role } from './user-types';
@@ -21,7 +23,8 @@ class User extends BaseEntity implements UserAttributes {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ unique: true })
+  @Index('handle', { unique: true })
+  @Column()
   handle!: string;
 
   @Column()
@@ -30,7 +33,8 @@ class User extends BaseEntity implements UserAttributes {
   @Column()
   lastName!: string;
 
-  @Column({ unique: true })
+  @Index('email address', { unique: true })
+  @Column()
   emailAddress!: string;
 
   @Column()
@@ -61,13 +65,18 @@ class User extends BaseEntity implements UserAttributes {
   }
 
   @AfterInsert()
-  actionsAfterInsert(): void {
-    appLogger.info(`User: ${this.id} successfully registered`);
+  logAfterInsert(): void {
+    appLogger.info(`User: ${this.handle} successfully registered`);
   }
 
   @AfterUpdate()
-  actionsAfterUpdate(): void {
-    appLogger.info(`User: ${this.id} data successfully modified`);
+  logAfterUpdate(): void {
+    appLogger.info(`User: ${this.handle} data successfully modified`);
+  }
+
+  @AfterRemove()
+  logAfterRemove(): void {
+    appLogger.info(`User: ${this.handle} successfully removed`);
   }
 
   async validatePassword(password: string): Promise<boolean> {

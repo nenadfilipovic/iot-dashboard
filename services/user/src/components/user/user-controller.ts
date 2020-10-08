@@ -1,23 +1,27 @@
 import { DefaultContext } from 'koa';
 
 import { User } from './user-model';
-import { appLogger } from '../../utils/logger';
 import { createToken } from '../../middlewares/jwt-middleware';
 import { UserAttributes } from './user-types';
 import { BaseError } from '../../errors/base-error';
 import { Errors } from './user-errors';
 import { userRemovedPublisher } from '../../event-bus/publishers';
-import { registerSchema, modifySchema, loginSchema } from './user-validation';
+import { userSchema } from './user-validation';
 
 /**
  * Register user
  */
 
 const registerUser = async (ctx: DefaultContext): Promise<void> => {
-  await registerSchema.validateAsync({ ...ctx.request.body });
+  const validatedData = (await userSchema.validateAsync(
+    { ...ctx.request.body },
+    {
+      presence: 'required',
+    },
+  )) as UserAttributes;
 
   const newUser = User.create({
-    ...(ctx.request.body as UserAttributes),
+    ...validatedData,
   });
 
   const user = await User.save(newUser);
@@ -26,10 +30,12 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.session = { token };
 
+  ctx.response.status = 201;
+
   ctx.body = {
     status: 'success',
     message: 'You have successfully registered new account',
-    data: { ...user },
+    data: user,
   };
 };
 
@@ -38,7 +44,12 @@ const registerUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyUser = async (ctx: DefaultContext): Promise<void> => {
-  await modifySchema.validateAsync({ ...ctx.request.body });
+  const validatedData = (await userSchema.validateAsync(
+    { ...ctx.request.body },
+    {
+      context: { update: true },
+    },
+  )) as UserAttributes;
 
   const handle = ctx.state.user.id;
 
@@ -48,14 +59,14 @@ const modifyUser = async (ctx: DefaultContext): Promise<void> => {
 
   if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  Object.assign(existingUser, { ...ctx.request.body });
+  Object.assign(existingUser, { ...validatedData });
 
   const user = await existingUser.save();
 
   ctx.body = {
     status: 'success',
     message: 'You have successfully modified your data',
-    data: { ...user },
+    data: user,
   };
 };
 
@@ -72,17 +83,18 @@ const removeUser = async (ctx: DefaultContext): Promise<void> => {
 
   if (!existingUser) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  await User.delete(existingUser.id);
+  await User.remove(existingUser);
 
   ctx.session = null;
 
+  ctx.response.status = 204;
+
   ctx.body = {
+    status: 'success',
     data: null,
   };
 
   userRemovedPublisher(existingUser.handle);
-
-  appLogger.info(`User: ${existingUser.id} successfully removed`);
 };
 
 /**
@@ -100,7 +112,7 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    data: { ...user },
+    data: user,
   };
 };
 
@@ -109,20 +121,23 @@ const getCurrentUser = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const logUserIn = async (ctx: DefaultContext): Promise<void> => {
-  await loginSchema.validateAsync({ ...ctx.request.body });
-
-  const { handle, password } = ctx.request.body as UserAttributes;
+  const validatedData = (await userSchema.validateAsync(
+    {
+      ...ctx.request.body,
+    },
+    { context: { login: true } },
+  )) as UserAttributes;
 
   const user = await User.findOne({
-    where: { handle },
+    where: { handle: validatedData.handle },
   });
 
   if (!user) throw new BaseError(Errors.USER_DOES_NOT_EXIST, 400);
 
-  const correctPassword = await user.validatePassword(password);
+  const correctPassword = await user.validatePassword(validatedData.password);
 
   if (!correctPassword) {
-    throw new BaseError(Errors.BAD_CREDENTIALS, 400);
+    throw new BaseError(Errors.BAD_CREDENTIALS, 401);
   }
 
   const token = createToken(user.handle);
@@ -131,7 +146,8 @@ const logUserIn = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    data: { user },
+    message: 'You have successfully logged in',
+    data: user,
   };
 };
 
@@ -153,10 +169,13 @@ const logUserOut = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const mqttAuth = async (ctx: DefaultContext): Promise<void> => {
-  const { handle, password } = ctx.request.body as UserAttributes;
+  const validatedData = (await userSchema.validateAsync(
+    { ...ctx.request.body },
+    { stripUnknown: true },
+  )) as UserAttributes;
 
   const existingUser = await User.findOne({
-    where: { handle },
+    where: { handle: validatedData.handle },
   });
 
   if (!existingUser) {
@@ -164,7 +183,9 @@ const mqttAuth = async (ctx: DefaultContext): Promise<void> => {
     return;
   }
 
-  const correctPassword = await existingUser.validatePassword(password);
+  const correctPassword = await existingUser.validatePassword(
+    validatedData.password,
+  );
 
   if (!correctPassword) {
     ctx.response.status = 400;

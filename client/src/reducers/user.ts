@@ -11,7 +11,7 @@ const initialState: UserState = {
   user: null,
 };
 const userReducer = (
-  state: UserState = initialState,
+  state = initialState,
   action: UserActionTypes,
 ): UserState => {
   switch (action.type) {
@@ -34,6 +34,7 @@ const userReducer = (
     case LOGOUT_USER_SUCCESS:
       return {
         ...state,
+        user: null,
       };
 
     default:

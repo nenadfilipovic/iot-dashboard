@@ -8,6 +8,8 @@ import {
   AfterLoad,
   AfterInsert,
   AfterUpdate,
+  AfterRemove,
+  Index,
 } from 'typeorm';
 
 import { DeviceAttributes, Type } from './device-types';
@@ -24,7 +26,8 @@ class Device extends BaseEntity implements DeviceAttributes {
   @Column()
   name!: string;
 
-  @Column({ unique: true })
+  @Index('channel', { unique: true })
+  @Column()
   channel!: string;
 
   @Column({ nullable: true })
@@ -47,13 +50,18 @@ class Device extends BaseEntity implements DeviceAttributes {
   }
 
   @AfterInsert()
-  afterInsertActions(): void {
-    appLogger.info(`Device: ${this.id} successfully created`);
+  logAfterInsert(): void {
+    appLogger.info(`Device: ${this.channel} successfully created`);
   }
 
   @AfterUpdate()
-  afterUpdateActions(): void {
-    appLogger.info(`Device: ${this.id} data successfully modified`);
+  logAfterUpdate(): void {
+    appLogger.info(`Device: ${this.channel} data successfully modified`);
+  }
+
+  @AfterRemove()
+  logAfterRemove(): void {
+    appLogger.info(`Device: ${this.channel} successfully removed`);
   }
 
   toJSON(): this {

@@ -1,27 +1,29 @@
-import { client } from '../api/client';
+import { buildClient } from '../api/client';
 import { DeviceAttributes } from '../types';
 
+const client = buildClient('devices');
+
 const _registerDevice = (formData: DeviceAttributes) => {
-  return client.post('/devices', formData);
+  return client.post('/', formData);
 };
 
 const _modifyDevice = (
   id: DeviceAttributes['id'],
   formData: DeviceAttributes,
 ) => {
-  return client.patch(`/devices/${id}`, formData);
+  return client.patch(`/${id}`, formData);
 };
 
 const _removeDevice = (id: DeviceAttributes['id']) => {
-  return client.delete(`/devices/${id}`);
+  return client.delete(`/${id}`);
 };
 
 const _getSingleDevice = (id: DeviceAttributes['id']) => {
-  return client.get(`/devices/${id}`);
+  return client.get(`/${id}`);
 };
 
 const _getAllDevices = () => {
-  return client.get(`/devices/`);
+  return client.get(`/`);
 };
 
 export {

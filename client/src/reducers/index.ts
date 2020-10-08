@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 
-import { notificationReducer } from './notification';
+import { alertReducer } from './alert';
 import { systemReducer } from './system';
 import { deviceReducer } from './device';
 import { userReducer } from './user';
 
 const rootReducer = combineReducers({
-  notificationReducer,
+  alertReducer,
   systemReducer,
   deviceReducer,
   userReducer,

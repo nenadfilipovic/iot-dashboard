@@ -2,35 +2,36 @@ version: "3"
 services:
   client:
     image: nenadfilipovic/iot-dashboard-client:latest
-    depends_on: 
-     - nginx
+    depends_on:
+      - nginx
 
   user-service:
     image: nenadfilipovic/iot-dashboard-user-service:latest
-    depends_on: 
+    depends_on:
       - mysql
       - rabbitmq
 
   device-service:
     image: nenadfilipovic/iot-dashboard-device-service:latest
-    depends_on: 
+    depends_on:
       - mysql
       - rabbitmq
 
   log-service:
     image: nenadfilipovic/iot-dashboard-log-service:latest
-    depends_on: 
+    depends_on:
       - influx-db
       - rabbitmq
 
   receiver-service:
     image: nenadfilipovic/iot-dashboard-receiver-service:latest
-    depends_on: 
+    depends_on:
       - emqx
       - rabbitmq
 
   nginx:
     image: nginx:1.19.2-alpine
+    restart: on-failure
     ports:
       - "80:80"
     volumes:
@@ -43,6 +44,7 @@ services:
 
   mysql:
     image: mysql:5.7
+    restart: on-failure
     environment:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
@@ -52,6 +54,7 @@ services:
 
   influx-db:
     image: influxdb:1.8.3-alpine
+    restart: on-failure
     environment:
       INFLUXDB_DB: log
       INFLUXDB_USER: user
@@ -59,6 +62,7 @@ services:
 
   emqx:
     image: emqx/emqx:4.2.1
+    restart: on-failure
     ports:
       - "1883:1883"
     environment:
@@ -72,3 +76,4 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.8.9-alpine
+    restart: on-failure

@@ -13,7 +13,7 @@ import {
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
-import { logUserOut } from '../actions';
+import { thunkLogUserOut } from '../actions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,7 +38,7 @@ const Header = ({ onNavOpen }: { onNavOpen: () => void }) => {
         <IconButton
           className={classes.menuButton}
           onClick={() => {
-            dispatch(logUserOut());
+            dispatch(thunkLogUserOut());
           }}
         >
           <ExitToAppIcon />

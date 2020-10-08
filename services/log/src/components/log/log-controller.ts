@@ -17,7 +17,7 @@ const getAllLogs = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    data: { logs },
+    data: logs,
   };
 };
 

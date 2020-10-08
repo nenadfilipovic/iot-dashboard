@@ -18,7 +18,7 @@ import LockIcon from '@material-ui/icons/Lock';
 
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserTypesCasting, ReactSVGComponent } from '../types';
-import { logUserIn } from '../actions';
+import { thunkLogUserIn } from '../actions';
 
 const { handle, password } = UserTypesCasting;
 
@@ -36,7 +36,7 @@ const Login = () => {
   });
 
   const onSubmit = (data: UserAttributes) => {
-    dispatch(logUserIn(data));
+    dispatch(thunkLogUserIn(data));
   };
 
   const formFields = [

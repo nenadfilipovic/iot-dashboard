@@ -14,15 +14,15 @@ git clone https://github.com/nenadfilipovic/iot-dashboard
 
 ### Prerequisites
 
-To use this app user needs to have docker and docker-compose installed on local computer.
+To use this app you need to have docker and docker-compose installed on local computer.
 
-If a user want to continue to develop this app in containers, vs-code plugins are also required, like this [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack), of course user also need to have wsl2 installed.
+If you want to continue to develop this app in containers, VS-Code plugins are also required, like this [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack), of course you also need to have wsl2 installed.
 
 ### Installing
 
 Installing is simple as running `docker-compose up` inside root folder where docker-compose.yml file is located.
 
-If user want to run it from VS-Code you can install [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) extension that enables user to run docker files from editor without using docker cli.
+If you want to run it from VS-Code you can install [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) extension that enables you to run docker files from editor without using docker cli.
 
 ## Running the tests
 

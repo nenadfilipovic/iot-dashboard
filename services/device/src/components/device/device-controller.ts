@@ -2,34 +2,39 @@ import { DefaultContext } from 'koa';
 import { Message } from 'amqp-ts';
 
 import { Device } from './device-model';
-import { appLogger } from '../../utils/logger';
 import { BaseError } from '../../errors/base-error';
 import { DeviceAttributes } from './device-types';
 import { Errors } from './device-errors';
 import { deviceRemovedPublisher } from '../../event-bus/publishers';
-import { modifySchema, registerSchema } from './device-validation';
+import { deviceSchema } from './device-validation';
 
 /**
  * Register device
  */
 
 const registerDevice = async (ctx: DefaultContext): Promise<void> => {
-  await registerSchema.validateAsync({
-    ...ctx.request.body,
-  });
+  const validatedData = await deviceSchema.validateAsync(
+    {
+      ...(ctx.request.body as DeviceAttributes),
+    },
+    { presence: 'required' },
+  );
 
   const owner = ctx.state.user.id;
 
   const newDevice = Device.create({
-    ...(ctx.request.body as DeviceAttributes),
-    owner: owner,
+    ...validatedData,
+    owner,
   });
 
   const device = await Device.save(newDevice);
 
+  ctx.response.status = 201;
+
   ctx.body = {
     status: 'success',
-    data: { device },
+    message: 'You have successfully registered new device',
+    data: device,
   };
 };
 
@@ -38,9 +43,12 @@ const registerDevice = async (ctx: DefaultContext): Promise<void> => {
  */
 
 const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
-  await modifySchema.validateAsync({
-    ...ctx.request.body,
-  });
+  const validatedData = await deviceSchema.validateAsync(
+    {
+      ...(ctx.request.body as DeviceAttributes),
+    },
+    { context: { update: true } },
+  );
 
   const channel = ctx.request.params.id;
 
@@ -53,18 +61,17 @@ const modifyDevice = async (ctx: DefaultContext): Promise<void> => {
   const owner = ctx.state.user.id;
 
   if (owner !== existingDevice.owner) {
-    throw new BaseError(Errors.NO_PERMISION, 403);
+    throw new BaseError(Errors.NO_PERMISION, 401);
   }
 
-  const modifiedDevice = Device.merge(existingDevice, {
-    ...(ctx.request.body as DeviceAttributes),
-  });
+  Object.assign(existingDevice, { ...validatedData });
 
-  const device = await Device.save(modifiedDevice);
+  const device = await existingDevice.save();
 
   ctx.body = {
     status: 'success',
-    data: { device },
+    message: 'You have successfully modified your device data',
+    data: device,
   };
 };
 
@@ -84,17 +91,17 @@ const removeDevice = async (ctx: DefaultContext): Promise<void> => {
   const owner = ctx.state.user.id;
 
   if (owner !== existingDevice.owner) {
-    throw new BaseError(Errors.NO_PERMISION, 403);
+    throw new BaseError(Errors.NO_PERMISION, 401);
   }
 
-  await Device.delete(existingDevice.id);
+  await Device.remove(existingDevice);
+
+  ctx.response.status = 204;
 
   ctx.body = {
     status: 'success',
     data: null,
   };
-
-  appLogger.info(`Device: ${existingDevice.id} successfully removed`);
 
   /**
    * This action will remove only logs
@@ -139,12 +146,12 @@ const getSingleDevice = async (ctx: DefaultContext): Promise<void> => {
   const owner = ctx.state.user.id;
 
   if (owner !== device.owner) {
-    throw new BaseError(Errors.NO_PERMISION, 403);
+    throw new BaseError(Errors.NO_PERMISION, 401);
   }
 
   ctx.body = {
     status: 'success',
-    data: { device },
+    data: device,
   };
 };
 
@@ -161,7 +168,7 @@ const getAllDevices = async (ctx: DefaultContext): Promise<void> => {
 
   ctx.body = {
     status: 'success',
-    data: { devices },
+    data: devices,
   };
 };
 

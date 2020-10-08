@@ -1,28 +1,30 @@
-import { client } from '../api/client';
-import { UserAttributes } from '../types';
+import { buildClient } from '../api/client';
+import { UserAttributes, UsersApi } from '../types';
+
+const client = buildClient('users');
 
 const _registerUser = async (formData: UserAttributes) => {
-  return client.post('/users', formData);
+  return client.post<UsersApi>('/', formData);
 };
 
 const _modifyUser = async (formData: UserAttributes) => {
-  return client.patch('/users', formData);
+  return client.patch<UsersApi>('/', formData);
 };
 
 const _removeUser = async () => {
-  return client.delete('/users');
+  return client.delete('/');
 };
 
 const _getCurrentUser = async () => {
-  return client.get('/users');
+  return client.get<UsersApi>('/');
 };
 
 const _logUserIn = (formData: UserAttributes) => {
-  return client.post('/users/login', formData);
+  return client.post<UsersApi>('/login', formData);
 };
 
 const _logUserOut = () => {
-  return client.post('/users/logout');
+  return client.post('/logout');
 };
 
 export {

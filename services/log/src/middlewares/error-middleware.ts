@@ -6,17 +6,16 @@ const errorMiddleware = async (ctx: Context, next: Next): Promise<void> => {
   try {
     await next();
   } catch (error) {
-    const isOperationalError = ErrorHandler.isTrustedError(error);
-    if (isOperationalError) {
+    if (ErrorHandler.isTrustedError(error)) {
+      ctx.status = error.statusCode;
       if (process.env.NODE_ENV === 'development') {
-        ctx.status = error.statusCode || error.status || 500;
         ctx.body = {
           status: error.status,
           message: error.message,
+          error: error,
           stack: error.stack,
         };
       } else if (process.env.NODE_ENV === 'production') {
-        ctx.status = error.statusCode || error.status || 500;
         ctx.body = {
           status: error.status,
           message: error.message,

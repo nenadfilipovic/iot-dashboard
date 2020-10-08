@@ -1,26 +1,30 @@
 import { Context, Next } from 'koa';
-import { BaseError } from '../errors/base-error';
+import { QueryError } from 'mysql2';
 
+import { BaseError } from '../errors/base-error';
 import { ErrorHandler } from '../errors/error-handler';
 
 const errorMiddleware = async (ctx: Context, next: Next): Promise<void> => {
   try {
     await next();
   } catch (error) {
-    error = handleDuplicateFields(error);
+    if (error.errno === 1062) {
+      error = handleDuplicateFields(error);
+    }
 
-    const isOperationalError = ErrorHandler.isTrustedError(error);
-    if (isOperationalError || error.isJoi) {
-      ctx.status = error.statusCode || error.status || 400;
+    if (ErrorHandler.isTrustedError(error)) {
+      ctx.status = error.statusCode;
+
       if (process.env.NODE_ENV === 'development') {
         ctx.body = {
-          status: error.status || 'fail',
-          data: error.message,
+          status: error.status,
+          message: error.message,
+          error: error,
           stack: error.stack,
         };
       } else if (process.env.NODE_ENV === 'production') {
         ctx.body = {
-          status: error.status || 'fail',
+          status: error.status,
           message: error.message,
         };
       }
@@ -35,7 +39,7 @@ const errorMiddleware = async (ctx: Context, next: Next): Promise<void> => {
   }
 };
 
-const handleDuplicateFields = (error: Error) => {
+const handleDuplicateFields = (error: QueryError) => {
   return new BaseError(error.message, 400);
 };
 

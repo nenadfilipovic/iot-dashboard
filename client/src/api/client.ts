@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-const client = axios.create({
-  baseURL: 'http://localhost/api/',
-  withCredentials: true,
-});
+const buildClient = (prefix: string) => {
+  return axios.create({
+    baseURL: `http://localhost/api/${prefix}`,
+    withCredentials: true,
+  });
+};
 
-export { client };
+export { buildClient };

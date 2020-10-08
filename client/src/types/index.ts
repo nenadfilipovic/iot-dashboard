@@ -1,5 +1,6 @@
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+
 import { rootReducer } from '../reducers';
 
 /**
@@ -8,6 +9,8 @@ import { rootReducer } from '../reducers';
 
 export type RootState = ReturnType<typeof rootReducer>;
 
+export type ReactSVGComponent = React.FC<React.SVGProps<SVGSVGElement>>;
+
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,
@@ -15,24 +18,25 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action<string>
 >;
 
-export interface NotificationState {
+export interface AlertState {
+  status: string;
   message: string;
 }
 
-export const NOTIFICATION_FAILURE = 'NOTIFICATION_FAILURE';
+export const SET_ALERT = 'SET_ALERT';
 
-interface NotificationFailure {
-  type: typeof NOTIFICATION_FAILURE;
-  payload: string;
+interface SetAlert {
+  type: typeof SET_ALERT;
+  payload: AlertState;
 }
 
-export const CLEAR_NOTIFICATIONS = 'CLEAR_NOTIFICATIONS';
+export const CLEAR_ALERT = 'CLEAR_ALERT';
 
-interface ClearNotifications {
-  type: typeof CLEAR_NOTIFICATIONS;
+interface ClearAlert {
+  type: typeof CLEAR_ALERT;
 }
 
-export type NotificationActionTypes = NotificationFailure | ClearNotifications;
+export type AlertActionTypes = SetAlert | ClearAlert;
 
 export interface SystemState {
   isLoading: boolean;
@@ -46,13 +50,11 @@ interface ActionStarted {
 
 export const ACTION_ENDED = 'ACTION_ENDED';
 
-interface ActionStopped {
+interface ActionEnded {
   type: typeof ACTION_ENDED;
 }
 
-export type SystemActionTypes = ActionStarted | ActionStopped;
-
-export type ReactSVGComponent = React.FC<React.SVGProps<SVGSVGElement>>;
+export type SystemActionTypes = ActionStarted | ActionEnded;
 
 /**
  * User types
@@ -84,6 +86,12 @@ export enum UserTypesCasting {
   role = 'role',
   modifyDate = 'modifyDate',
   registerDate = 'registerDate',
+}
+
+export interface UsersApi {
+  status: string;
+  message: string;
+  data: UserAttributes;
 }
 
 export interface UserState {

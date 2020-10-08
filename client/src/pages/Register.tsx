@@ -21,7 +21,7 @@ import PeopleIcon from '@material-ui/icons/People';
 
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserTypesCasting, ReactSVGComponent } from '../types';
-import { registerUser } from '../actions';
+import { thunkRegisterUser } from '../actions';
 
 const {
   firstName,
@@ -56,7 +56,7 @@ const Register = () => {
   });
 
   const onSubmit = (data: UserAttributes) => {
-    dispatch(registerUser(data));
+    dispatch(thunkRegisterUser(data));
   };
 
   const formFields = [

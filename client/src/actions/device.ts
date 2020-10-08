@@ -8,7 +8,7 @@ import {
   GET_ALL_DEVICES_SUCCESS,
   ACTION_STARTED,
   ACTION_ENDED,
-  NOTIFICATION_FAILURE,
+  SET_ALERT,
 } from '../types';
 import {
   _getAllDevices,
@@ -32,7 +32,7 @@ const registerDevice = (formData: DeviceAttributes): AppThunk => async (
     })
     .catch((error) => {
       dispatch({
-        type: NOTIFICATION_FAILURE,
+        type: SET_ALERT,
       });
     });
   dispatch({
@@ -55,7 +55,7 @@ const modifyDevice = (
     })
     .catch((error) => {
       dispatch({
-        type: NOTIFICATION_FAILURE,
+        type: SET_ALERT,
       });
     });
   dispatch({
@@ -77,7 +77,7 @@ const removeDevice = (id: DeviceAttributes['id']): AppThunk => async (
     })
     .catch((error) => {
       dispatch({
-        type: NOTIFICATION_FAILURE,
+        type: SET_ALERT,
       });
     });
   dispatch({
@@ -99,7 +99,7 @@ const getSingleDevice = (id: DeviceAttributes['id']): AppThunk => async (
     })
     .catch((error) => {
       dispatch({
-        type: NOTIFICATION_FAILURE,
+        type: SET_ALERT,
       });
     });
   dispatch({
@@ -119,7 +119,7 @@ const getAllDevices = (): AppThunk => async (dispatch) => {
     })
     .catch((error) => {
       dispatch({
-        type: NOTIFICATION_FAILURE,
+        type: SET_ALERT,
       });
     });
   dispatch({
