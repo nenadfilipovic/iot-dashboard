@@ -1,42 +1,43 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-// const themeConfig = {
-//   lighterBlue: '#191d3a',
-//   darkShadow: '0 0 5px 0 #000',
-//   windowShadow: '1px solid #e1e4e8',
-// };
-
 const theme = createMuiTheme({
   palette: {
+    type: 'dark',
     primary: {
-      main: '#24292e',
+      main: '#ffffff',
     },
     secondary: {
       main: '#ec5990',
     },
     background: {
       default: '#081229',
+      paper: '#191d3a',
     },
     text: {
-      primary: '#24292e',
-    },
-    error: {
-      main: '#ec5990',
+      primary: '#ffffff',
+      secondary: '#ec5990',
     },
   },
   typography: { fontFamily: '"Quicksand", sans-serif;' },
   props: {
-    MuiButton: { size: 'small' },
     MuiButtonBase: { disableRipple: true },
+  },
+  overrides: {},
+  customProperties: {
+    sideBarWidth: '270px',
   },
 });
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
-    customProperties: {};
+    customProperties: {
+      sideBarWidth: React.CSSProperties['width'];
+    };
   }
   interface ThemeOptions {
-    customProperties?: {};
+    customProperties?: {
+      sideBarWidth?: React.CSSProperties['width'];
+    };
   }
 }
 

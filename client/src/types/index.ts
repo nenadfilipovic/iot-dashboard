@@ -108,6 +108,7 @@ export const MODIFY_USER_SUCCESS = 'MODIFY_USER_SUCCESS';
 
 interface ModifyUserSuccess {
   type: typeof MODIFY_USER_SUCCESS;
+  payload: UserAttributes;
 }
 
 export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';

@@ -6,18 +6,11 @@ import {
   UserActionTypes,
   UserAttributes,
 } from '../types';
-import {
-  _registerUser,
-  _modifyUser,
-  _removeUser,
-  _getCurrentUser,
-  _logUserIn,
-  _logUserOut,
-} from '../services/user';
 
 const modifyUser = (modifiedUser: UserAttributes): UserActionTypes => {
   return {
     type: MODIFY_USER_SUCCESS,
+    payload: modifiedUser,
   };
 };
 

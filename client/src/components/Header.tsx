@@ -14,10 +14,14 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 import { thunkLogUserOut } from '../actions';
+import { Logo } from './Logo';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    menuButton: {
+    root: {
+      padding: '0 16px',
+    },
+    button: {
       marginLeft: 'auto',
     },
   }),
@@ -27,22 +31,33 @@ const Header = ({ onNavOpen }: { onNavOpen: () => void }) => {
   const dispatch = useDispatch();
 
   const classes = useStyles();
+
   return (
-    <AppBar position="relative">
-      <Toolbar>
+    <AppBar className={classes.root} position="relative" color="transparent">
+      <Toolbar disableGutters>
         <Hidden lgUp>
-          <IconButton onClick={onNavOpen}>
+          <Logo height="64xp" width="64px" />
+          <IconButton className={classes.button} onClick={onNavOpen}>
             <ViewListIcon />
           </IconButton>
+          <IconButton
+            onClick={() => {
+              dispatch(thunkLogUserOut());
+            }}
+          >
+            <ExitToAppIcon />
+          </IconButton>
         </Hidden>
-        <IconButton
-          className={classes.menuButton}
-          onClick={() => {
-            dispatch(thunkLogUserOut());
-          }}
-        >
-          <ExitToAppIcon />
-        </IconButton>
+        <Hidden mdDown>
+          <IconButton
+            className={classes.button}
+            onClick={() => {
+              dispatch(thunkLogUserOut());
+            }}
+          >
+            <ExitToAppIcon />
+          </IconButton>
+        </Hidden>
       </Toolbar>
     </AppBar>
   );

@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { joiResolver } from '@hookform/resolvers/joi';
-import Joi from 'joi';
 
 import {
   Grid,
@@ -22,6 +21,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserTypesCasting, ReactSVGComponent } from '../types';
 import { thunkRegisterUser } from '../actions';
+import { userSchema } from '../validation';
 
 const {
   firstName,
@@ -30,16 +30,6 @@ const {
   emailAddress,
   password,
 } = UserTypesCasting;
-
-const registerSchema = Joi.object({
-  handle: Joi.string().alphanum().min(5).required(),
-  firstName: Joi.string().min(3).required(),
-  lastName: Joi.string().min(3).required(),
-  emailAddress: Joi.string()
-    .email({ tlds: { allow: false } })
-    .required(),
-  password: Joi.string().min(7).required(),
-});
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -52,7 +42,7 @@ const Register = () => {
       emailAddress: '',
       password: '',
     },
-    resolver: joiResolver(registerSchema),
+    resolver: joiResolver(userSchema),
   });
 
   const onSubmit = (data: UserAttributes) => {

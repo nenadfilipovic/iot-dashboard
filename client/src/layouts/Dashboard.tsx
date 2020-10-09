@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     sidebarContainer: {
       [theme.breakpoints.up('lg')]: {
-        flex: '0 1 300px',
+        flex: `0 1 ${theme.customProperties.sideBarWidth}`,
       },
     },
   }),
@@ -29,9 +29,7 @@ const Dashboard = () => {
         </Box>
         <Box flex="1">
           <Header onNavOpen={() => setNavOpen(true)} />
-          <Box p={2}>
-            <Outlet />
-          </Box>
+          <Outlet />
         </Box>
       </Box>
     </Box>

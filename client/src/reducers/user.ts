@@ -23,6 +23,7 @@ const userReducer = (
     case MODIFY_USER_SUCCESS:
       return {
         ...state,
+        user: action.payload,
       };
 
     case LOGIN_USER_SUCCESS:

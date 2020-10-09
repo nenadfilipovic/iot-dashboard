@@ -22,15 +22,16 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     menuItemButton: {
       padding: '10px',
-      color: theme.palette.secondary.main,
+      textTransform: 'none',
     },
     menuItemButtonActive: {
       '& $p': {
-        color: theme.palette.primary.main,
+        color: theme.palette.secondary.main,
       },
       '& $svg': {
-        color: theme.palette.primary.main,
+        color: theme.palette.secondary.main,
       },
+      backgroundColor: theme.palette.action.hover,
     },
     menuItemIcon: {
       marginRight: theme.spacing(1),

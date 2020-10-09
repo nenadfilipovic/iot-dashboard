@@ -61,7 +61,8 @@ const thunkRemoveUser = (): AppThunk => async (dispatch) => {
       dispatch(logUserOut());
     })
     .catch((error) => {
-      //dispatch(notificationMessage()); // Izvaditi status i message iz erora
+      const { status, message } = error.response?.data;
+      dispatch(setAlert({ status, message }));
     });
   dispatch(actionStop());
 };
@@ -72,11 +73,13 @@ const thunkModifyUser = (formData: UserAttributes): AppThunk => async (
   dispatch(actionStart());
   await _modifyUser(formData)
     .then((response) => {
-      //dispatch(modifyUser()); // ubaciti usera unutra
-      //dispatch(notificationMessage()); // Izvaditi status i message
+      const { status, message, data } = response.data;
+      dispatch(modifyUser(data));
+      dispatch(setAlert({ status, message }));
     })
-    .catch((error) => {
-      //dispatch(notificationMessage()); // Izvaditi status i message iz erora
+    .catch((error: AxiosError) => {
+      const { status, message } = error.response?.data;
+      dispatch(setAlert({ status, message }));
     });
   dispatch(actionStop());
 };

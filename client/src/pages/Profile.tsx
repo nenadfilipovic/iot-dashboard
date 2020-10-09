@@ -1,79 +1,73 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useSelector, useDispatch } from 'react-redux';
+import { joiResolver } from '@hookform/resolvers/joi';
 
-import {
-  Grid,
-  TextField,
-  Button,
-  InputAdornment,
-  IconButton,
-} from '@material-ui/core';
+import { Grid, TextField, Button, Box } from '@material-ui/core';
 import FaceIcon from '@material-ui/icons/Face';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 import { PageSegment } from '../components/PageSegment';
-import { UserAttributes, UserTypesCasting, ReactSVGComponent } from '../types';
+import {
+  UserAttributes,
+  UserTypesCasting,
+  ReactSVGComponent,
+  RootState,
+} from '../types';
+import { userSchema } from '../validation';
+import { thunkModifyUser, thunkRemoveUser } from '../actions';
 
-const {
-  handle,
-  firstName,
-  lastName,
-  password,
-  emailAddress,
-} = UserTypesCasting;
+const { handle, firstName, lastName, emailAddress } = UserTypesCasting;
 
 const Profile = () => {
-  const { control, handleSubmit } = useForm<UserAttributes>({
+  const userData = useSelector((state: RootState) => state.userReducer.user);
+
+  const dispatch = useDispatch();
+
+  const { control, handleSubmit, errors } = useForm<UserAttributes>({
     defaultValues: {
-      handle: 'nenad88',
-      firstName: 'Nenad',
-      lastName: 'Filipovic',
-      password: 'nenad123',
-      emailAddress: 'nenad@nenad.com',
+      handle: userData?.handle,
+      firstName: userData?.firstName,
+      lastName: userData?.lastName,
+      emailAddress: userData?.emailAddress,
     },
+    resolver: joiResolver(userSchema),
   });
 
-  const [visiblePassword, setVisiblePassword] = useState<boolean>(false);
-
-  const onSubmit = (data: UserAttributes) => console.log(data);
+  const onSubmit = (data: UserAttributes) => {
+    dispatch(thunkModifyUser(data));
+  };
 
   const formFields = [
     {
       label: 'Handle',
       name: handle,
       control,
+      disabled: true,
+      error: !!errors.handle?.message,
+      helperText: errors.handle?.message,
     },
     {
       label: 'First Name',
       name: firstName,
       control,
+      error: !!errors.firstName?.message,
+      helperText: errors.firstName?.message,
     },
     {
       label: 'Last Name',
       name: lastName,
       control,
+      error: !!errors.lastName?.message,
+      helperText: errors.lastName?.message,
     },
-    {
-      label: 'Password',
-      name: password,
-      control,
-      type: visiblePassword ? 'text' : 'password',
-      InputProps: {
-        endAdornment: (
-          <InputAdornment position="start">
-            <IconButton onClick={() => setVisiblePassword(!visiblePassword)}>
-              {visiblePassword ? <Visibility /> : <VisibilityOff />}
-            </IconButton>
-          </InputAdornment>
-        ),
-      },
-    },
+
     {
       label: 'Email',
       name: emailAddress,
       control,
+      error: !!errors.emailAddress?.message,
+      helperText: errors.emailAddress?.message,
     },
   ];
 
@@ -97,7 +91,7 @@ const Profile = () => {
           </Grid>
         }
         actions={
-          <Button type="submit" color="primary">
+          <Button color="secondary" variant="contained" type="submit">
             Save
           </Button>
         }
@@ -106,17 +100,27 @@ const Profile = () => {
   );
 
   return (
-    <Grid direction="column" container spacing={2}>
-      <Grid item>{profileForm}</Grid>
-      <Grid item>
-        <PageSegment
-          title="Remove account"
-          subtitle="With this option you can disable your account"
-          icon={HighlightOffIcon as ReactSVGComponent}
-          actions={<Button color="primary">Delete</Button>}
-        />
+    <Box m={2}>
+      <Grid direction="column" container spacing={2}>
+        <Grid item>{profileForm}</Grid>
+        <Grid item>
+          <PageSegment
+            title="Remove account"
+            subtitle="With this option you can disable your account"
+            icon={HighlightOffIcon as ReactSVGComponent}
+            actions={
+              <Button
+                onClick={() => dispatch(thunkRemoveUser())}
+                color="secondary"
+                variant="contained"
+              >
+                Remove
+              </Button>
+            }
+          />
+        </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 };
 

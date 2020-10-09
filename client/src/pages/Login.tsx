@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { joiResolver } from '@hookform/resolvers/joi';
-import Joi from 'joi';
 
 import {
   Button,
@@ -19,20 +18,16 @@ import LockIcon from '@material-ui/icons/Lock';
 import { PageSegment } from '../components/PageSegment';
 import { UserAttributes, UserTypesCasting, ReactSVGComponent } from '../types';
 import { thunkLogUserIn } from '../actions';
+import { userSchema } from '../validation';
 
 const { handle, password } = UserTypesCasting;
-
-const loginSchema = Joi.object({
-  handle: Joi.string().alphanum().min(5).required(),
-  password: Joi.string().min(7).required(),
-});
 
 const Login = () => {
   const dispatch = useDispatch();
 
   const { control, handleSubmit, errors } = useForm<UserAttributes>({
     defaultValues: { handle: '', password: '' },
-    resolver: joiResolver(loginSchema),
+    resolver: joiResolver(userSchema),
   });
 
   const onSubmit = (data: UserAttributes) => {

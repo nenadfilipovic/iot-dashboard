@@ -12,6 +12,7 @@ interface RouteProps {
 const PrivateRoute = ({ element, children, ...rest }: RouteProps) => {
   const isLoggedIn = useSelector((state: RootState) => state.userReducer.user);
 
+  //const isLoggedIn = true;
   const route = !isLoggedIn ? (
     <Navigate to="/login" />
   ) : (
