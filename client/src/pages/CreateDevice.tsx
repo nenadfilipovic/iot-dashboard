@@ -1,4 +1,6 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+
 import {
   Theme,
   makeStyles,
@@ -19,6 +21,7 @@ import {
   Type,
   ReactSVGComponent,
 } from '../types';
+import { thunkRegisterDevice } from '../actions';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,16 +42,23 @@ const typeOptions = (['esp32', 'esp8266'] as Type[]).map((option) => (
 const CreateDevice = () => {
   const classes = useStyles();
 
+  const dispatch = useDispatch();
+
   const { control, handleSubmit } = useForm<DeviceAttributes>({
     defaultValues: {
+      id: '',
       name: '',
       channel: '',
       description: '',
       type: Type.esp8266,
+      modifyDate: new Date(),
+      registerDate: new Date(),
     },
   });
 
-  const onSubmit = (data: DeviceAttributes) => console.log(data);
+  const onSubmit = (data: DeviceAttributes) => {
+    dispatch(thunkRegisterDevice(data));
+  };
 
   const formFields = [
     {

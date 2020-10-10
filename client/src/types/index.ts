@@ -61,15 +61,15 @@ export type SystemActionTypes = ActionStarted | ActionEnded;
  */
 
 export interface UserAttributes {
-  id: string;
-  handle: string;
-  firstName: string;
-  lastName: string;
-  emailAddress: string;
-  password: string;
-  role: Role;
-  modifyDate: Date;
-  registerDate: Date;
+  id?: string;
+  handle?: string;
+  firstName?: string;
+  lastName?: string;
+  emailAddress?: string;
+  password?: string;
+  role?: Role;
+  modifyDate?: Date;
+  registerDate?: Date;
 }
 
 export enum Role {
@@ -135,14 +135,14 @@ export type UserActionTypes =
  */
 
 export interface DeviceAttributes {
-  id: string;
+  id?: string;
   owner?: string;
-  name: string;
-  channel: string;
-  description: string;
-  type: Type;
-  modifyDate: Date;
-  registerDate: Date;
+  name?: string;
+  channel?: string;
+  description?: string;
+  type?: Type;
+  modifyDate?: Date;
+  registerDate?: Date;
 }
 
 export enum Type {
@@ -160,6 +160,12 @@ export enum DeviceTypesCasting {
   registerDate = 'registerDate',
 }
 
+export interface DevicesApi {
+  status: string;
+  message: string;
+  data: DeviceAttributes;
+}
+
 export interface DeviceState {
   devices: DeviceAttributes[];
 }
@@ -168,12 +174,14 @@ export const REGISTER_DEVICE_SUCCESS = 'REGISTER_DEVICE_SUCCESS';
 
 interface RegisterDeviceSuccess {
   type: typeof REGISTER_DEVICE_SUCCESS;
+  payload: DeviceAttributes;
 }
 
 export const MODIFY_DEVICE_SUCCESS = 'MODIFY_DEVICE_SUCCESS';
 
 interface ModifyDeviceSuccess {
   type: typeof MODIFY_DEVICE_SUCCESS;
+  payload: DeviceAttributes;
 }
 
 export const REMOVE_DEVICE_SUCCESS = 'REMOVE_DEVICE_SUCCESS';
@@ -186,12 +194,14 @@ export const GET_SINGLE_DEVICE_SUCCESS = 'GET_SINGLE_DEVICE_SUCCESS';
 
 interface GetSingleDeviceSuccess {
   type: typeof GET_SINGLE_DEVICE_SUCCESS;
+  payload: UserAttributes;
 }
 
 export const GET_ALL_DEVICES_SUCCESS = 'GET_ALL_DEVICES_SUCCESS';
 
 interface GetAllDevicesSuccess {
   type: typeof GET_ALL_DEVICES_SUCCESS;
+  payload: DeviceAttributes;
 }
 
 export type DeviceActionTypes =

@@ -19,6 +19,7 @@ const deviceReducer = (
     case REGISTER_DEVICE_SUCCESS:
       return {
         ...state,
+        ...action.payload,
       };
 
     case MODIFY_DEVICE_SUCCESS:
@@ -36,9 +37,10 @@ const deviceReducer = (
         ...state,
       };
 
-    case GET_ALL_DEVICES_SUCCESS:
+    case GET_ALL_DEVICES_SUCCESS: //fetch
       return {
         ...state,
+        devices: [{ ...action.payload }],
       };
 
     default:

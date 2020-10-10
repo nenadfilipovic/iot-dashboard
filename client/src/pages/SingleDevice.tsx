@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Button, Grid, TextField } from '@material-ui/core';
 import { useForm, Controller } from 'react-hook-form';
 import TimelineIcon from '@material-ui/icons/Timeline';
@@ -11,7 +13,9 @@ import {
   DeviceTypesCasting,
   Type,
   ReactSVGComponent,
+  RootState,
 } from '../types';
+import { thunkModifyDevice } from '../actions';
 
 const {
   name,
@@ -25,6 +29,12 @@ const {
 const SingleDevice = () => {
   const [editable, setEditable] = useState<boolean>(false);
 
+  const dispatch = useDispatch();
+
+  const deviceData = useSelector((state: RootState) =>
+    state.deviceReducer.devices.filter((device) => device.id === param.id),
+  );
+
   const { control, handleSubmit } = useForm<DeviceAttributes>({
     defaultValues: {
       name: 'Device',
@@ -36,7 +46,9 @@ const SingleDevice = () => {
     },
   });
 
-  const onSubmit = (data: DeviceAttributes) => console.log(data);
+  const onSubmit = (data: DeviceAttributes) => {
+    dispatch(thunkModifyDevice(params.id));
+  };
 
   const formFields = [
     {

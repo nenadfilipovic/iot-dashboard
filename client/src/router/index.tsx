@@ -19,11 +19,11 @@ const Router = () => {
       <Routes>
         <PrivateRoute element={<Dashboard />}>
           <Route path="/" element={<Home />} />
-          <Route path="devices">
+          <Route path="/devices">
             <Route path="/" element={<DeviceList />} />
             <Route path=":id" element={<SingleDevice />} />
           </Route>
-          <Route path="profile" element={<Profile />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="404" element={<NotFound />} />
         </PrivateRoute>
         <PublicRoute isRestricted={true} element={<Basic />}>

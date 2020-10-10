@@ -24,7 +24,7 @@ const Profile = () => {
 
   const dispatch = useDispatch();
 
-  const { control, handleSubmit, errors } = useForm<UserAttributes>({
+  const { register, handleSubmit, errors } = useForm<UserAttributes>({
     defaultValues: {
       handle: userData?.handle,
       firstName: userData?.firstName,
@@ -42,22 +42,26 @@ const Profile = () => {
     {
       label: 'Handle',
       name: handle,
-      control,
+      register,
       disabled: true,
+      inputProps: {
+        disabled: true,
+        readOnly: true,
+      },
       error: !!errors.handle?.message,
       helperText: errors.handle?.message,
     },
     {
       label: 'First Name',
       name: firstName,
-      control,
+      register,
       error: !!errors.firstName?.message,
       helperText: errors.firstName?.message,
     },
     {
       label: 'Last Name',
       name: lastName,
-      control,
+      register,
       error: !!errors.lastName?.message,
       helperText: errors.lastName?.message,
     },
@@ -65,7 +69,7 @@ const Profile = () => {
     {
       label: 'Email',
       name: emailAddress,
-      control,
+      register,
       error: !!errors.emailAddress?.message,
       helperText: errors.emailAddress?.message,
     },
@@ -81,10 +85,16 @@ const Profile = () => {
           <Grid container spacing={2}>
             {formFields.map((field) => (
               <Grid item md={4} xs={12}>
-                <Controller
+                {/* <Controller
                   as={<TextField {...field} variant="outlined" fullWidth />}
                   name={field.name}
                   control={field.control}
+                /> */}
+                <TextField
+                  inputRef={field.register}
+                  {...field}
+                  variant="outlined"
+                  fullWidth
                 />
               </Grid>
             ))}

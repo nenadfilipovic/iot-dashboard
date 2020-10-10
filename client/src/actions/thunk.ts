@@ -1,4 +1,4 @@
-import { AppThunk, UserAttributes } from '../types';
+import { AppThunk, UserAttributes, DeviceAttributes } from '../types';
 import { actionStart, actionStop } from './system';
 import { setAlert } from './alert';
 import {
@@ -9,7 +9,21 @@ import {
   _logUserIn,
   _logUserOut,
 } from '../services/user';
+import {
+  _getAllDevices,
+  _getSingleDevice,
+  _modifyDevice,
+  _registerDevice,
+  _removeDevice,
+} from '../services/device';
 import { logUserIn, logUserOut, modifyUser } from './user';
+import {
+  getAllDevices,
+  getSingleDevice,
+  removeDevice,
+  modifyDevice,
+  registerDevice,
+} from './device';
 import { AxiosError } from 'axios';
 
 const thunkLogUserOut = (): AppThunk => async (dispatch) => {
@@ -105,6 +119,87 @@ const thunkRegisterUser = (formData: UserAttributes): AppThunk => async (
   dispatch(actionStop());
 };
 
+const thunkGetAllDevices = (): AppThunk => async (dispatch) => {
+  dispatch(actionStart());
+  await _getAllDevices()
+    .then((response) => {
+      const { status, message, data } = response.data;
+      dispatch(getAllDevices(data));
+    })
+    .catch((error: AxiosError) => {
+      const { status, message } = error.response?.data;
+      dispatch(setAlert({ status, message }));
+    });
+  dispatch(actionStop());
+};
+
+const thunkGetSingleDevice = (id: DeviceAttributes['id']): AppThunk => async (
+  dispatch,
+) => {
+  dispatch(actionStart());
+  await _getSingleDevice(id)
+    .then((response) => {
+      const { status, message, data } = response.data;
+      dispatch(getSingleDevice(data));
+    })
+    .catch((error) => {
+      const { status, message } = error.response?.data;
+      dispatch(setAlert({ status, message }));
+    });
+  dispatch(actionStop());
+};
+
+const thunkRemoveDevice = (id: DeviceAttributes['id']): AppThunk => async (
+  dispatch,
+) => {
+  dispatch(actionStart());
+  await _removeDevice(id)
+    .then((response) => {
+      const { status, message, data } = response.data;
+      dispatch(modifyDevice(data));
+      dispatch(setAlert({ status, message }));
+    })
+    .catch((error) => {
+      const { status, message } = error.response?.data;
+      dispatch(setAlert({ status, message }));
+    });
+  dispatch(actionStop());
+};
+
+const thunkModifyDevice = (
+  id: DeviceAttributes['id'],
+  formData: DeviceAttributes,
+): AppThunk => async (dispatch) => {
+  dispatch(actionStart());
+  await _modifyDevice(id, formData)
+    .then((response) => {
+      const { status, message, data } = response.data;
+      //dispatch(removeDevice(id));
+    })
+    .catch((error) => {
+      const { status, message } = error.response?.data;
+      dispatch(setAlert({ status, message }));
+    });
+  dispatch(actionStop());
+};
+
+const thunkRegisterDevice = (formData: DeviceAttributes): AppThunk => async (
+  dispatch,
+) => {
+  dispatch(actionStart());
+  await _registerDevice(formData)
+    .then((response) => {
+      const { status, message, data } = response.data;
+      dispatch(registerDevice(data));
+      dispatch(setAlert({ status, message }));
+    })
+    .catch((error) => {
+      const { status, message } = error.response?.data;
+      dispatch(setAlert({ status, message }));
+    });
+  dispatch(actionStop());
+};
+
 export {
   thunkGetCurrentUser,
   thunkRemoveUser,
@@ -112,4 +207,9 @@ export {
   thunkModifyUser,
   thunkLogUserOut,
   thunkLogUserIn,
+  thunkGetAllDevices,
+  thunkRegisterDevice,
+  thunkGetSingleDevice,
+  thunkRemoveDevice,
+  thunkModifyDevice,
 };
