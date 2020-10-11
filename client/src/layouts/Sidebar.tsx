@@ -92,6 +92,7 @@ const Sidebar = ({
         <List disablePadding>
           {navigationItems.map((item) => (
             <MenuItem
+              key={item.itemTitle}
               itemIcon={item.itemIcon as ReactSVGComponent}
               itemPath={item.itemPath}
               itemTitle={item.itemTitle}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { map } from 'lodash';
 
 import {
   Grid,
@@ -17,6 +18,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  Box,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import MemoryIcon from '@material-ui/icons/Memory';
@@ -27,7 +29,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 
 import { PageSegment } from '../components/PageSegment';
 import { CreateDevice } from './CreateDevice';
-import { DeviceAttributes, Type, ReactSVGComponent, RootState } from '../types';
+import { ReactSVGComponent, RootState } from '../types';
 import { thunkGetAllDevices, thunkRemoveDevice } from '../actions';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -55,14 +57,14 @@ const DeviceList = () => {
 
   useEffect(() => {
     dispatch(thunkGetAllDevices());
-  }, []);
+  }, [dispatch]);
 
   const deviceData = useSelector(
     (state: RootState) => state.deviceReducer.devices,
   );
 
-  const devices = deviceData.map((device) => (
-    <Grid item xs={12} sm={6} md={4}>
+  const devices = map(deviceData, (device) => (
+    <Grid key={device.name} item xs={12} sm={6} md={4}>
       <PageSegment
         title={device?.name!}
         subtitle={device?.registerDate!}
@@ -84,7 +86,7 @@ const DeviceList = () => {
             >
               <MenuItem
                 onClick={() => {
-                  dispatch(thunkRemoveDevice(device.id));
+                  dispatch(thunkRemoveDevice(device.channel));
                   handleClose();
                 }}
                 children={'Remove'}
@@ -127,7 +129,7 @@ const DeviceList = () => {
             variant="contained"
             color="primary"
             component={NavLink}
-            to={`/devices/${device.id}`}
+            to={`/devices/${device.channel}`}
           >
             Details
           </Button>
@@ -137,9 +139,9 @@ const DeviceList = () => {
   ));
 
   return (
-    <React.Fragment>
+    <Box m={2}>
       <Grid container spacing={2}>
-        {devices && devices}
+        {devices}
       </Grid>
       <Fab onClick={() => setModalOpen(true)} className={classes.actionButton}>
         <AddIcon />
@@ -147,7 +149,7 @@ const DeviceList = () => {
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <CreateDevice />
       </Modal>
-    </React.Fragment>
+    </Box>
   );
 };
 

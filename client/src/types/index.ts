@@ -138,7 +138,7 @@ export interface DeviceAttributes {
   id?: string;
   owner?: string;
   name?: string;
-  channel?: string;
+  channel: string;
   description?: string;
   type?: Type;
   modifyDate?: Date;
@@ -167,7 +167,7 @@ export interface DevicesApi {
 }
 
 export interface DeviceState {
-  devices: DeviceAttributes[];
+  devices: { [key: string]: DeviceAttributes };
 }
 
 export const REGISTER_DEVICE_SUCCESS = 'REGISTER_DEVICE_SUCCESS';
@@ -188,6 +188,7 @@ export const REMOVE_DEVICE_SUCCESS = 'REMOVE_DEVICE_SUCCESS';
 
 interface RemoveDeviceSuccess {
   type: typeof REMOVE_DEVICE_SUCCESS;
+  payload: DeviceAttributes;
 }
 
 export const GET_SINGLE_DEVICE_SUCCESS = 'GET_SINGLE_DEVICE_SUCCESS';
@@ -210,3 +211,30 @@ export type DeviceActionTypes =
   | RemoveDeviceSuccess
   | GetSingleDeviceSuccess
   | GetAllDevicesSuccess;
+
+/**
+ * Log types
+ */
+
+export interface LogAttributes {
+  temperature: string;
+  pressure: string;
+  humidity: string;
+}
+
+export interface LogsApi {
+  data: LogAttributes;
+}
+
+export interface LogState {
+  logs: LogAttributes[];
+}
+
+export const GET_LOGS = 'GET_LOGS';
+
+interface GetLogs {
+  type: typeof GET_LOGS;
+  payload: LogAttributes;
+}
+
+export type LogActionTypes = GetLogs;

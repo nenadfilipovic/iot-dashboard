@@ -1,5 +1,8 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { joiResolver } from '@hookform/resolvers/joi';
+import { useForm, Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Theme,
@@ -11,7 +14,6 @@ import {
   Grid,
   Container,
 } from '@material-ui/core';
-import { useForm, Controller } from 'react-hook-form';
 import MemoryIcon from '@material-ui/icons/Memory';
 
 import { PageSegment } from '../components/PageSegment';
@@ -22,6 +24,7 @@ import {
   ReactSVGComponent,
 } from '../types';
 import { thunkRegisterDevice } from '../actions';
+import { deviceSchema } from '../validation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,9 +45,11 @@ const typeOptions = (['esp32', 'esp8266'] as Type[]).map((option) => (
 const CreateDevice = () => {
   const classes = useStyles();
 
+  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
-  const { control, handleSubmit } = useForm<DeviceAttributes>({
+  const { control, handleSubmit, errors } = useForm<DeviceAttributes>({
     defaultValues: {
       id: '',
       name: '',
@@ -54,10 +59,12 @@ const CreateDevice = () => {
       modifyDate: new Date(),
       registerDate: new Date(),
     },
+    resolver: joiResolver(deviceSchema),
   });
 
   const onSubmit = (data: DeviceAttributes) => {
     dispatch(thunkRegisterDevice(data));
+    navigate('/devices');
   };
 
   const formFields = [
@@ -65,16 +72,22 @@ const CreateDevice = () => {
       label: 'Name',
       name: name,
       control,
+      error: !!errors.name?.message,
+      helperText: errors.name?.message,
     },
     {
-      label: 'Topic',
+      label: 'Channel',
       name: channel,
       control,
+      error: !!errors.channel?.message,
+      helperText: errors.channel?.message,
     },
     {
       label: 'Description',
       name: description,
       control,
+      error: !!errors.description?.message,
+      helperText: errors.description?.message,
     },
     {
       label: 'Type',
@@ -82,11 +95,13 @@ const CreateDevice = () => {
       control,
       select: true,
       children: typeOptions,
+      error: !!errors.type?.message,
+      helperText: errors.type?.message,
     },
   ];
 
   const createDeviceForm = (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
       <PageSegment
         title="Add new device"
         subtitle="Please enter data for device you want to create"
@@ -94,7 +109,7 @@ const CreateDevice = () => {
         content={
           <Grid container direction="column" spacing={2}>
             {formFields.map((field) => (
-              <Grid item>
+              <Grid key={field.name} item>
                 <Controller
                   as={
                     <TextField
@@ -114,7 +129,7 @@ const CreateDevice = () => {
           </Grid>
         }
         actions={
-          <Button color="primary" fullWidth type="submit">
+          <Button variant="contained" color="secondary" fullWidth type="submit">
             Create
           </Button>
         }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { joiResolver } from '@hookform/resolvers/joi';
 
@@ -84,12 +84,7 @@ const Profile = () => {
         content={
           <Grid container spacing={2}>
             {formFields.map((field) => (
-              <Grid item md={4} xs={12}>
-                {/* <Controller
-                  as={<TextField {...field} variant="outlined" fullWidth />}
-                  name={field.name}
-                  control={field.control}
-                /> */}
+              <Grid key={field.name} item md={4} xs={12}>
                 <TextField
                   inputRef={field.register}
                   {...field}

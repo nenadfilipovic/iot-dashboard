@@ -27,6 +27,7 @@ const modifyDevice = (modifiedDevice: DeviceAttributes): DeviceActionTypes => {
 const removeDevice = (removeDevice: DeviceAttributes): DeviceActionTypes => {
   return {
     type: REMOVE_DEVICE_SUCCESS,
+    payload: removeDevice,
   };
 };
 

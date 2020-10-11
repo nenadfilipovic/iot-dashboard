@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
   LineChart,
   CartesianGrid,
@@ -11,17 +12,7 @@ import {
 } from 'recharts';
 
 import { Box } from '@material-ui/core';
-
-// TODO Replace with global state
-const data = [
-  { time: '2015-03-25', temperature: 33, pressure: 1005, humidity: 55 },
-  { time: '2015-03-26', temperature: 32, pressure: 1025, humidity: 33 },
-  { time: '2015-03-27', temperature: 23, pressure: 950, humidity: 22 },
-  { time: '2015-03-28', temperature: 35, pressure: 1100, humidity: 55 },
-  { time: '2015-03-29', temperature: 31, pressure: 1006, humidity: 50 },
-  { time: '2015-03-30', temperature: 32, pressure: 1003, humidity: 70 },
-];
-//
+import { RootState } from '../types';
 
 const dataOptions = [
   {
@@ -39,6 +30,8 @@ const dataOptions = [
 ];
 
 const Chart = () => {
+  const data = useSelector((state: RootState) => state.logReducer.logs);
+
   const renderLines = dataOptions.map((item) => (
     <Line type="monotone" dataKey={item.name} stroke={item.color} />
   ));

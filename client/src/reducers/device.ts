@@ -1,3 +1,5 @@
+import { mapKeys, omit } from 'lodash';
+
 import {
   DeviceState,
   DeviceActionTypes,
@@ -9,7 +11,7 @@ import {
 } from '../types';
 
 const initialState: DeviceState = {
-  devices: [],
+  devices: {},
 };
 const deviceReducer = (
   state = initialState,
@@ -19,18 +21,17 @@ const deviceReducer = (
     case REGISTER_DEVICE_SUCCESS:
       return {
         ...state,
-        ...action.payload,
       };
 
     case MODIFY_DEVICE_SUCCESS:
-      return {
-        ...state,
-      };
+      return Object.assign({}, state, {
+        devices: { [action.payload.channel]: action.payload },
+      });
 
     case REMOVE_DEVICE_SUCCESS:
-      return {
-        ...state,
-      };
+      return Object.assign({}, state, {
+        devices: omit(state, action.payload.channel),
+      });
 
     case GET_SINGLE_DEVICE_SUCCESS:
       return {
@@ -38,10 +39,9 @@ const deviceReducer = (
       };
 
     case GET_ALL_DEVICES_SUCCESS: //fetch
-      return {
-        ...state,
-        devices: [{ ...action.payload }],
-      };
+      return Object.assign({}, state, {
+        devices: mapKeys(action.payload, 'channel'),
+      });
 
     default:
       return state;

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { joiResolver } from '@hookform/resolvers/joi';
 
-import { Button, Grid, TextField } from '@material-ui/core';
-import { useForm, Controller } from 'react-hook-form';
+import { Button, Grid, TextField, Box } from '@material-ui/core';
+import { useForm } from 'react-hook-form';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import InfoIcon from '@material-ui/icons/Info';
 
@@ -11,11 +13,11 @@ import { PageSegment } from '../components/PageSegment';
 import {
   DeviceAttributes,
   DeviceTypesCasting,
-  Type,
   ReactSVGComponent,
   RootState,
 } from '../types';
-import { thunkModifyDevice } from '../actions';
+import { thunkModifyDevice, thunkGetLogs } from '../actions';
+import { deviceSchema } from '../validation';
 
 const {
   name,
@@ -27,78 +29,75 @@ const {
 } = DeviceTypesCasting;
 
 const SingleDevice = () => {
-  const [editable, setEditable] = useState<boolean>(false);
+  const params = useParams();
+
+  const device = useSelector(
+    (state: RootState) => state.deviceReducer.devices[params.id],
+  );
+
+  useEffect(() => {
+    thunkGetLogs(params.id);
+  });
 
   const dispatch = useDispatch();
 
-  const deviceData = useSelector((state: RootState) =>
-    state.deviceReducer.devices.filter((device) => device.id === param.id),
-  );
-
-  const { control, handleSubmit } = useForm<DeviceAttributes>({
+  const { register, handleSubmit, errors } = useForm<DeviceAttributes>({
     defaultValues: {
-      name: 'Device',
-      channel: 'home',
-      type: Type.esp8266,
-      description: 'Sensor from living room',
-      modifyDate: new Date(),
-      registerDate: new Date(),
+      name: device.name,
+      channel: device.channel,
+      type: device.type,
+      description: device.description,
+      modifyDate: device.modifyDate,
+      registerDate: device.registerDate,
     },
+    resolver: joiResolver(deviceSchema),
   });
 
   const onSubmit = (data: DeviceAttributes) => {
-    dispatch(thunkModifyDevice(params.id));
+    dispatch(thunkModifyDevice(params.id, data));
   };
 
   const formFields = [
     {
       label: 'Name',
       name: name,
-      control,
+      register,
+      error: !!errors.name?.message,
+      helperText: errors.name?.message,
     },
     {
       label: 'Type',
       name: type,
-      control,
-      disabled: true,
+      register,
+      error: !!errors.type?.message,
+      helperText: errors.type?.message,
     },
     {
-      label: 'Topic',
+      label: 'Channel',
       name: channel,
-      control,
+      register,
+      disabled: true,
     },
     {
       label: 'Description',
       name: description,
-      control,
+      register,
+      error: !!errors.description?.message,
+      helperText: errors.description?.message,
     },
     {
       label: 'Modified',
       name: modifyDate,
-      control,
+      register,
       disabled: true,
     },
     {
       label: 'Created',
       name: registerDate,
-      control,
+      register,
       disabled: true,
     },
   ];
-
-  const button = editable ? (
-    <Button onClick={() => setEditable(!editable)} color="primary">
-      Save
-    </Button>
-  ) : (
-    <Button
-      onClick={() => setEditable(!editable)}
-      type="submit"
-      color="primary"
-    >
-      Edit
-    </Button>
-  );
 
   const deviceForm = (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -110,39 +109,39 @@ const SingleDevice = () => {
           <Grid container spacing={2}>
             {formFields.map((field) => (
               <Grid item md={4} xs={12}>
-                <Controller
-                  as={
-                    <TextField
-                      {...field}
-                      InputProps={{ readOnly: !editable }}
-                      variant="outlined"
-                      fullWidth
-                    />
-                  }
-                  name={field.name}
-                  control={field.control}
+                <TextField
+                  {...field}
+                  inputRef={field.register}
+                  variant="outlined"
+                  fullWidth
                 />
               </Grid>
             ))}
           </Grid>
         }
-        actions={button}
+        actions={
+          <Button type="submit" variant="contained" color="secondary">
+            Save
+          </Button>
+        }
       />
     </form>
   );
 
   return (
-    <Grid container direction="column" spacing={2}>
-      <Grid item>{deviceForm}</Grid>
-      <Grid item>
-        <PageSegment
-          title="Readings"
-          subtitle="Check data readings from your device"
-          icon={TimelineIcon as ReactSVGComponent}
-          content={<Chart />}
-        />
+    <Box m={2}>
+      <Grid container direction="column" spacing={2}>
+        <Grid item>{deviceForm}</Grid>
+        <Grid item>
+          <PageSegment
+            title="Readings"
+            subtitle="Check data readings from your device"
+            icon={TimelineIcon as ReactSVGComponent}
+            content={<Chart />}
+          />
+        </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 };
 
