@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import {
   LineChart,
   CartesianGrid,
@@ -12,7 +11,8 @@ import {
 } from 'recharts';
 
 import { Box } from '@material-ui/core';
-import { RootState } from '../types';
+
+import { LogAttributes } from '../types';
 
 const dataOptions = [
   {
@@ -21,7 +21,7 @@ const dataOptions = [
   },
   {
     name: 'pressure',
-    color: '#00203FFF',
+    color: '#ffffff',
   },
   {
     name: 'humidity',
@@ -29,11 +29,14 @@ const dataOptions = [
   },
 ];
 
-const Chart = () => {
-  const data = useSelector((state: RootState) => state.logReducer.logs);
-
+const Chart = ({ data }: { data: LogAttributes[] }) => {
   const renderLines = dataOptions.map((item) => (
-    <Line type="monotone" dataKey={item.name} stroke={item.color} />
+    <Line
+      key={item.name}
+      type="monotone"
+      dataKey={item.name}
+      stroke={item.color}
+    />
   ));
 
   const chartContent = (

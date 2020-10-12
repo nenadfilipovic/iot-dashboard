@@ -188,14 +188,7 @@ export const REMOVE_DEVICE_SUCCESS = 'REMOVE_DEVICE_SUCCESS';
 
 interface RemoveDeviceSuccess {
   type: typeof REMOVE_DEVICE_SUCCESS;
-  payload: DeviceAttributes;
-}
-
-export const GET_SINGLE_DEVICE_SUCCESS = 'GET_SINGLE_DEVICE_SUCCESS';
-
-interface GetSingleDeviceSuccess {
-  type: typeof GET_SINGLE_DEVICE_SUCCESS;
-  payload: UserAttributes;
+  payload: string;
 }
 
 export const GET_ALL_DEVICES_SUCCESS = 'GET_ALL_DEVICES_SUCCESS';
@@ -209,7 +202,6 @@ export type DeviceActionTypes =
   | RegisterDeviceSuccess
   | ModifyDeviceSuccess
   | RemoveDeviceSuccess
-  | GetSingleDeviceSuccess
   | GetAllDevicesSuccess;
 
 /**

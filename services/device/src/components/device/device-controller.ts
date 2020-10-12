@@ -185,6 +185,8 @@ const mqttAcl = async (ctx: DefaultContext): Promise<void> => {
     return;
   }
 
+  console.log(owner, channel, topic);
+
   const existingDevice = await Device.findOne({
     where: { owner, channel },
   });

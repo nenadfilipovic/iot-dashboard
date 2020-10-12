@@ -12,7 +12,6 @@ import {
   createStyles,
   List,
 } from '@material-ui/core';
-import DashboardIcon from '@material-ui/icons/Dashboard';
 import FaceIcon from '@material-ui/icons/Face';
 import PhonelinkRingIcon from '@material-ui/icons/PhonelinkRing';
 
@@ -23,11 +22,6 @@ import { UserAvatar } from '../components/UserAvatar';
 import { ReactSVGComponent, RootState } from '../types';
 
 const navigationItems = [
-  {
-    itemPath: '/',
-    itemTitle: 'Home',
-    itemIcon: DashboardIcon,
-  },
   {
     itemPath: '/devices',
     itemTitle: 'Devices',

@@ -21,7 +21,6 @@ import { logUserIn, logUserOut, modifyUser } from './user';
 import { getLogs } from './log';
 import {
   getAllDevices,
-  getSingleDevice,
   removeDevice,
   modifyDevice,
   registerDevice,
@@ -132,26 +131,12 @@ const thunkGetAllDevices = (): AppThunk => async (dispatch) => {
   dispatch(actionStop());
 };
 
-const thunkGetSingleDevice = (id: string): AppThunk => async (dispatch) => {
-  dispatch(actionStart());
-  await _getSingleDevice(id)
-    .then((response) => {
-      const { status, message, data } = response.data;
-      dispatch(getSingleDevice(data));
-    })
-    .catch((error) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
-    });
-  dispatch(actionStop());
-};
-
 const thunkRemoveDevice = (id: string): AppThunk => async (dispatch) => {
   dispatch(actionStart());
   await _removeDevice(id)
     .then((response) => {
       const { status, message, data } = response.data;
-      dispatch(removeDevice(data));
+      dispatch(removeDevice(id));
       dispatch(setAlert({ status, message }));
     })
     .catch((error) => {});
@@ -215,7 +200,6 @@ export {
   thunkLogUserIn,
   thunkGetAllDevices,
   thunkRegisterDevice,
-  thunkGetSingleDevice,
   thunkRemoveDevice,
   thunkModifyDevice,
   thunkGetLogs,

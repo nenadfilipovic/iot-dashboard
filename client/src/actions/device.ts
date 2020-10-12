@@ -3,7 +3,6 @@ import {
   REGISTER_DEVICE_SUCCESS,
   MODIFY_DEVICE_SUCCESS,
   REMOVE_DEVICE_SUCCESS,
-  GET_SINGLE_DEVICE_SUCCESS,
   GET_ALL_DEVICES_SUCCESS,
   DeviceActionTypes,
 } from '../types';
@@ -24,17 +23,10 @@ const modifyDevice = (modifiedDevice: DeviceAttributes): DeviceActionTypes => {
   };
 };
 
-const removeDevice = (removeDevice: DeviceAttributes): DeviceActionTypes => {
+const removeDevice = (removeDevice: string): DeviceActionTypes => {
   return {
     type: REMOVE_DEVICE_SUCCESS,
     payload: removeDevice,
-  };
-};
-
-const getSingleDevice = (singleDevice: DeviceAttributes): DeviceActionTypes => {
-  return {
-    type: GET_SINGLE_DEVICE_SUCCESS,
-    payload: singleDevice,
   };
 };
 
@@ -45,10 +37,4 @@ const getAllDevices = (allDevices: DeviceAttributes): DeviceActionTypes => {
   };
 };
 
-export {
-  getAllDevices,
-  getSingleDevice,
-  registerDevice,
-  modifyDevice,
-  removeDevice,
-};
+export { getAllDevices, registerDevice, modifyDevice, removeDevice };

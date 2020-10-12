@@ -6,10 +6,9 @@ const initialState: LogState = {
 const logReducer = (state = initialState, action: LogActionTypes): LogState => {
   switch (action.type) {
     case GET_LOGS:
-      return {
-        ...state,
-        logs: [{ ...action.payload }],
-      };
+      return Object.assign({}, state, {
+        logs: action.payload,
+      });
 
     default:
       return state;

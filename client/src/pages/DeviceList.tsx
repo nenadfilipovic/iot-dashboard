@@ -19,6 +19,7 @@ import {
   ListItemText,
   ListItemIcon,
   Box,
+  Typography,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import MemoryIcon from '@material-ui/icons/Memory';
@@ -64,7 +65,7 @@ const DeviceList = () => {
   );
 
   const devices = map(deviceData, (device) => (
-    <Grid key={device.name} item xs={12} sm={6} md={4}>
+    <Grid key={device.channel} item xs={12} sm={6} md={4}>
       <PageSegment
         title={device?.name!}
         subtitle={device?.registerDate!}
@@ -141,13 +142,21 @@ const DeviceList = () => {
   return (
     <Box m={2}>
       <Grid container spacing={2}>
-        {devices}
+        {devices.length > 0 ? (
+          devices
+        ) : (
+          <Typography
+            variant="h6"
+            color="textPrimary"
+            children={'You have no active devices, please create one'}
+          />
+        )}
       </Grid>
       <Fab onClick={() => setModalOpen(true)} className={classes.actionButton}>
         <AddIcon />
       </Fab>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <CreateDevice />
+        <CreateDevice closeModal={() => setModalOpen(false)} />
       </Modal>
     </Box>
   );

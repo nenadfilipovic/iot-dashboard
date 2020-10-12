@@ -6,7 +6,6 @@ import {
   REGISTER_DEVICE_SUCCESS,
   MODIFY_DEVICE_SUCCESS,
   GET_ALL_DEVICES_SUCCESS,
-  GET_SINGLE_DEVICE_SUCCESS,
   REMOVE_DEVICE_SUCCESS,
 } from '../types';
 
@@ -19,9 +18,9 @@ const deviceReducer = (
 ): DeviceState => {
   switch (action.type) {
     case REGISTER_DEVICE_SUCCESS:
-      return {
-        ...state,
-      };
+      return Object.assign({}, state, {
+        devices: { ...state.devices, [action.payload.channel]: action.payload },
+      });
 
     case MODIFY_DEVICE_SUCCESS:
       return Object.assign({}, state, {
@@ -30,15 +29,10 @@ const deviceReducer = (
 
     case REMOVE_DEVICE_SUCCESS:
       return Object.assign({}, state, {
-        devices: omit(state, action.payload.channel),
+        devices: omit(state.devices, action.payload),
       });
 
-    case GET_SINGLE_DEVICE_SUCCESS:
-      return {
-        ...state,
-      };
-
-    case GET_ALL_DEVICES_SUCCESS: //fetch
+    case GET_ALL_DEVICES_SUCCESS:
       return Object.assign({}, state, {
         devices: mapKeys(action.payload, 'channel'),
       });

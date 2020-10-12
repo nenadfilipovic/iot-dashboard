@@ -31,15 +31,20 @@ const {
 const SingleDevice = () => {
   const params = useParams();
 
+  const data = useSelector((state: RootState) => state.logReducer.logs);
+
   const device = useSelector(
     (state: RootState) => state.deviceReducer.devices[params.id],
   );
 
-  useEffect(() => {
-    thunkGetLogs(params.id);
-  });
-
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getLogs = (id: string) => {
+      dispatch(thunkGetLogs(id));
+    };
+    getLogs(params.id);
+  }, [dispatch, params.id]);
 
   const { register, handleSubmit, errors } = useForm<DeviceAttributes>({
     defaultValues: {
@@ -108,7 +113,7 @@ const SingleDevice = () => {
         content={
           <Grid container spacing={2}>
             {formFields.map((field) => (
-              <Grid item md={4} xs={12}>
+              <Grid key={field.name} item md={4} xs={12}>
                 <TextField
                   {...field}
                   inputRef={field.register}
@@ -137,7 +142,7 @@ const SingleDevice = () => {
             title="Readings"
             subtitle="Check data readings from your device"
             icon={TimelineIcon as ReactSVGComponent}
-            content={<Chart />}
+            content={<Chart data={data} />}
           />
         </Grid>
       </Grid>

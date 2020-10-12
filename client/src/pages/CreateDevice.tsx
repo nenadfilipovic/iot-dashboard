@@ -2,7 +2,6 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 
 import {
   Theme,
@@ -42,10 +41,12 @@ const typeOptions = (['esp32', 'esp8266'] as Type[]).map((option) => (
   </MenuItem>
 ));
 
-const CreateDevice = () => {
+const CreateDevice = ({
+  closeModal,
+}: {
+  closeModal: (value: React.SetStateAction<boolean>) => void;
+}) => {
   const classes = useStyles();
-
-  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -64,7 +65,7 @@ const CreateDevice = () => {
 
   const onSubmit = (data: DeviceAttributes) => {
     dispatch(thunkRegisterDevice(data));
-    navigate('/devices');
+    closeModal(false);
   };
 
   const formFields = [
