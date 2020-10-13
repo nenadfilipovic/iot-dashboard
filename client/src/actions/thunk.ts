@@ -5,14 +5,12 @@ import {
   _registerUser,
   _modifyUser,
   _removeUser,
-  _getCurrentUser,
   _logUserIn,
   _logUserOut,
 } from '../services/user';
 import { _getLogs } from '../services/log';
 import {
   _getAllDevices,
-  _getSingleDevice,
   _modifyDevice,
   _registerDevice,
   _removeDevice,
@@ -33,10 +31,7 @@ const thunkLogUserOut = (): AppThunk => async (dispatch) => {
     .then((response) => {
       dispatch(logUserOut());
     })
-    .catch((error: AxiosError) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
-    });
+    .catch((error: AxiosError) => {});
   dispatch(actionStop());
 };
 
@@ -50,18 +45,13 @@ const thunkLogUserIn = (formData: UserAttributes): AppThunk => async (
       dispatch(logUserIn(data));
       dispatch(setAlert({ status, message }));
     })
-    .catch((error: AxiosError) => {});
-  dispatch(actionStop());
-};
-
-const thunkGetCurrentUser = (): AppThunk => async (dispatch) => {
-  dispatch(actionStart());
-  await _getCurrentUser()
-    .then((response) => {
-      //dispatch(getCurrentUser());
-    })
-    .catch((error) => {
-      //dispatch(notificationMessage()); // Izvaditi status i message iz erora
+    .catch((error: AxiosError) => {
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
@@ -73,8 +63,12 @@ const thunkRemoveUser = (): AppThunk => async (dispatch) => {
       dispatch(logUserOut());
     })
     .catch((error) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
@@ -90,8 +84,12 @@ const thunkModifyUser = (formData: UserAttributes): AppThunk => async (
       dispatch(setAlert({ status, message }));
     })
     .catch((error: AxiosError) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
@@ -111,8 +109,12 @@ const thunkRegisterUser = (formData: UserAttributes): AppThunk => async (
       dispatch(setAlert({ status, message }));
     })
     .catch((error: AxiosError) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
@@ -125,8 +127,12 @@ const thunkGetAllDevices = (): AppThunk => async (dispatch) => {
       dispatch(getAllDevices(data));
     })
     .catch((error: AxiosError) => {
-      // const { status, message } = error.response?.data;
-      // dispatch(setAlert({ status, message }));
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
@@ -135,11 +141,18 @@ const thunkRemoveDevice = (id: string): AppThunk => async (dispatch) => {
   dispatch(actionStart());
   await _removeDevice(id)
     .then((response) => {
-      const { status, message, data } = response.data;
+      const { status, message } = response.data;
       dispatch(removeDevice(id));
       dispatch(setAlert({ status, message }));
     })
-    .catch((error) => {});
+    .catch((error) => {
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
+    });
   dispatch(actionStop());
 };
 
@@ -152,10 +165,15 @@ const thunkModifyDevice = (
     .then((response) => {
       const { status, message, data } = response.data;
       dispatch(modifyDevice(data));
+      dispatch(setAlert({ status, message }));
     })
     .catch((error) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
@@ -171,8 +189,12 @@ const thunkRegisterDevice = (formData: DeviceAttributes): AppThunk => async (
       dispatch(setAlert({ status, message }));
     })
     .catch((error) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
@@ -185,14 +207,17 @@ const thunkGetLogs = (deviceId: string): AppThunk => async (dispatch) => {
       dispatch(getLogs(data));
     })
     .catch((error) => {
-      const { status, message } = error.response?.data;
-      dispatch(setAlert({ status, message }));
+      dispatch(
+        setAlert({
+          status: error.response?.data.status,
+          message: error.response?.data.message,
+        }),
+      );
     });
   dispatch(actionStop());
 };
 
 export {
-  thunkGetCurrentUser,
   thunkRemoveUser,
   thunkRegisterUser,
   thunkModifyUser,

@@ -24,6 +24,11 @@ Installing is simple as running `docker-compose up` inside root folder where doc
 
 If you want to run it from VS-Code you can install [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) extension that enables you to run docker files from editor without using docker cli.
 
+App opens two ports for communication, 80 for accessing dashboard and 1883 for publishing mqtt messages. Mqtt messages should be in JSON format, any request that is not valid JSON will be rejected.
+
+EMQX broker inside app expects you to provide username and password for authentication, here you should use same credentials you used to register account.
+For access validation EMQX uses acl config lists, app is designed in such way that broker only accepts topics in form of `username/device channel`. MQTT clients will probably use term deviceId so you should provide device channel in place of deviceId.
+
 ## Running the tests
 
 -
@@ -39,6 +44,8 @@ If you want to run it from VS-Code you can install [Docker](https://marketplace.
 ## Deployment
 
 This app is intended to be run on local network but it can be easily deployed to any host supporting containers.
+
+Open browser, go to localhost and you will be presented with login screen.
 
 Will maybe add in future configuration for kubernetes and github actions to automatically deploy images on commit.
 
