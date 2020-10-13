@@ -29,6 +29,8 @@ App opens two ports for communication, 80 for accessing dashboard and 1883 for p
 EMQX broker inside app expects you to provide username and password for authentication, here you should use same credentials you used to register account.
 For access validation EMQX uses acl config lists, app is designed in such way that broker only accepts topics in form of `username/device channel`. MQTT clients will probably use term deviceId so you should provide device channel in place of deviceId.
 
+For testing MQTT path use [MQTTX](https://mqttx.app/) app by creators of EMQX broker.
+
 ## Running the tests
 
 -
